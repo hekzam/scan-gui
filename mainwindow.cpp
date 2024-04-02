@@ -22,10 +22,10 @@ void MainWindow::createMenuBar()
   currentViewTitle = new QLabel(tr("Name of the Window"),mainWindowMenuBar);
   currentViewTitle->setIndent(10);
   mainWindowMenuBar->setCornerWidget(currentViewTitle, Qt::TopLeftCorner);
-  fileMenu = new QMenu(tr("&Fichier"),this);
-  editMenu = new QMenu(tr("&Édition"),this);
-  viewMenu = new QMenu(tr("&Affichage"),this);
-  helpMenu = new QMenu(tr("A&ide"),this);
+  fileMenu = new QMenu(tr("&Fichier"),mainWindowMenuBar);
+  editMenu = new QMenu(tr("&Édition"),mainWindowMenuBar);
+  viewMenu = new QMenu(tr("&Affichage"),mainWindowMenuBar);
+  helpMenu = new QMenu(tr("A&ide"),mainWindowMenuBar);
   mainWindowMenuBar->addMenu(fileMenu);
   mainWindowMenuBar->addMenu(editMenu);
   mainWindowMenuBar->addMenu(viewMenu);
@@ -36,20 +36,23 @@ void MainWindow::createSearchableColumns()
 {
   // placeholder QLabel
   placeholderSearchableColumns = new QLabel("Not my problem, WIP",this);
+  // workingView->addWidget(placeholderSearchableColumns);
   placeholderSearchableColumns->setMargin(50);
   placeholderSearchableColumns->setMinimumSize(minPanelSize);
 }
 
 void MainWindow::createPreviewPanel()
 {
-  previewPanelandButtons = new QGroupBox("the preview + the buttons here", this);
+  previewPanelandButtons = new QGroupBox("the preview + the buttons here",this);
   previewPanelandButtons->setMinimumSize(minPanelSize);
 }
 
 void MainWindow::createWorkingView()
 {
   // TODO : add children to this box (preview, buttons and columns)
-  workingView = new QSplitter(this);
+  // TODO : check if the parent is correct
+  workingView = new QSplitter(this); //WIP
+  // workingView takes ownership with addWidget (see QSplitter docs)
   workingView->addWidget(placeholderSearchableColumns);
   workingView->addWidget(previewPanelandButtons);
   workingView->setChildrenCollapsible(false);
@@ -57,24 +60,10 @@ void MainWindow::createWorkingView()
 
 void MainWindow::createMainStack()
 {
-  mainStack = new QStackedWidget;
+  mainStack = new QStackedWidget(this);
   mainStack->addWidget(workingView);
   setCentralWidget(mainStack); // as it should be
 }
 
-// TODO : delete les pointeurs, free la mémoire etc...
 MainWindow::~MainWindow(){};
-// MainWindow::~MainWindow() {
-//   for(QObject *child : mainStack->children()){
-//     qDebug() << " Label deleted : " << child;
-//     deleteChildren(child);
-//   }
-// }
 
-// void MainWindow::deleteChildren(QObject *parent)
-// {
-//   for(QObject *child : parent->children()){
-//     qDebug() << " Label deleted : " << child;
-//     delete child;
-//   }
-// }

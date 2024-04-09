@@ -18,7 +18,7 @@ set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp
         mainwindow.h
-        mainwindow.ui
+
         ${TS_FILES}
 )
 
@@ -26,6 +26,11 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(scan-gui
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        sortTable/tablebox.h sortTable/tablebox.cpp
+        sortTable/tablebox.h sortTable/tablebox.cpp
+        sortTable/sorttable.h sortTable/sorttable.cpp
+        sortTable/boundary.h sortTable/boundary.cpp
+        sortTable/controller.h sortTable/controller.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET scan-gui APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

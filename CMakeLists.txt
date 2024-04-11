@@ -26,6 +26,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(scan-gui
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        preview/preview.h preview/preview.cpp
+        json/jsonreader.h json/jsonreader.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET scan-gui APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

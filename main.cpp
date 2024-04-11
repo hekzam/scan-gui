@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-
+#include "json/jsonreader.h"
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>
@@ -7,6 +7,14 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    QStringList args = QApplication::arguments();
+
+    if (args.size() >= 2)
+    {
+      mJSON::jsonreader j;
+      j.loadFromJSON(args.at(1));
+      j.getCoordinates();
+    }
 
     QTranslator translator;
     const QStringList uiLanguages = QLocale::system().uiLanguages();

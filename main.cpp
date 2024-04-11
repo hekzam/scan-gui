@@ -3,7 +3,7 @@
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>
-#include "sortTable/controller.h"
+#include "SortTable/controller.h"
 
 int main(int argc, char *argv[])
 {

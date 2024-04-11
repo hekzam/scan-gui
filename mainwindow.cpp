@@ -108,29 +108,46 @@ void MainWindow::createCreateProjectView()
 {
     createProjectView = new QWidget(this);
 
-
     QVBoxLayout *createProjectViewLayout = new QVBoxLayout(createProjectView);
     createProjectViewLayout -> setAlignment(Qt::AlignCenter);
 
-    /**QGridLayout *fileGrid = new QGridLayout(createProjectView);
-    QHBoxLayout *repositoryLayout = new QHBoxLayout(createProjectView);
-    QHBoxLayout *examLayout = new QHBoxLayout(createProjectView);
-    QHBoxLayout *scanLayout = new QHBoxLayout(createProjectView);
-    QHBoxLayout *listLayout = new QHBoxLayout(createProjectView);
+    QFormLayout *fileForm = new QFormLayout(createProjectView);
+    fileForm -> addRow(new QLabel("Pour continuer, veuillez renseigner les champs suivants.", this));
 
-    fileGrid -> addWidget(new QLabel("Pour continuer, veuillez renseigner les champs suivants.", createProjectView), 0, 0);
-    fileGrid -> addLayout(repositoryLayout, 1, 0);
-    fileGrid -> addLayout(examLayout, 2, 0);
-    fileGrid -> addLayout(scanLayout, 3, 0);
-    fileGrid -> addWidget(new QLabel("Si vous le souhaitez, vous pouvez également renseigner une liste d'émargement.", createProjectView), 0, 0);
-    fileGrid -> addLayout(listLayout, 5, 0);*/
+    QLineEdit *repositoryImport = new QLineEdit;
+    fileForm -> addRow(createFileEntry("Répertoire du projet", repositoryImport));
 
-    QPushButton *openFileButton = new QPushButton("Ouvrir", createProjectView);
-    openFileButton -> setStyleSheet("font-size: 16px; background-color: orange; color: white;");
-    openFileButton -> setFixedSize(100, 50);
-    connect(openFileButton, &QPushButton::clicked, this, &MainWindow::showEvaluationView);
+    QLineEdit *examImport = new QLineEdit;
+    fileForm -> addRow(createFileEntry("Données d'examen", examImport));
 
-    createProjectViewLayout -> addWidget(openFileButton);
+    QLineEdit *scanImport = new QLineEdit;
+    fileForm -> addRow(createFileEntry("Fichier de scans", scanImport));
+
+    fileForm -> addRow(new QLabel("Si vous le souhaitez, vous pouvez également renseigner une liste d'émargement.", this));
+
+    QLineEdit *listImport = new QLineEdit;
+    fileForm -> addRow(createFileEntry("Liste d'émargement", listImport));
+
+    QHBoxLayout *buttonLayout = new QHBoxLayout(createProjectView);
+    buttonLayout -> setAlignment(Qt::AlignRight);
+
+    QPushButton *nextButton = new QPushButton("Suivant");
+    nextButton -> setStyleSheet("font-size: 16px; background-color: green; color: white;");
+    nextButton -> setFixedSize(250, 50);
+    connect(nextButton, &QPushButton::clicked, this, &MainWindow::showEvaluationView);
+
+    QPushButton *backButton = new QPushButton("Retour");
+    backButton -> setStyleSheet("font-size: 16px; background-color: orange; color: white;");
+    backButton -> setFixedSize(250, 50);
+    connect(backButton, &QPushButton::clicked, this, &MainWindow::showWelcomeView);
+
+    buttonLayout -> addWidget(backButton);
+    buttonLayout -> addWidget(nextButton);
+
+    fileForm -> setHorizontalSpacing(100);
+
+    createProjectViewLayout -> addLayout(fileForm);
+    createProjectViewLayout -> addLayout(buttonLayout);
 
     mainStack -> addWidget(createProjectView);
 }
@@ -198,6 +215,32 @@ void MainWindow::openFileExplorer()
     if (!fileName.isEmpty()) {
         showEvaluationView();
     }
+}
+
+void MainWindow::openFileExplorerAlt(QLineEdit *file)
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::homePath());
+    if (!fileName.isEmpty()) {
+        file -> setText(fileName);
+    }
+}
+
+QHBoxLayout *MainWindow::createFileEntry(const QString &labelText, QLineEdit *lineEdit)
+{
+    QHBoxLayout *layout = new QHBoxLayout;
+    QLabel *label = new QLabel(labelText + " :", this);
+    QPushButton *browseButton = new QPushButton("Parcourir...", this);
+
+    layout -> addWidget(label);
+    layout -> addSpacing(100);
+    layout -> addWidget(lineEdit);
+    layout -> addWidget(browseButton);
+
+    connect(browseButton, &QPushButton::clicked, this, [this, lineEdit]() {
+        openFileExplorerAlt(lineEdit);
+    });
+
+    return layout;
 }
 
 void MainWindow::handleUndo()

@@ -9,6 +9,7 @@
 #include <QFileDialog>
 #include <QMenuBar>
 #include <QMenu>
+#include <QLineEdit>
 
 class MainWindow : public QMainWindow
 {
@@ -23,6 +24,8 @@ private slots:
     void showCreateProjectView();
     void showEvaluationView();
     void openFileExplorer();
+    void openFileExplorerAlt(QLineEdit *lineEdit);
+    QHBoxLayout *createFileEntry(const QString &labelText, QLineEdit *lineEdit);
     void handleUndo();
     void handleRedo();
     void toggleDarkMode();

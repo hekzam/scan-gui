@@ -4,9 +4,9 @@
 
 using namespace mViewPort;
 
-ExamViewPort::ExamViewPort(QWidget *parent) : QGraphicsView(parent)
+ExamViewPort::ExamViewPort(QGraphicsScene *gScene, QWidget *parent)
+    : QGraphicsView(gScene, parent)
 {
-  QGraphicsScene *gScene = new QGraphicsScene(parent);
   gScene->setBackgroundBrush(Qt::gray);
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHints(QPainter::Antialiasing);
@@ -18,12 +18,9 @@ ExamViewPort::ExamViewPort(QWidget *parent) : QGraphicsView(parent)
 
   singleImage = new QGraphicsPixmapItem;
   loadAnswerSheet(*this, *gScene);
-
-  // fixedPreviewLayout->addWidget(gView);
-  // previewStack->addWidget(fixedPreview);
-  // previewStack->setCurrentWidget(fixedPreview);
   // qDebug() << gView->transform();
   // qDebug() << gView->width();
+  connect(this, &ExamViewPort::scaleChanged, this, &ExamViewPort::changeScale);
 }
 
 ExamViewPort::~ExamViewPort() {}
@@ -31,22 +28,34 @@ ExamViewPort::~ExamViewPort() {}
 #if QT_CONFIG(wheelevent)
 void ExamViewPort::wheelEvent(QWheelEvent *e)
 {
-  // TODO finetune this
-  // if (Qt::ControlModifier && e->modifiers())
+  if (Qt::ControlModifier & e->modifiers())
   {
-    m_scale += e->angleDelta().y();
-    qDebug() << m_scale;
-    emit scaleChanged(m_scale);
-    e->accept();
+    // TODO finetune this
+    // m_scale += e->angleDelta().y() / qreal(600);
+    // m_scale = qMax(qreal(0.2), qMin(maxScalingFactor, m_scale));
+    // qDebug() << m_scale;
+    // emit scaleChanged(m_scale);
+    if (e->angleDelta().y() > 0)
+    {
+      emit scaleChanged(1.25);
+    }
+    else
+    {
+      emit scaleChanged(0.8);
+    }
+    // e->accept();
+  }
+  else
+  {
+    QGraphicsView::wheelEvent(e);
   }
 }
 #endif
 
 void ExamViewPort::changeScale(qreal scale)
 {
-  // whos scale ?
   this->scale(scale, scale);
-  update();
+  // update();
 }
 
 void ExamViewPort::loadAnswerSheet(QGraphicsView &gv, QGraphicsScene &gs)
@@ -64,17 +73,22 @@ void ExamViewPort::loadAnswerSheet(QGraphicsView &gv, QGraphicsScene &gs)
   else
   {
     singleImage->setPixmap(p);
+    singleImage->setPos(QPointF(0, 0));
     // scene takes ownership here
     gs.addItem(singleImage);
-    gv.fitInView(fitImageWidthInView(gv), Qt::KeepAspectRatio);
+    // qDebug() << gs.height();
+    // something wrong here, fit in view makes the image way too small
+    // gv.fitInView(fitImageWidthInView(gv), Qt::KeepAspectRatio);
+    gv.centerOn(singleImage);
   }
 }
 
 QRect ExamViewPort::fitImageWidthInView(QGraphicsView &gv)
 {
   QSize ps = singleImage->pixmap().size();
-  QRect defaultViewSize(0, 0, ps.width(), gv.height());
-  return defaultViewSize;
+  ROI = QRect(0, 0, ps.width(), 500);
+  qDebug() << ps;
+  return ROI;
 }
 
 void ExamViewPort::fitROIInView(QRect &)

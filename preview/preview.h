@@ -10,12 +10,6 @@
 #include <QGraphicsPixmapItem>
 #include "examviewport.h"
 
-class SheetViewPort : public QGraphicsView
-{
-public:
-  SheetViewPort(QGraphicsScene *scene);
-};
-
 class ExamPreview : public QGroupBox
 {
   Q_OBJECT
@@ -28,13 +22,6 @@ public:
 public slots:
   void setGroupBoxTitle(); // ??
 
-protected:
-  // TODO
-  // void resizeEvent(QResizeEvent *e) override;
-#if QT_CONFIG(wheelevent)
-  void wheelEvent(QWheelEvent *e) override;
-#endif
-
 private slots:
   // TODO
   // void nextImage();
@@ -44,11 +31,7 @@ private slots:
   void deletePage();
   void assignPage();
   void markExamSheetAsValidated();
-  void changeScale(qreal scale);
   // void displayImage(QString filename);
-
-signals:
-  void scaleChanged(qreal scale);
 
 private:
   void createPreviewStack();
@@ -56,15 +39,7 @@ private:
   void createFixedPreview();
   void createFloatablePreview();
 
-  void loadAnswerSheet(QGraphicsView &, QGraphicsScene &);
-  QRect fitImageWidthInView(QGraphicsView &);
-  void fitROIInView(QRect &);
-
-  // une scene ou deux ?
-  QGraphicsPixmapItem *singleImage;
-  // QGraphicsScene *gScene;
-  // mViewPort::ExamViewPort *gView;
-  SheetViewPort *gView;
+  mViewPort::ExamViewPort *gView;
 
   QGroupBox *previewBox;
   // QVBoxLayout *previewLayout;
@@ -82,8 +57,5 @@ private:
   // QPushButton *deletePageButton;
   // QPushButton *assignPageButton;
   // QPushButton *validatePageButton;
-
-  // Data
-  qreal m_scale = 1.0;
 };
 #endif // PREVIEWLAYOUT_H

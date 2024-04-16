@@ -7,12 +7,14 @@
 
 namespace mViewPort
 {
+static const qreal maxScalingFactor = 5.0;
+static const qreal minScalingFactor = 5.0;
 
 class ExamViewPort : public QGraphicsView
 {
   Q_OBJECT
 public:
-  ExamViewPort(QWidget *parent);
+  ExamViewPort(QGraphicsScene *gScene, QWidget *parent);
   ~ExamViewPort();
 
 protected:
@@ -37,6 +39,7 @@ private:
 
   // Data
   qreal m_scale = 1.0;
+  QRect ROI = QRect(0, 0, 500, 500); // region of interest
 };
 } // namespace mViewPort
 #endif // EXAMVIEWPORT_H

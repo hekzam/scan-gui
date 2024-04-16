@@ -1,11 +1,9 @@
 #include "preview.h"
-#include "qevent.h"
 
 using namespace mViewPort;
 
 static const qreal maxScalingFactor = 5.0;
-
-SheetViewPort::SheetViewPort(QGraphicsScene *scene) : QGraphicsView(scene) {}
+static const QSize minPreviewSize(600, 500);
 
 ExamPreview::ExamPreview(QWidget *parent)
 {
@@ -17,7 +15,6 @@ ExamPreview::ExamPreview(QWidget *parent)
 
   previewLayout->addWidget(previewStack);
   previewLayout->addWidget(previewButtonBox);
-  connect(this, &ExamPreview::scaleChanged, this, &ExamPreview::changeScale);
 }
 
 ExamPreview::~ExamPreview()
@@ -71,21 +68,8 @@ void ExamPreview::createFixedPreview()
   QVBoxLayout *fixedPreviewLayout = new QVBoxLayout(fixedPreview);
   fixedPreview->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
 
-  // pour remplacer tout le reste qui a été déplacé dans un constructeur
-  // gView = new ExamViewPort(fixedPreview);
   QGraphicsScene *gScene = new QGraphicsScene(fixedPreview);
-  gScene->setBackgroundBrush(Qt::gray);
-  gView = new SheetViewPort(gScene);
-  gView->setDragMode(QGraphicsView::ScrollHandDrag);
-  gView->setRenderHints(QPainter::Antialiasing);
-  // TODO : optimization flags
-  // TODO : check those
-  gView->setOptimizationFlags(QGraphicsView::DontSavePainterState);
-  gView->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
-  gView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-
-  singleImage = new QGraphicsPixmapItem;
-  loadAnswerSheet(*gView, *gScene);
+  gView = new ExamViewPort(gScene, fixedPreview);
 
   fixedPreviewLayout->addWidget(gView);
   previewStack->addWidget(fixedPreview);
@@ -104,20 +88,6 @@ void ExamPreview::createFloatablePreview()
 }
 
 void ExamPreview::setGroupBoxTitle() {}
-
-#if QT_CONFIG(wheelevent)
-void ExamPreview::wheelEvent(QWheelEvent *e)
-{
-  // TODO finetune this
-  // if (Qt::ControlModifier && e->modifiers())
-  {
-    m_scale += e->angleDelta().y();
-    qDebug() << m_scale;
-    emit scaleChanged(m_scale);
-    e->accept();
-  }
-}
-#endif
 
 // nevermind
 // void ExamPreview::resizeEvent(QResizeEvent *e)
@@ -140,41 +110,3 @@ void ExamPreview::deletePage() {}
 void ExamPreview::assignPage() {}
 
 void ExamPreview::markExamSheetAsValidated() {}
-
-void ExamPreview::changeScale(qreal scale)
-{
-  // whos scale ?
-  gView->scale(scale, scale);
-  update();
-}
-
-void ExamPreview::loadAnswerSheet(QGraphicsView &gv, QGraphicsScene &gs)
-{
-  // filename should be stored somewhere I can read it, probably passed to me by
-  // tableview
-  // load pixmap from filename
-  // QString filename = xx.getfilename()
-  QString filename =
-      "/home/nathan/workspace/be_projet_gui_hekzam/DATASET/jpegexample.jpg";
-  QPixmap p;
-  if (!p.load(filename))
-  {
-    qWarning() << "error loading the image";
-  }
-  else
-  {
-    singleImage->setPixmap(p);
-    // scene takes ownership here
-    gs.addItem(singleImage);
-    gv.fitInView(fitImageWidthInView(gv), Qt::KeepAspectRatio);
-  }
-}
-
-QRect ExamPreview::fitImageWidthInView(QGraphicsView &gv)
-{
-  QSize ps = singleImage->pixmap().size();
-  QRect defaultViewSize(0, 0, ps.width(), gv.height());
-  return defaultViewSize;
-}
-
-void ExamPreview::fitROIInView(QRect &) {}

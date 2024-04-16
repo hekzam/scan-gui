@@ -1,6 +1,8 @@
 #include <QtWidgets>
 #include "mainwindow.h"
-static const QSize minPanelSize(250,500);
+#include "preview/preview.h"
+
+static const QSize minPanelSize(250, 500);
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -171,11 +173,13 @@ void MainWindow::createEvaluationView()
 
     // Deuxième split / partie haute.
 
-    QGroupBox *tableBox = new QGroupBox("Tableau de Tri", evaluationView);
-    QGroupBox *previewBox = new QGroupBox("Aperçu", evaluationView);
+    QGroupBox *tableBox = new QGroupBox("Tableau de Tri", horizontalSplitter);
+    ExamPreview *previewBox = new ExamPreview(horizontalSplitter);
 
-    horizontalSplitter -> addWidget(tableBox);
-    horizontalSplitter -> addWidget(previewBox);
+    // qDebug() << horizontalSplitter->count();
+    horizontalSplitter->setSizes(QList<int>() << 500 << 500);
+    // horizontalSplitter->insertWidget(0, tableBox);
+    // horizontalSplitter->insertWidget(1, &previewBox);
 
     // Partie basse.
 

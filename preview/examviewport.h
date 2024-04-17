@@ -8,7 +8,7 @@
 namespace mViewPort
 {
 static const qreal maxScalingFactor = 5.0;
-static const qreal minScalingFactor = 5.0;
+static const qreal minScalingFactor = 0.2;
 
 class ExamViewPort : public QGraphicsView
 {

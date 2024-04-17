@@ -28,6 +28,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         preview/preview.h preview/preview.cpp
         preview/examviewport.h preview/examviewport.cpp
+        resources/previewplaceholders.qrc
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET scan-gui APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

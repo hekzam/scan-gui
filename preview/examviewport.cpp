@@ -63,8 +63,7 @@ void ExamViewPort::loadAnswerSheet(QGraphicsView &gv, QGraphicsScene &gs)
   // filename should be stored somewhere I can read it, probably passed to me
   // by tableview load pixmap from filename QString filename =
   // xx.getfilename()
-  QString filename =
-      "/home/nathan/workspace/be_projet_gui_hekzam/DATASET/jpegexample.jpg";
+  QString filename = ":/preview/jpegexample.jpg";
   QPixmap p;
   if (!p.load(filename))
   {

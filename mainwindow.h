@@ -9,7 +9,7 @@
 #include <QFileDialog>
 #include <QMenuBar>
 #include <QMenu>
-#include "SortTable/tablebox.h"
+#include "sortTable/tablebox.h"
 
 class MainWindow : public QMainWindow
 {

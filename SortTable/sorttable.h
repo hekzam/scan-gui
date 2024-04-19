@@ -5,6 +5,7 @@
 #include <QList>
 #include <QFile>
 #include <QHeaderView>
+#include "progresscell.h"
 
 class SortTable : public QTableWidget
 {

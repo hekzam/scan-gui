@@ -1,11 +1,12 @@
 #include "tablebox.h"
 
-TableBox::TableBox(QStringList const& fileNames,QWidget *parent) : QGroupBox(parent), groupBoxDisplayed(false) {
+TableBox::TableBox(QStringList const& fileNames,QWidget *parent) : QGroupBox(parent), firstAppearence(true) {
     setTitle("Tableau d'évalutation");
     sortBox = new QGroupBox(this);
     sortButton = new QPushButton("Tri",this);
     sortTable = new SortTable(this);
     sortDock = new QDockWidget(parent);
+    sortDock->hide();
     initTableFilter();
     initTableView(fileNames);
 }
@@ -44,29 +45,23 @@ void TableBox::initTableFilter(){
 
     sortDock->setFixedSize(350,350);
     sortBox->setLayout(sortBoxLayout);
-
     sortDock->setWidget(sortBox);
     sortDock->setFloating(true);
-    connect(sortDock, &QDockWidget::visibilityChanged, this, &TableBox::updateGroupBoxDisplayed);
-    sortDock->hide();
 }
 
 void TableBox::displayTableFilter(){
-    if (groupBoxDisplayed){
+    if (!sortDock->isHidden()){
         sortDock->hide();
-        groupBoxDisplayed = false;
     }
     else{
-        QPoint pos = sortTable->mapToGlobal(sortTable->rect().topRight());
-        pos.setX(pos.x() - sortDock->width());
-        sortDock->move(pos);
+        if (firstAppearence){
+            QPoint pos = sortTable->mapToGlobal(sortTable->rect().topRight());
+            pos.setX(pos.x() - sortDock->width());
+            sortDock->move(pos);
+            firstAppearence = false;
+        }
         sortDock->show();
-        groupBoxDisplayed = true;
     }
-}
-
-void TableBox::updateGroupBoxDisplayed(bool visible){
-    groupBoxDisplayed = visible;
 }
 
 void TableBox::initTableView(QStringList const& fileNames){

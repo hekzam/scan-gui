@@ -17,17 +17,16 @@ public:
 
 private:
     SortTable *sortTable;
-    bool groupBoxDisplayed;
     QDockWidget *sortDock;
     QGroupBox *sortBox;
     QPushButton *sortButton;
+    bool firstAppearence;
 
     void initTableFilter();
     void initTableView(QStringList const& listeFichiers);
 
 private slots:
     void displayTableFilter();
-    void updateGroupBoxDisplayed(bool visible);
 };
 
 #endif // TABLEBOX_H

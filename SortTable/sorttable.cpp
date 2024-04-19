@@ -27,10 +27,12 @@ void SortTable::initSortTable(QStringList const& fileNames){
     for(QString const& nomFichier : fileNames){
         QFile *file = new QFile(nomFichier);
         fileList.push_back(file);
-        int syntaxe = std::rand() % 100;
+        int progress = std::rand() % 101;
         int semantique = std::rand() % 2;
+        ProgressCell *progression = new ProgressCell(progress,this);
         setItem(ligne,COL_NOM,new QTableWidgetItem(file->fileName().section('/', -1)));
-        setItem(ligne,COL_SYNTAXE,new QTableWidgetItem(QString::number(syntaxe)));
+        setCellWidget(ligne,COL_SYNTAXE, progression);
+        setItem(ligne,COL_SYNTAXE, progression);
         setItem(ligne,COL_SEMANTIQUE,new QTableWidgetItem(QString::number(semantique)));
         ligne++;
     }

@@ -7,6 +7,9 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QDockWidget>
+#include <QLineEdit>
+
+#include <QDebug>
 #include "sorttable.h"
 
 class TableBox : public QGroupBox
@@ -20,6 +23,8 @@ private:
     QDockWidget *sortDock;
     QGroupBox *sortBox;
     QPushButton *sortButton;
+    QLineEdit *textZone;
+    QString textSearched;
     bool firstAppearence;
 
     void initTableFilter();
@@ -27,6 +32,9 @@ private:
 
 private slots:
     void displayTableFilter();
+    void searchProcessing();
+    void tagsProcessing();
+    void cleanSearchBar();
 };
 
 #endif // TABLEBOX_H

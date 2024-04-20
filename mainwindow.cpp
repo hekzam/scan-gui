@@ -174,10 +174,11 @@ void MainWindow::createEvaluationView()
     // Deuxième split / partie haute.
 
     QGroupBox *tableBox = new QGroupBox("Tableau de Tri", horizontalSplitter);
-    ExamPreview *previewBox = new ExamPreview(horizontalSplitter);
+    ExamPreview previewBox(horizontalSplitter);
 
     // qDebug() << horizontalSplitter->count();
-    horizontalSplitter->setSizes(QList<int>() << 500 << 500);
+    horizontalSplitter->setSizes(QList<int>() << width() / 2 << width() / 2);
+
     // horizontalSplitter->insertWidget(0, tableBox);
     // horizontalSplitter->insertWidget(1, &previewBox);
 

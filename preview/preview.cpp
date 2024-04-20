@@ -2,111 +2,129 @@
 
 using namespace mViewPort;
 
-static const qreal maxScalingFactor = 5.0;
-static const QSize minPreviewSize(600, 500);
-
 ExamPreview::ExamPreview(QWidget *parent)
+    : previewBox(new QGroupBox(tr("Preview"), parent)),
+      szPol(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding)
 {
-  previewBox = new QGroupBox(tr("Preview"), parent);
   QVBoxLayout *previewLayout = new QVBoxLayout(previewBox);
   setCheckable(false);
-  createPreviewButtonBox();
+  setSizePolicy(szPol);
+
   createPreviewStack();
+  createPreviewButtonBox();
 
   previewLayout->addWidget(previewStack);
   previewLayout->addWidget(previewButtonBox);
 }
 
-ExamPreview::~ExamPreview()
-{
-  // delete im;
-  // delete gScene;
-  // delete gView;
-  delete previewBox;
-}
+ExamPreview::~ExamPreview(){}
 
 void ExamPreview::createPreviewStack()
 {
   previewStack = new QStackedWidget(previewBox);
+  previewStack->setSizePolicy(szPol);
   createFixedPreview();
   createFloatablePreview();
-  previewStack->setCurrentIndex(0);
+  previewStack->setCurrentIndex(1);
+  previewStack->setMinimumSize(minPreviewSize);
 }
 
 void ExamPreview::createPreviewButtonBox()
 {
   previewButtonBox = new QGroupBox(previewBox);
   QHBoxLayout *previewButtonLayout = new QHBoxLayout(previewButtonBox);
-  previewButtonBox->setAlignment(Qt::AlignCenter);
-  QPushButton *deletePageButton =
+
+  auto viewWholePageButton =
+      new QPushButton(tr("Show the whole page"), previewButtonBox);
+  auto deletePageButton =
       new QPushButton(tr("Delete the page"), previewButtonBox);
-  QPushButton *assignPageButton =
+  auto assignPageButton =
       new QPushButton(tr("Assign this page"), previewButtonBox);
-  QPushButton *validatePageButton =
+  auto validatePageButton =
       new QPushButton(tr("Mark as verified/validated"), previewButtonBox);
 
-  previewButtonLayout->addWidget(deletePageButton);
-  // is this right
-  connect(deletePageButton, &QPushButton::clicked, this,
+  // this doesn't work
+  connect(viewWholePageButton, &QAbstractButton::clicked, this,
+          &ExamPreview::dockFloatablePreview);
+
+  connect(deletePageButton, &QAbstractButton::clicked, this,
           &ExamPreview::deletePage);
 
-  previewButtonLayout->addWidget(assignPageButton);
   connect(assignPageButton, &QPushButton::clicked, this,
           &ExamPreview::assignPage);
 
-  previewButtonLayout->addWidget(validatePageButton);
   connect(validatePageButton, &QPushButton::clicked, this,
           &ExamPreview::markExamSheetAsValidated);
-  // TODO : connect...
+
+  previewButtonLayout->addWidget(viewWholePageButton);
+  previewButtonLayout->addWidget(deletePageButton);
+  previewButtonLayout->addWidget(assignPageButton);
+  previewButtonLayout->addWidget(validatePageButton);
 }
 
 // TODO : définir la grille
 void ExamPreview::createFixedPreview()
 {
-  // TODO :resize event
   QFrame *fixedPreview = new QFrame(previewStack);
   QVBoxLayout *fixedPreviewLayout = new QVBoxLayout(fixedPreview);
   fixedPreview->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
+  fixedPreview->setMinimumSize(minPreviewSize);
 
-  QGraphicsScene *gScene = new QGraphicsScene(fixedPreview);
-  gView = new ExamViewPort(gScene, fixedPreview);
+  gScene = new QGraphicsScene(fixedPreview);
+  fixedView = new ExamViewPort(gScene, fixedPreview);
 
-  fixedPreviewLayout->addWidget(gView);
+  fixedPreviewLayout->addWidget(fixedView);
   previewStack->addWidget(fixedPreview);
-  // previewStack->setCurrentWidget(fixedPreview);
-  // qDebug() << gView->transform();
-  // qDebug() << gView->width();
 }
 
 void ExamPreview::createFloatablePreview()
 {
-  QDockWidget *floatablePreview = new QDockWidget(previewStack);
-  QGraphicsView gv = new QGraphicsView(floatablePreview);
-  floatablePreview->setWidget(&gv);
+  floatablePreview = new QDockWidget(previewStack, Qt::Widget);
+  floatablePreview->setFloating(false);
+  floatablePreview->setFeatures(QDockWidget::DockWidgetFloatable |
+                                QDockWidget::DockWidgetMovable);
+
+  floatView = new ExamViewPort(gScene, floatablePreview);
+  floatablePreview->setWidget(floatView);
   // TODO
   previewStack->addWidget(floatablePreview);
+  connect(floatablePreview, &QDockWidget::topLevelChanged, this,
+          &ExamPreview::showFieldGrid);
 }
 
 void ExamPreview::setGroupBoxTitle() {}
 
-// nevermind
-// void ExamPreview::resizeEvent(QResizeEvent *e)
-// {
-//   // TODO : fix this
-//   m_scale = qMax(qreal(0.1), qMin(maxScalingFactor,
-//                                   qreal(e->size().width() /
-//                                         qreal(singleImage->pixmap().width()))));
-//   // m_scale = qMax(qreal(0.1), qMin(qreal(4), m_scale));
-//   // emit scaleChanged((m_scale));
-//   QGroupBox::resizeEvent(e);
-// }
+void ExamPreview::nextImage() {}
 
-void ExamPreview::dockFloatablePreview() {}
+void ExamPreview::previousImage() {}
 
-void ExamPreview::showFieldGrid() {}
+void ExamPreview::dockFloatablePreview()
+{
+  qDebug() << "xd?";
+  if (!floatablePreview->isFloating())
+  {
+    floatablePreview->setFloating(true);
+    previewStack->setCurrentIndex(0);
+  }
+}
 
-void ExamPreview::deletePage() {}
+void ExamPreview::showFieldGrid()
+{
+  qDebug() << "xd?";
+  previewStack->setCurrentIndex(0);
+}
 
-void ExamPreview::assignPage() {}
+void ExamPreview::deletePage()
+{
+  qDebug() << "xd?";
+}
 
-void ExamPreview::markExamSheetAsValidated() {}
+void ExamPreview::assignPage()
+{
+  qDebug() << "xd?";
+}
+
+void ExamPreview::markExamSheetAsValidated()
+{
+  qDebug() << "xd?";
+}

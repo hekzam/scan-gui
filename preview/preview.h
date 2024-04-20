@@ -13,19 +13,19 @@
 class ExamPreview : public QGroupBox
 {
   Q_OBJECT
-  // do I need Q_PROPERTY?
 
 public:
-  ExamPreview(QWidget *parent = nullptr);
+  explicit ExamPreview(QWidget *parent = nullptr);
   ~ExamPreview();
 
 public slots:
-  void setGroupBoxTitle(); // ??
+  void setGroupBoxTitle();
 
 private slots:
-  // TODO
-  // void nextImage();
-  // void previousImage();
+  // TODO, public ?
+  void nextImage();
+  void previousImage();
+
   void dockFloatablePreview();
   void showFieldGrid();
   void deletePage();
@@ -39,23 +39,20 @@ private:
   void createFixedPreview();
   void createFloatablePreview();
 
-  mViewPort::ExamViewPort *gView;
+  QSizePolicy szPol;
+
+  mViewPort::ExamViewPort *fixedView;
+  mViewPort::ExamViewPort *floatView;
+  QGraphicsScene *gScene;
 
   QGroupBox *previewBox;
-  // QVBoxLayout *previewLayout;
+
   QStackedWidget *previewStack;
-  // QDockWidget *floatablePreview;
-  // QFrame *fixedPreview; // not sure if QLabel or QWidget
-  // QScrollArea *scrollArea;
+  QDockWidget *floatablePreview;
+  QGroupBox *previewButtonBox;
+
   // show Grid
   // QGraphicsView *gridView;
   // QGraphicsScene *gridScene;
-  QGroupBox *previewButtonBox;
-  // QHBoxLayout *previewButtonLayout;
-
-  // Buttons
-  // QPushButton *deletePageButton;
-  // QPushButton *assignPageButton;
-  // QPushButton *validatePageButton;
 };
 #endif // PREVIEWLAYOUT_H

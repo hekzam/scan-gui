@@ -1,39 +1,24 @@
 /*TO-DO
-            * faire le tri via le headerTitle (fonction qui exsiste déjà ? -> to check)
-               => FAIT
+ *      -> ajouter les recherches avancées (avec des balises à la façon de Gmail
+                        ex:  student: Emilien,Marco ; id: 221 )
 
-            * faire la recherche dans le champs
-                    -> faire à la façon d'un cntrl+f -> et si c'était une balise ? (#copie: 1, #exercice : 2, ...
-                                                             -> permet de réduire le temps de calcul non ?)
-                         - récupérer la chaine
-                         - faire un highlight de la chaine recup dans les autres mots -> peut être faire un stackWidget
-                                                        (on change de widget dès que le champs est focus/cliqué)
-                                                        avec un tableau vide qui se remplit au fur et/ou se vide au fur et à mesure
-                                                        que l'user écrit.
-                         - actualisé en temps réel l'affichage
-
-                    -> ajouter plus tard les recherches avancées (avec des balises à la façon de Gmail ex:  #student: Emilien, #id: 221... )
-
-            * lorsque qu'on clique sur un elem, une pop-up s'ouvre (pour donner une idée de la preview)
-            *
-
-
-
+ * lorsque qu'on clique sur un elem, une pop-up s'ouvre (pour donner une idée de la preview)
 */
-#include "tablebox.h"
 
+#include "tablebox.h"
 
 TableBox::TableBox(QStringList const& fileNames,QWidget *parent) : QGroupBox(parent), firstAppearence(true) {
     setTitle("Tableau d'évalutation");
     sortBox = new QGroupBox(this);
 
     textZone = new QLineEdit(this);
-    textZone->set
     textZone->setPlaceholderText("Rentrez votre recherche et cliquez sur entrée. Pour effectuer une recherche par balise, consultez l'aide.");
     connect(textZone, &QLineEdit::textChanged, this, &TableBox::cleanSearchBar);
     connect(textZone, &QLineEdit::returnPressed, this, &TableBox::searchProcessing);
 
     sortButton = new QPushButton("Tri",this);
+    searchInfo = new QLabel(this) ;
+
     sortTable = new SortTable(this);
     sortDock = new QDockWidget(parent);
     sortDock->hide();
@@ -99,10 +84,14 @@ void TableBox::initTableView(QStringList const& fileNames){
     QHBoxLayout *sortButtonLayout = new QHBoxLayout;
     sortButtonLayout->addStretch();
     sortButtonLayout->addWidget(textZone);
+
+    sortButtonLayout->addWidget(searchInfo);
+
     sortButtonLayout->addWidget(sortButton);
 
     QVBoxLayout *evalLayout = new QVBoxLayout;
     evalLayout->addLayout(sortButtonLayout);
+
     evalLayout->addWidget(sortTable);
 
     sortTable->initSortTable(fileNames);
@@ -115,7 +104,7 @@ void TableBox::searchProcessing(){
 
     bool istextSearchedEmpty = textSearched.trimmed().isEmpty();
 
-    if(textSearched.contains(":")){
+    if((textSearched.contains(":"))||(textSearched.contains(";"))){
         //qDebug()<< "Balise détecté !!";
         tagsProcessing();
     }
@@ -140,16 +129,28 @@ void TableBox::searchProcessing(){
 
 void TableBox::tagsProcessing()
 {
+    //qDebug()<< textSearched;
+    //textSearched = textSearched.trimmed(); // attention, trimmed ne supprime que les espaces en trop (pas ceux à l'intérieur de la chaîne)
+    //qDebug()<< textSearched;
 
-    QStringList tagAndWord = textSearched.trimmed().split(":");
-    QString tag;
-    QString word;
+    QStringList textSearchedList = textSearched.split(";");
 
-    tag = tagAndWord[0];
+    for (int var = 0; var < textSearchedList.size(); ++var) {
+        //qDebug()<< textSearchedList[var];
+        QStringList tagsAndWordsList = textSearchedList[var].split(":");
+        searchedTags.append(tagsAndWordsList[0].trimmed());
+        searchedConditions.append(tagsAndWordsList[1].trimmed());
+        //qDebug()<< tags;
+        //qDebug()<< words;
+    }
 
-    word = tagAndWord[1];
-    //qDebug()<< tag <<word;
+    for (int var = 0; var < searchedTags.size(); ++var) {
+        //si headerList était publique, on aurait pu le réutiliser
+        if((knownTags).contains(searchedTags[var])){
+            //qDebug()<<"Faire la recherche en lien avec la (ou même les) balise(s)";
+        }
 
+    }
 }
 
 void TableBox::cleanSearchBar()

@@ -8,6 +8,7 @@
 #include <QFileDialog>
 #include <QDockWidget>
 #include <QLineEdit>
+#include <QLabel>
 
 #include <QDebug>
 #include "sorttable.h"
@@ -24,7 +25,11 @@ private:
     QGroupBox *sortBox;
     QPushButton *sortButton;
     QLineEdit *textZone;
+    QLabel *searchInfo;
     QString textSearched;
+    QStringList knownTags = {"tags1","tags2", "tags3"};
+    QStringList searchedTags;
+    QStringList searchedConditions;
     bool firstAppearence;
 
     void initTableFilter();

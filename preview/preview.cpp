@@ -4,11 +4,12 @@ using namespace mViewPort;
 
 ExamPreview::ExamPreview(QWidget *parent)
     : previewBox(new QGroupBox(tr("Preview"), parent)),
-      szPol(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding)
+      previewSizePolicy(QSizePolicy::MinimumExpanding,
+                        QSizePolicy::MinimumExpanding)
 {
   QVBoxLayout *previewLayout = new QVBoxLayout(previewBox);
   setCheckable(false);
-  setSizePolicy(szPol);
+  QGroupBox::setSizePolicy(previewSizePolicy);
 
   createPreviewStack();
   createPreviewButtonBox();
@@ -22,17 +23,19 @@ ExamPreview::~ExamPreview(){}
 void ExamPreview::createPreviewStack()
 {
   previewStack = new QStackedWidget(previewBox);
-  previewStack->setSizePolicy(szPol);
-  createFixedPreview();
-  createFloatablePreview();
-  previewStack->setCurrentIndex(1);
+  previewStack->setSizePolicy(previewSizePolicy);
+  createBasePreview();
+  createGridPreview();
+  createDialogPreview();
+  previewStack->setCurrentIndex(0);
   previewStack->setMinimumSize(minPreviewSize);
+  qDebug() << "current previewstack widget :" << previewStack->currentWidget();
 }
 
 void ExamPreview::createPreviewButtonBox()
 {
   previewButtonBox = new QGroupBox(previewBox);
-  QHBoxLayout *previewButtonLayout = new QHBoxLayout(previewButtonBox);
+  auto previewButtonLayout = new QHBoxLayout(previewButtonBox);
 
   auto viewWholePageButton =
       new QPushButton(tr("Show the whole page"), previewButtonBox);
@@ -43,11 +46,10 @@ void ExamPreview::createPreviewButtonBox()
   auto validatePageButton =
       new QPushButton(tr("Mark as verified/validated"), previewButtonBox);
 
-  // this doesn't work
-  connect(viewWholePageButton, &QAbstractButton::clicked, this,
-          &ExamPreview::dockFloatablePreview);
+  connect(viewWholePageButton, &QPushButton::clicked, this,
+          &ExamPreview::showExternalPreview);
 
-  connect(deletePageButton, &QAbstractButton::clicked, this,
+  connect(deletePageButton, &QPushButton::clicked, this,
           &ExamPreview::deletePage);
 
   connect(assignPageButton, &QPushButton::clicked, this,
@@ -62,34 +64,52 @@ void ExamPreview::createPreviewButtonBox()
   previewButtonLayout->addWidget(validatePageButton);
 }
 
-// TODO : définir la grille
-void ExamPreview::createFixedPreview()
+void ExamPreview::createBasePreview()
 {
-  QFrame *fixedPreview = new QFrame(previewStack);
-  QVBoxLayout *fixedPreviewLayout = new QVBoxLayout(fixedPreview);
-  fixedPreview->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
-  fixedPreview->setMinimumSize(minPreviewSize);
+  basePreview = new QFrame(previewStack);
+  auto basePreviewLayout = new QVBoxLayout(basePreview);
 
-  gScene = new QGraphicsScene(fixedPreview);
-  fixedView = new ExamViewPort(gScene, fixedPreview);
+  basePreviewLayout->setContentsMargins(0, 0, 0, 0);
+  basePreview->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
+  basePreview->setMinimumSize(minPreviewSize);
 
-  fixedPreviewLayout->addWidget(fixedView);
-  previewStack->addWidget(fixedPreview);
+  baseScene = new QGraphicsScene(basePreview);
+  baseViewport = new ExamViewPort(baseScene, basePreview);
+
+  basePreviewLayout->addWidget(baseViewport);
+  previewStack->addWidget(basePreview);
 }
 
-void ExamPreview::createFloatablePreview()
+// TODO : définir la grille
+void ExamPreview::createGridPreview()
 {
-  floatablePreview = new QDockWidget(previewStack, Qt::Widget);
-  floatablePreview->setFloating(false);
-  floatablePreview->setFeatures(QDockWidget::DockWidgetFloatable |
-                                QDockWidget::DockWidgetMovable);
+  auto gridPreview = new QFrame(previewStack);
+  auto gridPreviewLayout = new QVBoxLayout(gridPreview);
 
-  floatView = new ExamViewPort(gScene, floatablePreview);
-  floatablePreview->setWidget(floatView);
-  // TODO
-  previewStack->addWidget(floatablePreview);
-  connect(floatablePreview, &QDockWidget::topLevelChanged, this,
-          &ExamPreview::showFieldGrid);
+  gridPreviewLayout->setContentsMargins(0, 0, 0, 0);
+  gridPreview->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
+  gridPreview->setMinimumSize(minPreviewSize);
+
+  gridScene = new QGraphicsScene(gridPreview);
+  gridViewport = new ExamViewPort(gridScene, gridPreview);
+
+  // *** TEST ***
+  QString ut3_testfn = ":/preview/logo-UT3 modif.png";
+  gridViewport->loadImage(ut3_testfn, ut3_testfn);
+  // *** END TEST ***
+
+  gridPreviewLayout->addWidget(gridViewport);
+  previewStack->addWidget(gridPreview);
+}
+
+// TODO: do we need to save the window position, if so, how ?
+// TODO: detect closeEvent to show the correct viewport in the correct place
+void ExamPreview::createDialogPreview()
+{
+  // subclass ?
+  floatableDialogPreview = new QDialog(this);
+  floatableDialogPreview->setModal(false);
+  auto dialogLayout = new QVBoxLayout(floatableDialogPreview);
 }
 
 void ExamPreview::setGroupBoxTitle() {}
@@ -98,33 +118,30 @@ void ExamPreview::nextImage() {}
 
 void ExamPreview::previousImage() {}
 
-void ExamPreview::dockFloatablePreview()
+// Ping-pong
+void ExamPreview::showExternalPreview()
 {
-  qDebug() << "xd?";
-  if (!floatablePreview->isFloating())
+  if (floatableDialogPreview->isHidden())
   {
-    floatablePreview->setFloating(true);
-    previewStack->setCurrentIndex(0);
+    floatableDialogPreview->layout()->addWidget(baseViewport);
+    floatableDialogPreview->show();
   }
-}
-
-void ExamPreview::showFieldGrid()
-{
-  qDebug() << "xd?";
-  previewStack->setCurrentIndex(0);
+  else
+  {
+    basePreview->layout()->addWidget(baseViewport);
+    floatableDialogPreview->hide();
+  }
+  previewStack->setCurrentIndex((previewStack->currentIndex() + 1) % 2);
 }
 
 void ExamPreview::deletePage()
 {
-  qDebug() << "xd?";
 }
 
 void ExamPreview::assignPage()
 {
-  qDebug() << "xd?";
 }
 
 void ExamPreview::markExamSheetAsValidated()
 {
-  qDebug() << "xd?";
 }

@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/preview">
         <file>jpegexample.jpg</file>
+        <file>logo-UT3 modif.png</file>
     </qresource>
 </RCC>

@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+  delete previewBox;
 }
 
 void MainWindow::createMenuBar()
@@ -174,7 +175,7 @@ void MainWindow::createEvaluationView()
     // Deuxième split / partie haute.
 
     QGroupBox *tableBox = new QGroupBox("Tableau de Tri", horizontalSplitter);
-    ExamPreview previewBox(horizontalSplitter);
+    previewBox = new ExamPreview(horizontalSplitter);
 
     // qDebug() << horizontalSplitter->count();
     horizontalSplitter->setSizes(QList<int>() << width() / 2 << width() / 2);

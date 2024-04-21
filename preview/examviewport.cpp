@@ -17,7 +17,9 @@ ExamViewPort::ExamViewPort(QGraphicsScene *gScene, QWidget *parent)
   setOptimizationFlags(QGraphicsView::DontSavePainterState);
   setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
   setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+
   singleImage = new QGraphicsPixmapItem;
+  gScene->addItem(singleImage);
 
   // test variables
   QString exampleIFN = ":/preview/jpegexample.jpg";
@@ -70,6 +72,7 @@ void ExamViewPort::changeScale(qreal scale)
   this->scale(scale, scale);
 }
 
+// throw some error here to let the preview window know?
 void ExamViewPort::loadAnswerSheet(QGraphicsView &gv, QGraphicsScene &gs)
 {
   QPixmap p;
@@ -81,7 +84,7 @@ void ExamViewPort::loadAnswerSheet(QGraphicsView &gv, QGraphicsScene &gs)
   {
     singleImage->setPixmap(p);
     singleImage->setPos(QPointF(0, 0));
-    gs.addItem(singleImage);
+
     scaleToWidgetSize(gv, gs);
     gv.ensureVisible(ROI);
   }

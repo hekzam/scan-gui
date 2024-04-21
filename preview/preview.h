@@ -8,6 +8,7 @@
 #include <QStackedWidget>
 #include <QVBoxLayout>
 #include <QGraphicsPixmapItem>
+#include <QDialog>
 #include "examviewport.h"
 
 class ExamPreview : public QGroupBox
@@ -21,13 +22,16 @@ public:
 public slots:
   void setGroupBoxTitle();
 
+protected:
+  // ?
+  // void closeEvent(QCloseEvent *) override;
+  // bool eventFilter(QObject *, QEvent *) override; // ?
 private slots:
   // TODO, public ?
   void nextImage();
   void previousImage();
 
-  void dockFloatablePreview();
-  void showFieldGrid();
+  void showExternalPreview();
   void deletePage();
   void assignPage();
   void markExamSheetAsValidated();
@@ -36,20 +40,23 @@ private slots:
 private:
   void createPreviewStack();
   void createPreviewButtonBox();
-  void createFixedPreview();
-  void createFloatablePreview();
+  void createDialogPreview();
+  void createBasePreview();
+  void createGridPreview();
 
-  QSizePolicy szPol;
+  QSizePolicy previewSizePolicy;
 
-  mViewPort::ExamViewPort *fixedView;
-  mViewPort::ExamViewPort *floatView;
-  QGraphicsScene *gScene;
+  mViewPort::ExamViewPort *baseViewport;
+  mViewPort::ExamViewPort *gridViewport;
+  QGraphicsScene *baseScene;
+  QGraphicsScene *gridScene;
 
   QGroupBox *previewBox;
 
-  QStackedWidget *previewStack;
-  QDockWidget *floatablePreview;
   QGroupBox *previewButtonBox;
+  QStackedWidget *previewStack;
+  QFrame *basePreview;
+  QDialog *floatableDialogPreview;
 
   // show Grid
   // QGraphicsView *gridView;

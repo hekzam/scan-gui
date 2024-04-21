@@ -11,6 +11,7 @@
 #include <QMenu>
 #include <QLineEdit>
 
+class ExamPreview;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -44,6 +45,7 @@ private:
     QMenu *viewMenu;
     QMenu *helpMenu;
     QStackedWidget *mainStack;
+    ExamPreview *previewBox;
 
     QWidget *welcomeView;
     QWidget *createProjectView;

@@ -28,6 +28,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         json/jsonreader.h json/jsonreader.cpp
         test_case.qrc
+        preview/preview.h preview/preview.cpp
+        preview/examviewport.h preview/examviewport.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET scan-gui APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

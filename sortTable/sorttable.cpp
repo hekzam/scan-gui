@@ -6,8 +6,6 @@ SortTable::SortTable(QWidget *parent) : QTableWidget(parent) {
     hideColumn(COL_MET1);
     hideColumn(COL_MET2);
     setHorizontalHeaderLabels(headerList);
-    setStyleSheet("background-color : #2E2F30;"
-                  "selection-background-color :#404244;");
     setEditTriggers(QAbstractItemView::NoEditTriggers);
     setSelectionMode(QAbstractItemView::SingleSelection);
     setShowGrid(true);

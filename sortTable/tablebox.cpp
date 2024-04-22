@@ -82,7 +82,6 @@ void TableBox::displayTableFilter(){
 void TableBox::initTableView(QStringList const& fileNames){
 
     QHBoxLayout *sortButtonLayout = new QHBoxLayout;
-    sortButtonLayout->addStretch();
     sortButtonLayout->addWidget(textZone);
 
     sortButtonLayout->addWidget(searchInfo);

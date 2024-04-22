@@ -10,6 +10,7 @@
 #include <QMenuBar>
 #include <QMenu>
 #include <QLineEdit>
+#include "sortTable/tablebox.h"
 
 class ExamPreview;
 class MainWindow : public QMainWindow

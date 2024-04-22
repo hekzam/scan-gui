@@ -7,7 +7,7 @@ using namespace mViewPort;
 ExamViewPort::ExamViewPort(QGraphicsScene *gScene, QWidget *parent)
     : QGraphicsView(gScene, parent)
 {
-  setMinimumSize(minPreviewSize);
+  // setMinimumSize(minPreviewSize);
 
   gScene->setBackgroundBrush(Qt::gray);
   setDragMode(QGraphicsView::ScrollHandDrag);
@@ -22,7 +22,7 @@ ExamViewPort::ExamViewPort(QGraphicsScene *gScene, QWidget *parent)
   gScene->addItem(singleImage);
 
   // test variables
-  QString exampleIFN = ":/preview/jpegexample.jpg";
+  QString exampleIFN = ":/preview/resources/jpegexample.jpg";
   QString exJFN = "";
   loadImage(exampleIFN, exJFN);
   connect(this, &ExamViewPort::scaleChanged, this, &ExamViewPort::changeScale);
@@ -93,7 +93,7 @@ void ExamViewPort::loadAnswerSheet(QGraphicsView &gv, QGraphicsScene &gs)
 void ExamViewPort::scaleToWidgetSize(QGraphicsView &gv, QGraphicsScene &gs)
 {
   QSize ps = singleImage->pixmap().size();
-  qreal scalefactor = (qreal) gv.width() / ps.width();
+  qreal scalefactor = (qreal) minPreviewSize.width() / ps.width();
   m_scale = scalefactor;
   this->scale(scalefactor, scalefactor);
   // qDebug() << ps;

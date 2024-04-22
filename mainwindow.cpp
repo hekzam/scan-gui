@@ -175,21 +175,20 @@ void MainWindow::createEvaluationView()
     // Deuxième split / partie haute.
 
     // QGroupBox *tableBox = new QGroupBox("Tableau de Tri", horizontalSplitter);
-    previewBox = new ExamPreview(horizontalSplitter);
 
     // qDebug() << horizontalSplitter->count();
-    horizontalSplitter->setSizes(QList<int>() << width() / 2 << width() / 2);
 
     // horizontalSplitter->insertWidget(0, tableBox);
     // horizontalSplitter->insertWidget(1, &previewBox);
     QStringList fileNames = QFileDialog::getOpenFileNames(this, ("Ouvrir des fichiers"), "/Users/marcomartins/My Documents /Licence Informatique L3/Bureau d'Étude/QT/Proto", "*.*");
-    TableBox *tableBox = new TableBox(fileNames,this);
-    QGroupBox *previewBox = new QGroupBox("Aperçu", evaluationView);
+    TableBox *tableBox = new TableBox(fileNames, horizontalSplitter);
 
-    horizontalSplitter -> addWidget(tableBox);
+    // horizontalSplitter->addWidget(tableBox);
     // horizontalSplitter -> addWidget(previewBox);
-    horizontalSplitter -> setSizes(QList<int>() << 500 << 500);
-
+    previewBox = new ExamPreview(horizontalSplitter);
+    horizontalSplitter->setChildrenCollapsible(true);
+    // horizontalSplitter->setSizes(QList<int>() << width() / 2 << width() / 2);
+    horizontalSplitter->setSizes(QList<int>() << 500 << 500);
 
     // Partie basse.
 

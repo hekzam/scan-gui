@@ -9,7 +9,7 @@ ExamPreview::ExamPreview(QWidget *parent)
 {
   QVBoxLayout *previewLayout = new QVBoxLayout(previewBox);
   setCheckable(false);
-  QGroupBox::setSizePolicy(previewSizePolicy);
+  // QGroupBox::setSizePolicy(previewSizePolicy);
 
   createPreviewStack();
   createPreviewButtonBox();
@@ -23,13 +23,14 @@ ExamPreview::~ExamPreview(){}
 void ExamPreview::createPreviewStack()
 {
   previewStack = new QStackedWidget(previewBox);
-  previewStack->setSizePolicy(previewSizePolicy);
+  // previewStack->setSizePolicy(previewSizePolicy);
   createBasePreview();
   createGridPreview();
   createDialogPreview();
   previewStack->setCurrentIndex(0);
-  previewStack->setMinimumSize(minPreviewSize);
-  qDebug() << "current previewstack widget :" << previewStack->currentWidget();
+  // previewStack->setMinimumSize(minPreviewSize);
+  // qDebug() << "current previewstack widget :" <<
+  // previewStack->currentWidget();
 }
 
 void ExamPreview::createPreviewButtonBox()
@@ -71,7 +72,7 @@ void ExamPreview::createBasePreview()
 
   basePreviewLayout->setContentsMargins(0, 0, 0, 0);
   basePreview->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
-  basePreview->setMinimumSize(minPreviewSize);
+  // basePreview->setMinimumSize(minPreviewSize);
 
   baseScene = new QGraphicsScene(basePreview);
   baseViewport = new ExamViewPort(baseScene, basePreview);
@@ -88,13 +89,13 @@ void ExamPreview::createGridPreview()
 
   gridPreviewLayout->setContentsMargins(0, 0, 0, 0);
   gridPreview->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
-  gridPreview->setMinimumSize(minPreviewSize);
+  // gridPreview->setMinimumSize(minPreviewSize);
 
   gridScene = new QGraphicsScene(gridPreview);
   gridViewport = new ExamViewPort(gridScene, gridPreview);
 
   // *** TEST ***
-  QString ut3_testfn = ":/preview/logo-UT3 modif.png";
+  QString ut3_testfn = ":/preview/resources/logo-UT3 modif.png";
   gridViewport->loadImage(ut3_testfn, ut3_testfn);
   // *** END TEST ***
 

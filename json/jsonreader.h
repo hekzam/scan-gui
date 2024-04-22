@@ -2,6 +2,7 @@
 #define JSONREADER_H
 
 #include <QJsonObject>
+#include <QSize>
 
 namespace mJSON
 {
@@ -20,6 +21,7 @@ struct coordinates
 {
   int x, y, h, w = 0;
   QString clef;
+
   coordinates(){};
   ~coordinates(){};
 
@@ -34,21 +36,30 @@ struct coordinates
 
 struct coordArray
 {
-  QList<coordinates> *Array;
+  QSize documentSize;
+  QList<coordinates> *documentFields;
+  QList<coordinates> *documentMarkers;
 
   ~coordArray()
   {
-    delete Array;
+    delete documentFields;
+    delete documentMarkers;
   }
 
   void addCoordinates(coordinates &c)
   {
-    Array->append(c);
+    documentFields->append(c);
+  }
+
+  void addMarker(coordinates &m)
+  {
+    documentMarkers->append(m);
   }
 
   coordArray()
   {
-    Array = new QList<coordinates>;
+    documentFields = new QList<coordinates>;
+    documentMarkers = new QList<coordinates>;
   }
 };
 
@@ -59,17 +70,19 @@ public:
   jsonreader();
   ~jsonreader();
 
-  int loadFromJSON(QString filename);
+  int loadFromJSON(const QString filename);
   void getCoordinates();
   // QString jsonFilename;
   coordArray *a;
 
 private:
   void parseValues(QJsonObject &, coordinates &);
+  void identifyFields(QJsonObject &, coordinates &);
+  void identifyMarkers(QJsonObject &, coordinates &);
+  void calculateDocumentSize();
   QJsonObject *jsonObj;
   QJsonDocument *jsonDoc;
   QJsonObject o;
-  QJsonValue v;
 };
 } // namespace mJSON
 #endif // JSONREADER_H

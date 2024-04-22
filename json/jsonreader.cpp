@@ -19,7 +19,7 @@ jsonreader::~jsonreader()
   delete a; // ATTENTION LA STRUCTURE EST DETRUITE ICI, on perd les données
 }
 
-int jsonreader::loadFromJSON(QString filename)
+int jsonreader::loadFromJSON(const QString filename)
 {
   // TODO
   // to be done from project root tho, not absolute root, or file dialog
@@ -72,12 +72,22 @@ void jsonreader::getCoordinates()
   coordinates coo = coordinates();
   // pour récupérer le nom de l'objet duquel on extrait les données
   QStringList jsonKeys = jsonObj->keys();
+  QStringList markerKeys;
+
+  // TODO : give user the possibility to change this ?
+  markerKeys = jsonKeys.filter("marker barcode", Qt::CaseInsensitive);
   for (auto &clef : jsonKeys)
   {
     coo.clef = clef;
-    v = jsonObj->value(clef);
-    o = v.toObject();
-    parseValues(o, coo);
+    o = jsonObj->value(clef).toObject();
+    if (markerKeys.contains(clef))
+    {
+      identifyMarkers(o, coo);
+    }
+    else
+    {
+      identifyFields(o, coo);
+    }
   }
   // NE PAS EFFACER, autre manière de récupérer les valeurs sans la clef
   //  QJsonObject::Iterator iter;
@@ -90,10 +100,17 @@ void jsonreader::getCoordinates()
   //      parseValues(o, coo);
   //    }
   //  }
-  for (auto &stuff : *a->Array)
+  for (auto &stuff : *a->documentFields)
   {
     qDebug() << stuff.clef << stuff.x << stuff.y << stuff.h << stuff.w;
   }
+  qDebug() << "markers";
+  for (auto &c : *a->documentMarkers)
+  {
+    qDebug() << c.clef << c.x << c.y << c.h << c.w;
+  }
+  calculateDocumentSize();
+  qDebug() << a->documentSize;
 }
 
 void jsonreader::parseValues(QJsonObject &o, coordinates &coo)
@@ -118,5 +135,36 @@ void jsonreader::parseValues(QJsonObject &o, coordinates &coo)
   {
     coo.w = round(v.toDouble());
   }
+}
+
+void jsonreader::identifyFields(QJsonObject &o, coordinates &coo)
+{
+  parseValues(o, coo);
   a->addCoordinates(coo);
+}
+
+void jsonreader::identifyMarkers(QJsonObject &o, coordinates &coo)
+{
+  parseValues(o, coo);
+  a->addMarker(coo);
+}
+
+void jsonreader::calculateDocumentSize()
+{
+  coordinates topleft;
+  coordinates bottomright;
+  for (auto i = a->documentMarkers->cbegin(), rend = a->documentMarkers->cend();
+       i != rend; ++i)
+  {
+    if (i->clef.contains("tl"))
+    {
+      topleft = *i;
+    }
+    if (i->clef.contains("br"))
+    {
+      bottomright = *i;
+    }
+  }
+  QSize ds = QSize(topleft.x + bottomright.x, topleft.y + bottomright.y);
+  a->documentSize = ds;
 }

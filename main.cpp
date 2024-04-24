@@ -5,19 +5,20 @@
 #include <QTranslator>
 #include <qprogressbar.h>
 #include <QString>
-#include "sortTable/controller.h"
+
+// #include "sortTable/controller.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     QStringList args = QApplication::arguments();
 
-    // if (args.size() >= 2)
-    // {
-    //   mJSON::jsonreader j;
-    //   j.loadFromJSON(args.at(1));
-    //   j.getCoordinates();
-    // }
+    if (args.size() >= 2)
+    {
+      mJSON::jsonreader j;
+      j.loadFromJSON(args.at(1));
+      j.getCoordinates();
+    }
 
     QTranslator translator;
     const QStringList uiLanguages = QLocale::system().uiLanguages();

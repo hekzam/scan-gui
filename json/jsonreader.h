@@ -82,7 +82,6 @@ private:
   void calculateDocumentSize();
   QJsonObject *jsonObj;
   QJsonDocument *jsonDoc;
-  QJsonObject o;
 };
 } // namespace mJSON
 #endif // JSONREADER_H

@@ -69,18 +69,16 @@ int jsonreader::loadFromJSON(const QString filename)
 void jsonreader::getCoordinates()
 {
   a = new coordArray;
+  QJsonObject o;
   coordinates coo = coordinates();
   // pour récupérer le nom de l'objet duquel on extrait les données
   QStringList jsonKeys = jsonObj->keys();
-  QStringList markerKeys;
-
-  // TODO : give user the possibility to change this ?
-  markerKeys = jsonKeys.filter("marker barcode", Qt::CaseInsensitive);
+  // TODO : give user the possibility to change the name of the marker id
   for (auto &clef : jsonKeys)
   {
     coo.clef = clef;
     o = jsonObj->value(clef).toObject();
-    if (markerKeys.contains(clef))
+    if (clef.contains("marker barcode"))
     {
       identifyMarkers(o, coo);
     }
@@ -89,17 +87,6 @@ void jsonreader::getCoordinates()
       identifyFields(o, coo);
     }
   }
-  // NE PAS EFFACER, autre manière de récupérer les valeurs sans la clef
-  //  QJsonObject::Iterator iter;
-  //  for (auto iter = jsonObj->constBegin(); iter != jsonObj->constEnd();
-  //  ++iter)
-  //  {
-  //    if (iter->isObject())
-  //    {
-  //      o = iter->toObject();
-  //      parseValues(o, coo);
-  //    }
-  //  }
   for (auto &stuff : *a->documentFields)
   {
     qDebug() << stuff.clef << stuff.x << stuff.y << stuff.h << stuff.w;
@@ -121,11 +108,11 @@ void jsonreader::parseValues(QJsonObject &o, coordinates &coo)
                                      << "width");
   if (const QJsonValue v = o[cKeys.at(0)]; v.isDouble())
   {
-    coo.x = round(v.toDouble());
+    coo.x = qFloor(v.toDouble());
   }
   if (const QJsonValue v = o[cKeys.at(1)]; v.isDouble())
   {
-    coo.y = round(v.toDouble());
+    coo.y = qFloor(v.toDouble());
   }
   if (const QJsonValue v = o[cKeys.at(2)]; v.isDouble())
   {
@@ -153,18 +140,27 @@ void jsonreader::calculateDocumentSize()
 {
   coordinates topleft;
   coordinates bottomright;
-  for (auto i = a->documentMarkers->cbegin(), rend = a->documentMarkers->cend();
-       i != rend; ++i)
+  if (!a->documentMarkers->empty())
   {
-    if (i->clef.contains("tl"))
+    for (auto i = a->documentMarkers->cbegin(),
+              rend = a->documentMarkers->cend();
+         i != rend; ++i)
     {
-      topleft = *i;
+      if (i->clef.contains("tl"))
+      {
+        topleft = *i;
+      }
+      if (i->clef.contains("br"))
+      {
+        bottomright = *i;
+      }
     }
-    if (i->clef.contains("br"))
-    {
-      bottomright = *i;
-    }
+    QSize ds = QSize(topleft.x + bottomright.x, topleft.y + bottomright.y);
+    a->documentSize = ds;
   }
-  QSize ds = QSize(topleft.x + bottomright.x, topleft.y + bottomright.y);
-  a->documentSize = ds;
+  else
+  {
+    qWarning() << "no markers found for this sheet, marker id should contain "
+                  "\"marker barcode\"";
+  }
 }

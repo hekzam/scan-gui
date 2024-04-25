@@ -7,7 +7,7 @@ static const QSize minPanelSize(250, 500);
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    setMinimumSize(1280,720);
+    setMinimumSize(1024,640);
     createMenuBar();
     createMainStack();
     createWelcomeView();
@@ -113,8 +113,10 @@ void MainWindow::createCreateProjectView()
 
     QVBoxLayout *createProjectViewLayout = new QVBoxLayout(createProjectView);
     createProjectViewLayout -> setAlignment(Qt::AlignCenter);
+    createProjectViewLayout -> setContentsMargins(50, 50, 50, 50);
 
-    QFormLayout *fileForm = new QFormLayout(createProjectView);
+    QFormLayout *fileForm = new QFormLayout();
+    fileForm->setSpacing(20);
     fileForm -> addRow(new QLabel("Pour continuer, veuillez renseigner les champs suivants.", this));
 
     QLineEdit *repositoryImport = new QLineEdit;
@@ -131,7 +133,7 @@ void MainWindow::createCreateProjectView()
     QLineEdit *listImport = new QLineEdit;
     fileForm -> addRow(createFileEntry("Liste d'émargement", listImport));
 
-    QHBoxLayout *buttonLayout = new QHBoxLayout(createProjectView);
+    QHBoxLayout *buttonLayout = new QHBoxLayout();
     buttonLayout -> setAlignment(Qt::AlignRight);
 
     QPushButton *nextButton = new QPushButton("Suivant");
@@ -150,6 +152,7 @@ void MainWindow::createCreateProjectView()
     fileForm -> setHorizontalSpacing(100);
 
     createProjectViewLayout -> addLayout(fileForm);
+    createProjectViewLayout -> addSpacing(50);
     createProjectViewLayout -> addLayout(buttonLayout);
 
     mainStack -> addWidget(createProjectView);
@@ -194,8 +197,21 @@ void MainWindow::createEvaluationView()
     infoLayout -> addWidget(informationsBox);
     infoLayout -> addWidget(generalButtonsBox);
     informationsLayout -> addWidget(new QLabel("WIP Informations",this));
-    generalButtonsLayout -> addWidget(new QLabel("WIP General Buttons",this));
     generalButtonsBox -> setStyleSheet("QGroupBox { border: none; }");
+
+    // Button Layout
+
+    QPushButton *exportButton = new QPushButton("Exporter");
+    exportButton -> setStyleSheet("font-size: 16px; background-color: green; color: white;");
+    exportButton -> setFixedSize(250, 50);
+
+    QPushButton *backButton = new QPushButton("Retour");
+    backButton -> setStyleSheet("font-size: 16px; background-color: orange; color: white;");
+    backButton -> setFixedSize(250, 50);
+    connect(backButton, &QPushButton::clicked, this, &MainWindow::showCreateProjectView);
+
+    generalButtonsLayout -> addWidget(backButton);
+    generalButtonsLayout -> addWidget(exportButton);
 
     mainStack -> addWidget(evaluationView);
 }
@@ -238,9 +254,13 @@ QHBoxLayout *MainWindow::createFileEntry(const QString &labelText, QLineEdit *li
     QPushButton *browseButton = new QPushButton("Parcourir...", this);
 
     layout -> addWidget(label);
-    layout -> addSpacing(100);
     layout -> addWidget(lineEdit);
     layout -> addWidget(browseButton);
+
+    // Définir le stretch pour chaque widget
+    layout -> setStretch(0, 1);
+    layout -> setStretch(1, 3);
+    layout -> setStretch(2, 0.5);
 
     connect(browseButton, &QPushButton::clicked, this, [this, lineEdit]() {
         openFileExplorerAlt(lineEdit);

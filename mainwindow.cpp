@@ -26,45 +26,45 @@ void MainWindow::createMenuBar()
 
     // Menu Déroulant Fichier.
 
-    fileMenu = menuBar -> addMenu(tr("&Fichier"));
+    fileMenu = menuBar -> addMenu(tr("&File"));
 
-    QAction *newFileAction = new QAction(tr("&Nouveau"), this);
+    QAction *newFileAction = new QAction(tr("&New File"), this);
     connect(newFileAction, &QAction::triggered, this, &MainWindow::openFileExplorer);
     fileMenu -> addAction(newFileAction);
 
-    QAction *openFileAction = new QAction(tr("&Ouvrir"), this);
+    QAction *openFileAction = new QAction(tr("&Open File"), this);
     connect(openFileAction, &QAction::triggered, this, &MainWindow::openFileExplorer);
     fileMenu -> addAction(openFileAction);
 
-    QAction *saveFileAction = new QAction(tr("&Enregistrer"), this);
+    QAction *saveFileAction = new QAction(tr("&Save File"), this);
     connect(saveFileAction, &QAction::triggered, this, &MainWindow::openFileExplorer);
     fileMenu -> addAction(saveFileAction);
 
     // Menu Déroulant Edition.
 
-    editMenu = menuBar -> addMenu(tr("&Édition"));
+    editMenu = menuBar -> addMenu(tr("&Edit"));
 
-    QAction *undoAction = new QAction(tr("&Annuler"), this);
+    QAction *undoAction = new QAction(tr("&Undo"), this);
     connect(undoAction, &QAction::triggered, this, &MainWindow::handleUndo);
     editMenu -> addAction(undoAction);
 
-    QAction *redoAction = new QAction(tr("&Rétablir"), this);
+    QAction *redoAction = new QAction(tr("&Redo"), this);
     connect(redoAction, &QAction::triggered, this, &MainWindow::handleRedo);
     editMenu -> addAction(redoAction);
 
     // Menu Déroulant Affichage.
 
-    viewMenu = menuBar -> addMenu(tr("&Affichage"));
+    viewMenu = menuBar -> addMenu(tr("&View"));
 
-    QAction *darkModeAction = new QAction(tr("&Mode Sombre"), this);
+    QAction *darkModeAction = new QAction(tr("&Dark Mode"), this);
     connect(darkModeAction, &QAction::triggered, this, &MainWindow::toggleDarkMode);
     viewMenu -> addAction(darkModeAction);
 
     // Menu Déroulant Aide.
 
-    helpMenu = menuBar -> addMenu(tr("&Aide"));
+    helpMenu = menuBar -> addMenu(tr("&Help"));
 
-    QAction *userManualAction = new QAction(tr("&Manuel Utilisateur"), this);
+    QAction *userManualAction = new QAction(tr("&User Manual"), this);
     connect(userManualAction, &QAction::triggered, this, &MainWindow::openUserManual);
     helpMenu -> addAction(userManualAction);
 }
@@ -86,15 +86,15 @@ void MainWindow::createWelcomeView()
     titleLabel -> setAlignment(Qt::AlignCenter);
     titleLabel -> setStyleSheet("font-size: 24px;");
 
-    QLabel *descriptionLabel = new QLabel("Logiciel d'évaluation d'examens.", welcomeView);
+    QLabel *descriptionLabel = new QLabel("Exam evaluation software.", welcomeView);
     descriptionLabel -> setAlignment(Qt::AlignCenter);
 
-    QPushButton *createButton = new QPushButton("Créer un nouveau projet", welcomeView);
+    QPushButton *createButton = new QPushButton("Create a new project", welcomeView);
     createButton -> setStyleSheet("font-size: 16px; background-color: green; color: white;");
     createButton -> setFixedSize(250, 50);
     connect(createButton, &QPushButton::clicked, this, &MainWindow::showCreateProjectView);
 
-    QPushButton *openButton = new QPushButton("Ouvrir un projet existant", welcomeView);
+    QPushButton *openButton = new QPushButton("Open an existing project", welcomeView);
     openButton -> setStyleSheet("font-size: 16px; background-color: blue; color: white;");
     openButton -> setFixedSize(250, 50);
     connect(openButton, &QPushButton::clicked, this, &MainWindow::openFileExplorer);
@@ -117,31 +117,31 @@ void MainWindow::createCreateProjectView()
 
     QFormLayout *fileForm = new QFormLayout();
     fileForm->setSpacing(20);
-    fileForm -> addRow(new QLabel("Pour continuer, veuillez renseigner les champs suivants.", this));
+    fileForm -> addRow(new QLabel("To continue, please fill in the following fields.", this));
 
     QLineEdit *repositoryImport = new QLineEdit;
-    fileForm -> addRow(createFileEntry("Répertoire du projet", repositoryImport));
+    fileForm -> addRow(createFileEntry("Project Repository", repositoryImport));
 
     QLineEdit *examImport = new QLineEdit;
-    fileForm -> addRow(createFileEntry("Données d'examen", examImport));
+    fileForm -> addRow(createFileEntry("Exam data", examImport));
 
     QLineEdit *scanImport = new QLineEdit;
-    fileForm -> addRow(createFileEntry("Fichier de scans", scanImport));
+    fileForm -> addRow(createFileEntry("Scan file(s)", scanImport));
 
-    fileForm -> addRow(new QLabel("Si vous le souhaitez, vous pouvez également renseigner une liste d'émargement.", this));
+    fileForm -> addRow(new QLabel("If you desire, you can also fill in an attendance list.", this));
 
     QLineEdit *listImport = new QLineEdit;
-    fileForm -> addRow(createFileEntry("Liste d'émargement", listImport));
+    fileForm -> addRow(createFileEntry("Attendance list", listImport));
 
     QHBoxLayout *buttonLayout = new QHBoxLayout();
     buttonLayout -> setAlignment(Qt::AlignRight);
 
-    QPushButton *nextButton = new QPushButton("Suivant");
+    QPushButton *nextButton = new QPushButton("Next");
     nextButton -> setStyleSheet("font-size: 16px; background-color: green; color: white;");
     nextButton -> setFixedSize(250, 50);
     connect(nextButton, &QPushButton::clicked, this, &MainWindow::showEvaluationView);
 
-    QPushButton *backButton = new QPushButton("Retour");
+    QPushButton *backButton = new QPushButton("Back");
     backButton -> setStyleSheet("font-size: 16px; background-color: orange; color: white;");
     backButton -> setFixedSize(250, 50);
     connect(backButton, &QPushButton::clicked, this, &MainWindow::showWelcomeView);
@@ -178,7 +178,7 @@ void MainWindow::createEvaluationView()
     // Deuxième split / partie haute.
 
     // TODO : add saveState() on this splitter
-    QStringList fileNames = QFileDialog::getOpenFileNames(this, ("Ouvrir des fichiers"), "/Users/marcomartins/My Documents /Licence Informatique L3/Bureau d'Étude/QT/Proto", "*.*");
+    QStringList fileNames = QFileDialog::getOpenFileNames(this, ("Open files"), "/Users/marcomartins/My Documents /Licence Informatique L3/Bureau d'Étude/QT/Proto", "*.*");
     TableBox *tableBox = new TableBox(fileNames, horizontalSplitter);
     previewBox = new ExamPreview(horizontalSplitter);
 
@@ -189,23 +189,23 @@ void MainWindow::createEvaluationView()
     // Partie basse.
 
     QHBoxLayout *infoLayout = new QHBoxLayout(infoBox);
-    QGroupBox *informationsBox = new QGroupBox("Informations Générales", evaluationView);
-    QVBoxLayout *informationsLayout = new QVBoxLayout(informationsBox);
+    QGroupBox *informationBox = new QGroupBox("General information", evaluationView);
+    QVBoxLayout *informationLayout = new QVBoxLayout(informationBox);
     QGroupBox *generalButtonsBox = new QGroupBox(evaluationView);
     QHBoxLayout *generalButtonsLayout = new QHBoxLayout(generalButtonsBox);
 
-    infoLayout -> addWidget(informationsBox);
+    infoLayout -> addWidget(informationBox);
     infoLayout -> addWidget(generalButtonsBox);
-    informationsLayout -> addWidget(new QLabel("WIP Informations",this));
+    informationLayout -> addWidget(new QLabel("WIP Information",this));
     generalButtonsBox -> setStyleSheet("QGroupBox { border: none; }");
 
     // Button Layout
 
-    QPushButton *exportButton = new QPushButton("Exporter");
+    QPushButton *exportButton = new QPushButton("Export");
     exportButton -> setStyleSheet("font-size: 16px; background-color: green; color: white;");
     exportButton -> setFixedSize(250, 50);
 
-    QPushButton *backButton = new QPushButton("Retour");
+    QPushButton *backButton = new QPushButton("Back");
     backButton -> setStyleSheet("font-size: 16px; background-color: orange; color: white;");
     backButton -> setFixedSize(250, 50);
     connect(backButton, &QPushButton::clicked, this, &MainWindow::showCreateProjectView);
@@ -251,16 +251,16 @@ QHBoxLayout *MainWindow::createFileEntry(const QString &labelText, QLineEdit *li
 {
     QHBoxLayout *layout = new QHBoxLayout;
     QLabel *label = new QLabel(labelText + " :", this);
-    QPushButton *browseButton = new QPushButton("Parcourir...", this);
+    QPushButton *browseButton = new QPushButton("Search...", this);
 
     layout -> addWidget(label);
     layout -> addWidget(lineEdit);
     layout -> addWidget(browseButton);
 
     // Définir le stretch pour chaque widget
-    layout -> setStretch(0, 1);
-    layout -> setStretch(1, 3);
-    layout -> setStretch(2, 0.5);
+    layout -> setStretch(0, 2);
+    layout -> setStretch(1, 6);
+    layout -> setStretch(2, 1);
 
     connect(browseButton, &QPushButton::clicked, this, [this, lineEdit]() {
         openFileExplorerAlt(lineEdit);

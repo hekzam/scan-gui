@@ -24,7 +24,7 @@ void Boundary::init(){
     setCentralWidget(menuWindow);
     setStyleSheet("background-color : #404040");
 
-    QPushButton *menuButton = new QPushButton("Importer des fichiers",menuWindow);
+    QPushButton *menuButton = new QPushButton("Import files",menuWindow);
     menuButton->setFixedSize(400,100);
     menuButton->setStyleSheet("background-color : green");
     connect(menuButton, &QPushButton::clicked, this, &Boundary::ouvrirExplorateurFichier);
@@ -36,15 +36,15 @@ void Boundary::init(){
 
 void Boundary::initTableFilter(){
 
-    QCheckBox *nom = new QCheckBox("Nom",checkBoxGroup);
+    QCheckBox *nom = new QCheckBox("Name",checkBoxGroup);
     nom->setCheckState(Qt::Checked);
     connect(nom,&QCheckBox::stateChanged,sortTable,&SortTable::editNameColumn);
 
-    QCheckBox *syntax = new QCheckBox("Syntaxe",checkBoxGroup);
+    QCheckBox *syntax = new QCheckBox("Syntax",checkBoxGroup);
     syntax->setCheckState(Qt::Checked);
     connect(syntax,&QCheckBox::stateChanged,sortTable,&SortTable::editSyntaxColumn);
 
-    QCheckBox *semantic = new QCheckBox("Semantique",checkBoxGroup);
+    QCheckBox *semantic = new QCheckBox("Semantic",checkBoxGroup);
     semantic->setCheckState(Qt::Checked);
     connect(semantic,&QCheckBox::stateChanged,sortTable,&SortTable::editSemanticColumn);
 
@@ -82,7 +82,7 @@ void Boundary::initTableView(QStringList const& listeFichiers){
     setCentralWidget(tableWindow);
     initTableFilter();
 
-    QPushButton *checkBoxButton = new QPushButton("Tri",tableWindow);
+    QPushButton *checkBoxButton = new QPushButton("Sort",tableWindow);
     checkBoxButton->setFixedSize(50,50);
     checkBoxButton->setStyleSheet("background-color :#E1912F");
     connect(checkBoxButton,&QPushButton::clicked,this,&Boundary::displayTableFilter);

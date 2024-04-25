@@ -2,7 +2,7 @@
 
 SortTable::SortTable(QWidget *parent) : QTableWidget(parent) {
     setColumnCount(NB_COL);
-    headerList << "Nom" << "Syntaxe" << "Sémantique" << "Métrique 1" << "Métrique 2";
+    headerList << "Name" << "Syntax" << "Semantic" << "Metric 1" << "Metric 2";
     hideColumn(COL_MET1);
     hideColumn(COL_MET2);
     setHorizontalHeaderLabels(headerList);

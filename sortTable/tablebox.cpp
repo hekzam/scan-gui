@@ -8,15 +8,15 @@
 #include "tablebox.h"
 
 TableBox::TableBox(QStringList const& fileNames,QWidget *parent) : QGroupBox(parent), firstAppearence(true) {
-    setTitle("Tableau d'évalutation");
+    setTitle("Evaluation table");
     sortBox = new QGroupBox(this);
 
     textZone = new QLineEdit(this);
-    textZone->setPlaceholderText("Rentrez votre recherche et cliquez sur entrée. Pour effectuer une recherche par balise, consultez l'aide.");
+    textZone->setPlaceholderText("Enter your search and click enter. To search by tag, see Help.");
     connect(textZone, &QLineEdit::textChanged, this, &TableBox::cleanSearchBar);
     connect(textZone, &QLineEdit::returnPressed, this, &TableBox::searchProcessing);
 
-    sortButton = new QPushButton("Tri",this);
+    sortButton = new QPushButton("Sort",this);
     searchInfo = new QLabel(this) ;
 
     sortTable = new SortTable(this);
@@ -32,15 +32,15 @@ void TableBox::initTableFilter(){
     sortButton->setStyleSheet("background-color :#E1912F");
     connect(sortButton,&QPushButton::clicked,this,&TableBox::displayTableFilter);
 
-    QCheckBox *nom = new QCheckBox("Nom",sortBox);
+    QCheckBox *nom = new QCheckBox("Name",sortBox);
     nom->setCheckState(Qt::Checked);
     connect(nom,&QCheckBox::stateChanged,sortTable,&SortTable::editNameColumn);
 
-    QCheckBox *syntax = new QCheckBox("Syntaxe",sortBox);
+    QCheckBox *syntax = new QCheckBox("Syntax",sortBox);
     syntax->setCheckState(Qt::Checked);
     connect(syntax,&QCheckBox::stateChanged,sortTable,&SortTable::editSyntaxColumn);
 
-    QCheckBox *semantic = new QCheckBox("Semantique",sortBox);
+    QCheckBox *semantic = new QCheckBox("Semantic",sortBox);
     semantic->setCheckState(Qt::Checked);
     connect(semantic,&QCheckBox::stateChanged,sortTable,&SortTable::editSemanticColumn);
 

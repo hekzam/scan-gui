@@ -15,7 +15,7 @@ void Controller::liaisonControlBoundary(){
 }
 
 void Controller::afficherGestionnaire(){
-    QStringList const nomsFichiers = QFileDialog::getOpenFileNames(boundaryWindow, ("Ouvrir des fichiers"), "/Users/marcomartins/My Documents /Licence Informatique L3/Bureau d'Étude/QT/Proto", "*.*");
+    QStringList const nomsFichiers = QFileDialog::getOpenFileNames(boundaryWindow, ("Open files"), "/Users/marcomartins/My Documents /Licence Informatique L3/Bureau d'Étude/QT/Proto", "*.*");
     boundaryWindow->initTableView(nomsFichiers);
 }
 

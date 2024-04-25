@@ -3,13 +3,13 @@
 using namespace mViewPort;
 
 ExamPreview::ExamPreview(QWidget *parent)
-    : previewBox(new QGroupBox(tr("Preview"), parent)),
+    : /*previewBox = new*/ QGroupBox(tr("Preview"), parent),
       previewSizePolicy(QSizePolicy::MinimumExpanding,
                         QSizePolicy::MinimumExpanding)
 {
-  QVBoxLayout *previewLayout = new QVBoxLayout(previewBox);
+  QVBoxLayout *previewLayout = new QVBoxLayout(this /*previewBox*/);
   setCheckable(false);
-  // QGroupBox::setSizePolicy(previewSizePolicy);
+  setSizePolicy(previewSizePolicy);
 
   createPreviewStack();
   createPreviewButtonBox();
@@ -18,11 +18,16 @@ ExamPreview::ExamPreview(QWidget *parent)
   previewLayout->addWidget(previewButtonBox);
 }
 
+QSize ExamPreview::sizeHint() const
+{
+  return QSize(640, 480);
+}
+
 ExamPreview::~ExamPreview(){}
 
 void ExamPreview::createPreviewStack()
 {
-  previewStack = new QStackedWidget(previewBox);
+  previewStack = new QStackedWidget(this /*previewBox*/);
   // previewStack->setSizePolicy(previewSizePolicy);
   createBasePreview();
   createGridPreview();
@@ -35,7 +40,7 @@ void ExamPreview::createPreviewStack()
 
 void ExamPreview::createPreviewButtonBox()
 {
-  previewButtonBox = new QGroupBox(previewBox);
+  previewButtonBox = new QGroupBox(this /*previewBox*/);
   auto previewButtonLayout = new QHBoxLayout(previewButtonBox);
 
   auto viewWholePageButton =
@@ -109,6 +114,7 @@ void ExamPreview::createDialogPreview()
 {
   // subclass ?
   floatableDialogPreview = new QDialog(this);
+  floatableDialogPreview->setWindowTitle("Whole sheet Preview - scan-gui");
   floatableDialogPreview->setModal(false);
   auto dialogLayout = new QVBoxLayout(floatableDialogPreview);
 }

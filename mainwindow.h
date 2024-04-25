@@ -46,7 +46,7 @@ private:
     QMenu *viewMenu;
     QMenu *helpMenu;
     QStackedWidget *mainStack;
-    ExamPreview *previewBox;
+    // ExamPreview *previewBox;
 
     QWidget *welcomeView;
     QWidget *createProjectView;

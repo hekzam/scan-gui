@@ -17,7 +17,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-  delete previewBox;
 }
 
 void MainWindow::createMenuBar()
@@ -173,18 +172,17 @@ void MainWindow::createEvaluationView()
     verticalSplitter -> addWidget(horizontalSplitter);
     verticalSplitter -> addWidget(infoBox);
     verticalSplitter -> setOrientation(Qt::Vertical);
-    verticalSplitter -> setSizes(QList<int>() << 800 << 200);
+    verticalSplitter->setSizes(QList<int>() << 800 << 200);
 
     // Deuxième split / partie haute.
 
     // TODO : add saveState() on this splitter
     QStringList fileNames = QFileDialog::getOpenFileNames(this, ("Open files"), "/Users/marcomartins/My Documents /Licence Informatique L3/Bureau d'Étude/QT/Proto", "*.*");
-    TableBox *tableBox = new TableBox(fileNames, horizontalSplitter);
-    previewBox = new ExamPreview(horizontalSplitter);
+    TableBox *tableBox = new TableBox(fileNames, evaluationView);
+    ExamPreview *previewBox = new ExamPreview(evaluationView);
 
-    horizontalSplitter->setChildrenCollapsible(true);
-    // horizontalSplitter->setSizes(QList<int>() << width() / 2 << width() / 2);
-    // horizontalSplitter->setSizes(QList<int>() << 500 << 500);
+    horizontalSplitter->insertWidget(0, tableBox);
+    horizontalSplitter->insertWidget(1, previewBox);
 
     // Partie basse.
 
@@ -213,7 +211,7 @@ void MainWindow::createEvaluationView()
     generalButtonsLayout -> addWidget(backButton);
     generalButtonsLayout -> addWidget(exportButton);
 
-    mainStack -> addWidget(evaluationView);
+    mainStack->addWidget(evaluationView);
 }
 
 void MainWindow::showWelcomeView()

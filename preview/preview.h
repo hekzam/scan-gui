@@ -17,6 +17,7 @@ class ExamPreview : public QGroupBox
 
 public:
   explicit ExamPreview(QWidget *parent = nullptr);
+  virtual QSize sizeHint() const override;
   ~ExamPreview();
 
 public slots:
@@ -51,7 +52,7 @@ private:
   QGraphicsScene *baseScene;
   QGraphicsScene *gridScene;
 
-  QGroupBox *previewBox;
+  // QGroupBox *previewBox;
 
   QGroupBox *previewButtonBox;
   QStackedWidget *previewStack;

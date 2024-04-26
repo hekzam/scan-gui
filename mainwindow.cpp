@@ -178,7 +178,7 @@ void MainWindow::createEvaluationView()
 
     // TODO : add saveState() on this splitter
     QStringList fileNames = QFileDialog::getOpenFileNames(this, ("Open files"), "/Users/marcomartins/My Documents /Licence Informatique L3/Bureau d'Étude/QT/Proto", "*.*");
-    TableBox *tableBox = new TableBox(fileNames, evaluationView);
+    TableBox *tableBox = new TableBox(fileNames, this, evaluationView);
     ExamPreview *previewBox = new ExamPreview(evaluationView);
 
     horizontalSplitter->insertWidget(0, tableBox);

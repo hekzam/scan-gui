@@ -1,6 +1,6 @@
 #include "progresscell.h"
 
-ProgressCell::ProgressCell(int value, QWidget *parent) : QProgressBar(parent),m_value(value) {
+ProgressCell::ProgressCell(int value, QWidget *parent) : QProgressBar(parent),QTableWidgetItem(),m_value(value) {
     setValue(value);
 }
 

@@ -7,7 +7,7 @@
 
 #include "tablebox.h"
 
-TableBox::TableBox(QStringList const& fileNames,QWidget *parent) : QGroupBox(parent), firstAppearence(true) {
+TableBox::TableBox(QStringList const& fileNames, QWidget *dockParent, QWidget *parent) : QGroupBox(parent), firstAppearence(true) {
     setTitle("Evaluation table");
     sortBox = new QGroupBox(this);
 
@@ -20,7 +20,7 @@ TableBox::TableBox(QStringList const& fileNames,QWidget *parent) : QGroupBox(par
     searchInfo = new QLabel(this) ;
 
     sortTable = new SortTable(this);
-    sortDock = new QDockWidget(parent);
+    sortDock = new QDockWidget(dockParent);
     sortDock->hide();
     initTableFilter();
     initTableView(fileNames);
@@ -58,7 +58,7 @@ void TableBox::initTableFilter(){
     sortBoxLayout->addWidget(metric1);
     sortBoxLayout->addWidget(metric2);
 
-    sortDock->setFixedSize(350,350);
+    sortDock->setMinimumSize(250,250);
     sortBox->setLayout(sortBoxLayout);
     sortDock->setWidget(sortBox);
     sortDock->setFloating(true);

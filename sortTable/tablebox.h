@@ -17,7 +17,7 @@ class TableBox : public QGroupBox
 {
     Q_OBJECT
 public:
-    TableBox(QStringList const& fileNames, QWidget *parent = nullptr);
+    TableBox(QStringList const& fileNames, QWidget *dockParent, QWidget *parent = nullptr);
 
 private:
     SortTable *sortTable;

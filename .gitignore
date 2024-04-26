@@ -73,3 +73,6 @@ CMakeLists.txt.user*
 *.exe
 
 inner*.png
+
+# Nix output files
+result*

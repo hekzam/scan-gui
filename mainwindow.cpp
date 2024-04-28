@@ -7,7 +7,7 @@ static const QSize minPanelSize(250, 500);
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    setMinimumSize(1024,640);
+    setMinimumSize(1280,720);
     createMenuBar();
     createMainStack();
     createWelcomeView();
@@ -38,6 +38,10 @@ void MainWindow::createMenuBar()
     QAction *saveFileAction = new QAction(tr("&Save File"), this);
     connect(saveFileAction, &QAction::triggered, this, &MainWindow::openFileExplorer);
     fileMenu -> addAction(saveFileAction);
+
+    QAction *exportAction = new QAction(tr("&Export"), this);
+    connect(exportAction, &QAction::triggered, this, &MainWindow::openFileExplorer);
+    fileMenu -> addAction(exportAction);
 
     // Menu Déroulant Edition.
 
@@ -166,50 +170,29 @@ void MainWindow::createEvaluationView()
     QHBoxLayout *evaluationViewLayout = new QHBoxLayout(evaluationView);
     QSplitter *verticalSplitter = new QSplitter(evaluationView);
     QSplitter *horizontalSplitter = new QSplitter(evaluationView);
-    QGroupBox *infoBox = new QGroupBox(evaluationView);
 
-    evaluationViewLayout -> addWidget(verticalSplitter);
-    verticalSplitter -> addWidget(horizontalSplitter);
-    verticalSplitter -> addWidget(infoBox);
+    ExamPreview *previewBox = new ExamPreview(evaluationView);
+
+    evaluationViewLayout -> addWidget(horizontalSplitter);
+    horizontalSplitter -> insertWidget(0, verticalSplitter);
+    horizontalSplitter -> insertWidget(1, previewBox);
     verticalSplitter -> setOrientation(Qt::Vertical);
-    verticalSplitter->setSizes(QList<int>() << 800 << 200);
+    verticalSplitter -> setSizes(QList<int>() << 800 << 200);
 
     // Deuxième split / partie haute.
 
     // TODO : add saveState() on this splitter
     QStringList fileNames = QFileDialog::getOpenFileNames(this, ("Open files"), "/Users/marcomartins/My Documents /Licence Informatique L3/Bureau d'Étude/QT/Proto", "*.*");
     TableBox *tableBox = new TableBox(fileNames, this, evaluationView);
-    ExamPreview *previewBox = new ExamPreview(evaluationView);
 
-    horizontalSplitter->insertWidget(0, tableBox);
-    horizontalSplitter->insertWidget(1, previewBox);
+    verticalSplitter -> addWidget(tableBox);
 
     // Partie basse.
-
-    QHBoxLayout *infoLayout = new QHBoxLayout(infoBox);
     QGroupBox *informationBox = new QGroupBox("General information", evaluationView);
     QVBoxLayout *informationLayout = new QVBoxLayout(informationBox);
-    QGroupBox *generalButtonsBox = new QGroupBox(evaluationView);
-    QHBoxLayout *generalButtonsLayout = new QHBoxLayout(generalButtonsBox);
 
-    infoLayout -> addWidget(informationBox);
-    infoLayout -> addWidget(generalButtonsBox);
+    verticalSplitter -> addWidget(informationBox);
     informationLayout -> addWidget(new QLabel("WIP Information",this));
-    generalButtonsBox -> setStyleSheet("QGroupBox { border: none; }");
-
-    // Button Layout
-
-    QPushButton *exportButton = new QPushButton("Export");
-    exportButton -> setStyleSheet("font-size: 16px; background-color: green; color: white;");
-    exportButton -> setFixedSize(250, 50);
-
-    QPushButton *backButton = new QPushButton("Back");
-    backButton -> setStyleSheet("font-size: 16px; background-color: orange; color: white;");
-    backButton -> setFixedSize(250, 50);
-    connect(backButton, &QPushButton::clicked, this, &MainWindow::showCreateProjectView);
-
-    generalButtonsLayout -> addWidget(backButton);
-    generalButtonsLayout -> addWidget(exportButton);
 
     mainStack->addWidget(evaluationView);
 }

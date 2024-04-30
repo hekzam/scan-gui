@@ -138,6 +138,7 @@ void TableBox::searchProcessing(){
     }
     else{
         qDebug()<<"Le pattern est PAS BON";
+        searchInfo->setText("Le format n'est pas bon !!!");
         return;
     }
 }

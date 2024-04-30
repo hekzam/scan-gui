@@ -16,7 +16,8 @@ TableBox::TableBox(QStringList const& fileNames, QWidget *dockParent, QWidget *p
 
 
     sortButton = new QPushButton("Sort",this);
-    searchInfo = new QLabel(this) ;
+
+    searchInfo = new QLabel(this);
 
     sortTable = new SortTable(this);
     sortDock = new QDockWidget(dockParent);
@@ -93,6 +94,8 @@ void TableBox::initTableView(QStringList const& fileNames){
     QVBoxLayout *evalLayout = new QVBoxLayout;
     evalLayout->addLayout(sortButtonLayout);
 
+    evalLayout->addWidget(searchInfo);
+
     evalLayout->addWidget(sortTable);
 
     sortTable->initSortTable(fileNames);
@@ -109,7 +112,8 @@ void TableBox::initRegEx()
 
 
 void TableBox::searchProcessing(){
-    text = input.trimmed();
+    text = input.remove(" ");
+
     if (text.isEmpty()){
         for (int i = 0; i < sortTable->rowCount(); ++i)
             sortTable->setRowHidden(i, false);
@@ -122,10 +126,12 @@ void TableBox::searchProcessing(){
             tagsProcessing(text);
         }
         else if (text.contains(",")){
+            initSelectedColumns(false);
             qDebug()<<"multiple";
             multipleTextProcessing(text);
         }
         else{
+            initSelectedColumns(false);
             qDebug()<<"simple";
             simpleTextProcessing(text);
         }
@@ -137,16 +143,29 @@ void TableBox::searchProcessing(){
 }
 
 
-void TableBox::filterTextRows(QRegularExpression regex)
+void TableBox::filterTextRows(QRegularExpression regex, QList<int> selectedColumns)
 {
     for (int i = 0; i < sortTable->rowCount(); ++i) {
+
         bool match = false;
-        for (int j = 0; j < sortTable->columnCount(); ++j) {
-            QTableWidgetItem *item = sortTable->item(i, j);
+
+
+
+        for (int j = 0; j < selectedColumns.size(); j++) {
+
+            int selectedIndex = selectedColumns[j];
+
+
+            QTableWidgetItem *item = sortTable->item(i, selectedIndex);
+
+
+
             if (item && regex.match(item->text()).hasMatch()) {
                 match = true;
                 break;
             }
+
+
         }
         sortTable->setRowHidden(i, !match);
     }
@@ -157,13 +176,20 @@ void TableBox::filterTextRows(QRegularExpression regex)
 
 void TableBox::filterTaggedTextRows(QList <QRegularExpression> regexList, QList<int> selectedColumns)
 {
-    for (int i = 0; i < sortTable->rowCount(); ++i) {
+    for (int i = 0; i < sortTable->rowCount(); i++) {
         bool match = false;
 
-        for (int &j : selectedColumns) {
-            QTableWidgetItem *item = sortTable->item(i, j);
-            if (item && regexList[j].match(item->text()).hasMatch()) {
+        for (int j = 0; j < selectedColumns.size(); j++) {
+
+            int selectedIndex = selectedColumns[j];
+
+            QTableWidgetItem *item = sortTable->item(i, selectedIndex);
+
+            if (item && regexList[j].match(item->text()).hasMatch()){
                 match = true;
+            }
+            else{
+                match = false;
                 break;
             }
         }
@@ -174,13 +200,15 @@ void TableBox::filterTaggedTextRows(QList <QRegularExpression> regexList, QList<
 
 void TableBox::simpleTextProcessing(QString query)
 {
+
     QRegularExpression regex(query, QRegularExpression::CaseInsensitiveOption);
-    filterTextRows(regex);
+    filterTextRows(regex, selectedColumns);
 }
 
 
 void TableBox::multipleTextProcessing(QString query)
 {
+
     queriesList= query.split(",", Qt::SkipEmptyParts);
 
     //cleaning elements
@@ -193,7 +221,7 @@ void TableBox::multipleTextProcessing(QString query)
     qDebug()<<pattern;
     QRegularExpression regex(pattern, QRegularExpression::CaseInsensitiveOption);
 
-    filterTextRows(regex);
+    filterTextRows(regex, selectedColumns);
 }
 
 void TableBox::tagsProcessing(QString query)
@@ -202,7 +230,7 @@ void TableBox::tagsProcessing(QString query)
     //ensuite on prend seulement les colonnes qui nous intéressent
     //
 
-    initSelectedColumns(true);
+
 
     queriesList = query.split(";", Qt::SkipEmptyParts);
     qDebug()<<queriesList;
@@ -214,37 +242,34 @@ void TableBox::tagsProcessing(QString query)
     for (QString &elem : queriesList){
         QStringList elemList = elem.split(":");
         searchedTags.append(elemList[0].trimmed());
-
-        QRegularExpression regex(elemList[1].split(",", Qt::SkipEmptyParts).join("|").trimmed(), QRegularExpression::CaseInsensitiveOption);
+        QString pattern = elemList[1].split(",", Qt::SkipEmptyParts).join("|");
+        QRegularExpression regex(pattern, QRegularExpression::CaseInsensitiveOption);
         regexList.append(regex);
+        qDebug()<<pattern;
     }
+
     qDebug()<<searchedTags;
 
-
-    //version sans recup de l'indice
-
-    for (QString &elem : searchedTags){
-        if (!(sortTable->getHeaderList().contains(elem, Qt::CaseInsensitive))){
-            qDebug()<<"Tu le sors d'où ce tag ??";
-            return ;
-        }
-    }
+    qDebug()<<sortTable->getHeaderList();
 
 
-    //Version avec recup de l'indice
-
+    initSelectedColumns(true);
 
     for (int var = 0; var < sortTable->getHeaderList().size(); var++) {
-        if (searchedTags.contains( sortTable->getHeaderList()[var])){
+        if (searchedTags.contains(sortTable->getHeaderList()[var],Qt::CaseInsensitive)){
             selectedColumns.append(var);
         }
     }
-    // si la taille de selectedColumn < searchedTags -> un tag n'est pas bon
     if(selectedColumns.size()!= searchedTags.size()){
-        qDebug()<<"Tu le sors d'où ce tag ??";
+        qDebug()<<"tag pas bon";
+        searchInfo->setText("Le format des tags n'est pas bon !");
         return;
     }
 
+    qDebug()<<selectedColumns;
+    qDebug()<<regexList;
+
+    filterTaggedTextRows(regexList, selectedColumns);
 
 }
 
@@ -255,11 +280,25 @@ void TableBox::cleanSortTable()
     if (input.trimmed() == "") {
         searchProcessing();
     }
+    searchInfo->setText("");
 }
 
 void TableBox::initSelectedColumns(bool isTagSearch)
 {
+
     selectedColumns.clear();
+
+    if(isTagSearch){
+        return;
+    }
+    else{
+        for (int var = 0; var < sortTable->rowCount(); var++) {
+            if(!(sortTable->isColumnHidden(var))){
+                selectedColumns.append(var);
+            }
+        }
+    }
+
 }
 
 

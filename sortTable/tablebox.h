@@ -28,7 +28,7 @@ private:
 
     QLineEdit *textZone;
 
-    QLabel *searchInfo; // ->TO DO
+    QLabel *searchInfo;
 
 
     QString simpleOrMultipleTextPattern = "^\\s*(?:\\w+(?:\\s*,\\s*\\w+)*)\\s*$";
@@ -59,7 +59,7 @@ private slots:
     void multipleTextProcessing(QString query);
     void simpleTextProcessing(QString query);
 
-    void filterTextRows(QRegularExpression regex);
+    void filterTextRows(QRegularExpression regex, QList<int> selectedColumns);
     void filterTaggedTextRows(QList <QRegularExpression> regexList, QList<int> selectedColumns);
     void cleanSortTable();
 

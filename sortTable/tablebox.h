@@ -9,6 +9,7 @@
 #include <QDockWidget>
 #include <QLineEdit>
 #include <QLabel>
+#include <QRegularExpression>
 
 #include <QDebug>
 #include "sorttable.h"
@@ -24,22 +25,45 @@ private:
     QDockWidget *sortDock;
     QGroupBox *sortBox;
     QPushButton *sortButton;
+
     QLineEdit *textZone;
-    QLabel *searchInfo;
-    QString textSearched;
-    QStringList knownTags = {"tags1","tags2", "tags3"};
-    QStringList searchedTags;
-    QStringList searchedConditions;
+
+    QLabel *searchInfo; // ->TO DO
+
+
+    QString simpleOrMultipleTextPattern = "^\\s*(?:\\w+(?:\\s*,\\s*\\w+)*)\\s*$";
+    QString tagPattern = "^\\s*(?:\\w+\\s*:\\s*\\w+(?:\\s*,\\s*\\w+)*)\\s*(?:;\\s*\\w+\\s*:\\s*\\w+(?:\\s*,\\s*\\w+)*)*\\s*$";
+    QString combinedPattern = simpleOrMultipleTextPattern + "|" + tagPattern;
+
+    QRegularExpression regexTestPattern;
+
+    QString input;
+    QString text;
+
+
+    QStringList queriesList;
+
+    QList<int> selectedColumns;
+
     bool firstAppearence;
 
     void initTableFilter();
     void initTableView(QStringList const& listeFichiers);
+    void initRegEx();
 
 private slots:
     void displayTableFilter();
     void searchProcessing();
-    void tagsProcessing();
-    void cleanSearchBar();
+
+    void tagsProcessing(QString query);
+    void multipleTextProcessing(QString query);
+    void simpleTextProcessing(QString query);
+
+    void filterTextRows(QRegularExpression regex);
+    void filterTaggedTextRows(QList <QRegularExpression> regexList, QList<int> selectedColumns);
+    void cleanSortTable();
+
+    void initSelectedColumns(bool isTagSearch);
 };
 
 #endif // TABLEBOX_H

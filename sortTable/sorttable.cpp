@@ -71,3 +71,8 @@ void SortTable::editMetric2Column(int checkedState){
     else
         hideColumn(COL_MET2);
 }
+
+QStringList SortTable::getHeaderList()
+{
+    return headerList;
+}

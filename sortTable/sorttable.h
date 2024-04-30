@@ -32,6 +32,7 @@ public slots:
     void editSemanticColumn(int checkedState);
     void editMetric1Column(int checkedState);
     void editMetric2Column(int checkedState);
+    QStringList getHeaderList();
 };
 
 #endif // SORTTABLE_H

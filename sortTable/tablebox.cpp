@@ -1,8 +1,6 @@
 /*TO-DO
- *      -> ajouter les recherches avancées (avec des balises à la façon de Gmail
-                        ex:  student: Emilien,Marco ; id: 221 )
-
- * lorsque qu'on clique sur un elem, une pop-up s'ouvre (pour donner une idée de la preview)
+ *       -> ajouter les recherches avancées (avec des balises à la façon de Gmail
+ *       ex:  student: Emilien,Marco ; id: 221 )
 */
 
 #include "tablebox.h"
@@ -12,9 +10,10 @@ TableBox::TableBox(QStringList const& fileNames, QWidget *dockParent, QWidget *p
     sortBox = new QGroupBox(this);
 
     textZone = new QLineEdit(this);
-    textZone->setPlaceholderText("Enter your search and click enter. To search by tag, see Help.");
-    connect(textZone, &QLineEdit::textChanged, this, &TableBox::cleanSearchBar);
+    textZone->setPlaceholderText("Enter your search and click enter.");
+    connect(textZone, &QLineEdit::textChanged, this, &TableBox::cleanSortTable);
     connect(textZone, &QLineEdit::returnPressed, this, &TableBox::searchProcessing);
+
 
     sortButton = new QPushButton("Sort",this);
     searchInfo = new QLabel(this) ;
@@ -22,6 +21,9 @@ TableBox::TableBox(QStringList const& fileNames, QWidget *dockParent, QWidget *p
     sortTable = new SortTable(this);
     sortDock = new QDockWidget(dockParent);
     sortDock->hide();
+
+
+    initRegEx();
     initTableFilter();
     initTableView(fileNames);
 }
@@ -98,26 +100,50 @@ void TableBox::initTableView(QStringList const& fileNames){
     setLayout(evalLayout);
 }
 
+void TableBox::initRegEx()
+{
+    //init of the regex for the test of the pattern
+    regexTestPattern.setPattern(combinedPattern);
+    regexTestPattern.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
+}
+
 
 void TableBox::searchProcessing(){
-
-    bool istextSearchedEmpty = textSearched.trimmed().isEmpty();
-
-    if((textSearched.contains(":"))||(textSearched.contains(";"))){
-        //qDebug()<< "Balise détecté !!";
-        tagsProcessing();
-    }
-
-    for (int i = 0; i < sortTable->rowCount(); ++i) {
-        if (istextSearchedEmpty) {
+    text = input.trimmed();
+    if (text.isEmpty()){
+        for (int i = 0; i < sortTable->rowCount(); ++i)
             sortTable->setRowHidden(i, false);
-            continue;
+        return;
+    }
+    if (regexTestPattern.match(text).hasMatch()){
+        qDebug()<<"Le pattern est bon";
+        if (text.contains(":")){
+            qDebug()<<"tag";
+            tagsProcessing(text);
         }
+        else if (text.contains(",")){
+            qDebug()<<"multiple";
+            multipleTextProcessing(text);
+        }
+        else{
+            qDebug()<<"simple";
+            simpleTextProcessing(text);
+        }
+    }
+    else{
+        qDebug()<<"Le pattern est PAS BON";
+        return;
+    }
+}
 
+
+void TableBox::filterTextRows(QRegularExpression regex)
+{
+    for (int i = 0; i < sortTable->rowCount(); ++i) {
         bool match = false;
         for (int j = 0; j < sortTable->columnCount(); ++j) {
             QTableWidgetItem *item = sortTable->item(i, j);
-            if (item && item->text().contains(textSearched, Qt::CaseInsensitive)) {
+            if (item && regex.match(item->text()).hasMatch()) {
                 match = true;
                 break;
             }
@@ -126,38 +152,114 @@ void TableBox::searchProcessing(){
     }
 }
 
-void TableBox::tagsProcessing()
+
+
+
+void TableBox::filterTaggedTextRows(QList <QRegularExpression> regexList, QList<int> selectedColumns)
 {
-    //qDebug()<< textSearched;
-    //textSearched = textSearched.trimmed(); // attention, trimmed ne supprime que les espaces en trop (pas ceux à l'intérieur de la chaîne)
-    //qDebug()<< textSearched;
+    for (int i = 0; i < sortTable->rowCount(); ++i) {
+        bool match = false;
 
-    QStringList textSearchedList = textSearched.split(";");
-
-    for (int var = 0; var < textSearchedList.size(); ++var) {
-        //qDebug()<< textSearchedList[var];
-        QStringList tagsAndWordsList = textSearchedList[var].split(":");
-        searchedTags.append(tagsAndWordsList[0].trimmed());
-        searchedConditions.append(tagsAndWordsList[1].trimmed());
-        //qDebug()<< tags;
-        //qDebug()<< words;
-    }
-
-    for (int var = 0; var < searchedTags.size(); ++var) {
-        //si headerList était publique, on aurait pu le réutiliser
-        if((knownTags).contains(searchedTags[var])){
-            //qDebug()<<"Faire la recherche en lien avec la (ou même les) balise(s)";
+        for (int &j : selectedColumns) {
+            QTableWidgetItem *item = sortTable->item(i, j);
+            if (item && regexList[j].match(item->text()).hasMatch()) {
+                match = true;
+                break;
+            }
         }
-
+        sortTable->setRowHidden(i, !match);
     }
 }
 
-void TableBox::cleanSearchBar()
+
+void TableBox::simpleTextProcessing(QString query)
 {
-    textSearched = textZone->text();
-    if (textSearched.trimmed() == "") {
+    QRegularExpression regex(query, QRegularExpression::CaseInsensitiveOption);
+    filterTextRows(regex);
+}
+
+
+void TableBox::multipleTextProcessing(QString query)
+{
+    queriesList= query.split(",", Qt::SkipEmptyParts);
+
+    //cleaning elements
+    for (QString &elem : queriesList) {
+        elem = elem.trimmed();
+        qDebug()<<elem;
+    }
+
+    QString pattern = queriesList.join("|");
+    qDebug()<<pattern;
+    QRegularExpression regex(pattern, QRegularExpression::CaseInsensitiveOption);
+
+    filterTextRows(regex);
+}
+
+void TableBox::tagsProcessing(QString query)
+{
+    //on vérifie que les tags sont bon
+    //ensuite on prend seulement les colonnes qui nous intéressent
+    //
+
+    initSelectedColumns(true);
+
+    queriesList = query.split(";", Qt::SkipEmptyParts);
+    qDebug()<<queriesList;
+
+
+    QStringList searchedTags;
+    QList<QRegularExpression> regexList;
+
+    for (QString &elem : queriesList){
+        QStringList elemList = elem.split(":");
+        searchedTags.append(elemList[0].trimmed());
+
+        QRegularExpression regex(elemList[1].split(",", Qt::SkipEmptyParts).join("|").trimmed(), QRegularExpression::CaseInsensitiveOption);
+        regexList.append(regex);
+    }
+    qDebug()<<searchedTags;
+
+
+    //version sans recup de l'indice
+
+    for (QString &elem : searchedTags){
+        if (!(sortTable->getHeaderList().contains(elem, Qt::CaseInsensitive))){
+            qDebug()<<"Tu le sors d'où ce tag ??";
+            return ;
+        }
+    }
+
+
+    //Version avec recup de l'indice
+
+
+    for (int var = 0; var < sortTable->getHeaderList().size(); var++) {
+        if (searchedTags.contains( sortTable->getHeaderList()[var])){
+            selectedColumns.append(var);
+        }
+    }
+    // si la taille de selectedColumn < searchedTags -> un tag n'est pas bon
+    if(selectedColumns.size()!= searchedTags.size()){
+        qDebug()<<"Tu le sors d'où ce tag ??";
+        return;
+    }
+
+
+}
+
+
+void TableBox::cleanSortTable()
+{    
+    input = textZone->text();
+    if (input.trimmed() == "") {
         searchProcessing();
     }
+}
+
+void TableBox::initSelectedColumns(bool isTagSearch)
+{
+    selectedColumns.clear();
 }
 
 

@@ -30,6 +30,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         test_case.qrc
         preview/preview.h preview/preview.cpp
         preview/examviewport.h preview/examviewport.cpp
+        preview/singlepage.h preview/singlepage.cpp
         sortTable/tablebox.h sortTable/tablebox.cpp
         sortTable/tablebox.h sortTable/tablebox.cpp
         sortTable/sorttable.h sortTable/sorttable.cpp

@@ -1,9 +1,0 @@
-/Users/marcomartins/Hekzam2/scan-gui/build/Qt_6_7_0_for_macOS-Debug/CMakeFiles/scan-gui.dir
-/Users/marcomartins/Hekzam2/scan-gui/build/Qt_6_7_0_for_macOS-Debug/CMakeFiles/edit_cache.dir
-/Users/marcomartins/Hekzam2/scan-gui/build/Qt_6_7_0_for_macOS-Debug/CMakeFiles/rebuild_cache.dir
-/Users/marcomartins/Hekzam2/scan-gui/build/Qt_6_7_0_for_macOS-Debug/CMakeFiles/list_install_components.dir
-/Users/marcomartins/Hekzam2/scan-gui/build/Qt_6_7_0_for_macOS-Debug/CMakeFiles/install.dir
-/Users/marcomartins/Hekzam2/scan-gui/build/Qt_6_7_0_for_macOS-Debug/CMakeFiles/install/local.dir
-/Users/marcomartins/Hekzam2/scan-gui/build/Qt_6_7_0_for_macOS-Debug/CMakeFiles/install/strip.dir
-/Users/marcomartins/Hekzam2/scan-gui/build/Qt_6_7_0_for_macOS-Debug/CMakeFiles/scan-gui_autogen_timestamp_deps.dir
-/Users/marcomartins/Hekzam2/scan-gui/build/Qt_6_7_0_for_macOS-Debug/CMakeFiles/scan-gui_autogen.dir

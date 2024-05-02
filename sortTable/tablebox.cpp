@@ -5,7 +5,7 @@
 
 #include "tablebox.h"
 
-TableBox::TableBox(QStringList const& fileNames, QWidget *dockParent, QWidget *parent) : QGroupBox(parent), firstAppearence(true) {
+TableBox::TableBox(std::vector<JsonLinker::infoPage> paths, QWidget *dockParent, QWidget *parent) : QGroupBox(parent), firstAppearence(true) {
     setTitle("Evaluation table");
     sortBox = new QGroupBox(this);
 
@@ -26,7 +26,7 @@ TableBox::TableBox(QStringList const& fileNames, QWidget *dockParent, QWidget *p
 
     initRegEx();
     initTableFilter();
-    initTableView(fileNames);
+    initTableView(paths);
 }
 
 void TableBox::initTableFilter(){
@@ -35,27 +35,37 @@ void TableBox::initTableFilter(){
     sortButton->setStyleSheet("background-color :#E1912F");
     connect(sortButton,&QPushButton::clicked,this,&TableBox::displayTableFilter);
 
-    QCheckBox *nom = new QCheckBox("Name",sortBox);
-    nom->setCheckState(Qt::Checked);
-    connect(nom,&QCheckBox::stateChanged,sortTable,&SortTable::editNameColumn);
+    QCheckBox *name = new QCheckBox("Name",sortBox);
+    name->setCheckState(Qt::Checked);
+    connect(name,&QCheckBox::stateChanged,this,[this](int state){
+        sortTable -> editColumn(state, sortTable -> COL_NAME);
+    });
 
     QCheckBox *syntax = new QCheckBox("Syntax",sortBox);
     syntax->setCheckState(Qt::Checked);
-    connect(syntax,&QCheckBox::stateChanged,sortTable,&SortTable::editSyntaxColumn);
+    connect(syntax,&QCheckBox::stateChanged,this,[this](int state){
+        sortTable -> editColumn(state, sortTable -> COL_SYNTAX);
+    });
 
     QCheckBox *semantic = new QCheckBox("Semantic",sortBox);
     semantic->setCheckState(Qt::Checked);
-    connect(semantic,&QCheckBox::stateChanged,sortTable,&SortTable::editSemanticColumn);
+    connect(semantic,&QCheckBox::stateChanged,this,[this](int state){
+        sortTable -> editColumn(state, sortTable -> COL_SEMANTIC);
+    });
 
     QCheckBox *metric1 = new QCheckBox("Metric 1",sortBox);
-    connect(metric1,&QCheckBox::stateChanged,sortTable,&SortTable::editMetric1Column);
+    connect(metric1,&QCheckBox::stateChanged,this,[this](int state){
+        sortTable -> editColumn(state, sortTable -> COL_MET1);
+    });
 
     QCheckBox *metric2 = new QCheckBox("Metric 2",sortBox);
-    connect(metric2,&QCheckBox::stateChanged,sortTable,&SortTable::editMetric2Column);
+    connect(metric2,&QCheckBox::stateChanged,sortTable,[this](int state){
+        sortTable -> editColumn(state, sortTable -> COL_MET2);
+    });
 
     QVBoxLayout *sortBoxLayout = new QVBoxLayout;
     sortBoxLayout->setSpacing(10);
-    sortBoxLayout->addWidget(nom);
+    sortBoxLayout->addWidget(name);
     sortBoxLayout->addWidget(syntax);
     sortBoxLayout->addWidget(semantic);
     sortBoxLayout->addWidget(metric1);
@@ -82,7 +92,7 @@ void TableBox::displayTableFilter(){
     }
 }
 
-void TableBox::initTableView(QStringList const& fileNames){
+void TableBox::initTableView(std::vector<JsonLinker::infoPage> paths){
 
     QHBoxLayout *sortButtonLayout = new QHBoxLayout;
     sortButtonLayout->addWidget(textZone);
@@ -98,7 +108,7 @@ void TableBox::initTableView(QStringList const& fileNames){
 
     evalLayout->addWidget(sortTable);
 
-    sortTable->initSortTable(fileNames);
+    sortTable->initSortTable(paths);
 
     setLayout(evalLayout);
 }

@@ -11,6 +11,7 @@
 #include <QMenu>
 #include <QLineEdit>
 #include "sortTable/tablebox.h"
+#include "json/jsonlinker.h"
 
 class ExamPreview;
 class MainWindow : public QMainWindow

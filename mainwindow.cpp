@@ -182,8 +182,12 @@ void MainWindow::createEvaluationView()
     // Deuxième split / partie haute.
 
     // TODO : add saveState() on this splitter
-    QStringList fileNames = QFileDialog::getOpenFileNames(this, ("Open files"), "/Users/marcomartins/My Documents /Licence Informatique L3/Bureau d'Étude/QT/Proto", "*.*");
-    TableBox *tableBox = new TableBox(fileNames, this, evaluationView);
+    QStringList filePaths = QFileDialog::getOpenFileNames(this, ("Open files"), "../../../../../resources/test_case/Fichiers", "*.png *.jpeg *.pdf");
+    QStringList jsonFilePaths = QFileDialog::getOpenFileNames(this, ("Open files"), "../../../../../resources/test_case/Json", "*.json");
+    JsonLinker linker;
+    std::vector<JsonLinker::infoPage> paths = linker.linkFileToJson(filePaths, jsonFilePaths);
+    TableBox *tableBox = new TableBox(paths, this, evaluationView);
+
 
     verticalSplitter -> addWidget(tableBox);
 

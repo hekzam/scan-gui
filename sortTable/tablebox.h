@@ -10,15 +10,15 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QRegularExpression>
-
 #include <QDebug>
 #include "sorttable.h"
+#include "../json/jsonlinker.h"
 
 class TableBox : public QGroupBox
 {
     Q_OBJECT
 public:
-    TableBox(QStringList const& fileNames, QWidget *dockParent, QWidget *parent = nullptr);
+    TableBox(std::vector<JsonLinker::infoPage> paths, QWidget *dockParent, QWidget *parent = nullptr);
 
 private:
     SortTable *sortTable;
@@ -48,7 +48,7 @@ private:
     bool firstAppearence;
 
     void initTableFilter();
-    void initTableView(QStringList const& listeFichiers);
+    void initTableView(std::vector<JsonLinker::infoPage> paths);
     void initRegEx();
 
 private slots:

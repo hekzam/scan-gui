@@ -2,7 +2,8 @@
 
 SortTable::SortTable(QWidget *parent) : QTableWidget(parent) {
     setColumnCount(NB_COL);
-    headerList << "Name" << "Syntax" << "Semantic" << "Metric 1" << "Metric 2";
+    headerList << "Paths" << "Name" << "Syntax" << "Semantic" << "Metric 1" << "Metric 2";
+    hideColumn(COL_PATH);
     hideColumn(COL_MET1);
     hideColumn(COL_MET2);
     setHorizontalHeaderLabels(headerList);
@@ -18,59 +19,33 @@ SortTable::~SortTable(){
         delete fichier;
 }
 
-void SortTable::initSortTable(QStringList const& fileNames){
+void SortTable::initSortTable(std::vector<JsonLinker::infoPage> paths){
     std::srand(std::time(nullptr));
     int ligne(0);
-    setRowCount(fileNames.size());
-    for(QString const& nomFichier : fileNames){
-        QFile *file = new QFile(nomFichier);
-        fileList.push_back(file);
+    setRowCount(paths.size());
+    for(JsonLinker::infoPage const& path : paths){
+        //qDebug() << path.filePath;
         int progress = std::rand() % 101;
         int semantique = std::rand() % 2;
         ProgressCell *progression = new ProgressCell(progress,this);
-        setItem(ligne,COL_NOM,new QTableWidgetItem(file->fileName().section('/', -1)));
-        setCellWidget(ligne,COL_SYNTAXE, progression);
-        setItem(ligne,COL_SYNTAXE, progression);
-        setItem(ligne,COL_SEMANTIQUE,new QTableWidgetItem(QString::number(semantique)));
+        setItem(ligne,COL_PATH, new QTableWidgetItem(path.filePath + "$$$" + path.jsonPath));
+        setItem(ligne,COL_NAME,new QTableWidgetItem(path.fileName));
+        setCellWidget(ligne,COL_SYNTAX, progression);
+        setItem(ligne,COL_SYNTAX, progression);
+        setItem(ligne,COL_SEMANTIC,new QTableWidgetItem(QString::number(semantique)));
         ligne++;
     }
     resizeColumnsToContents();
 }
 
-void SortTable::editNameColumn(int checkedState){
+
+void SortTable::editColumn(int checkedState, int column){
     if (checkedState == Qt::Checked)
-        showColumn(COL_NOM);
+        showColumn(column);
     else
-        hideColumn(COL_NOM);
+        hideColumn(column);
 }
 
-void SortTable::editSyntaxColumn(int checkedState){
-    if (checkedState == Qt::Checked)
-        showColumn(COL_SYNTAXE);
-    else
-        hideColumn(COL_SYNTAXE);
-}
-
-void SortTable::editSemanticColumn(int checkedState){
-    if (checkedState == Qt::Checked)
-        showColumn(COL_SEMANTIQUE);
-    else
-        hideColumn(COL_SEMANTIQUE);
-}
-
-void SortTable::editMetric1Column(int checkedState){
-    if (checkedState == Qt::Checked)
-        showColumn(COL_MET1);
-    else
-        hideColumn(COL_MET1);
-}
-
-void SortTable::editMetric2Column(int checkedState){
-    if (checkedState == Qt::Checked)
-        showColumn(COL_MET2);
-    else
-        hideColumn(COL_MET2);
-}
 
 QStringList SortTable::getHeaderList()
 {

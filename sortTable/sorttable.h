@@ -6,20 +6,22 @@
 #include <QFile>
 #include <QHeaderView>
 #include "progresscell.h"
+#include "../json/jsonlinker.h"
 
 class SortTable : public QTableWidget
 {
     Q_OBJECT
 public:
-    static int const NB_COL = 5;
-    static int const COL_NOM = 0;
-    static int const COL_SYNTAXE = 1;
-    static int const COL_SEMANTIQUE = 2;
-    static int const COL_MET1 = 3;
-    static int const COL_MET2 = 4;
+    static int const NB_COL = 6;
+    static int const COL_PATH = 0;
+    static int const COL_NAME = 1;
+    static int const COL_SYNTAX = 2;
+    static int const COL_SEMANTIC = 3;
+    static int const COL_MET1 = 4;
+    static int const COL_MET2 = 5;
 
     explicit SortTable(QWidget *parent=nullptr);
-    void initSortTable(QStringList const& listeFichiers);
+    void initSortTable(std::vector<JsonLinker::infoPage> paths);
     ~SortTable();
 
 private:
@@ -27,11 +29,7 @@ private:
     QStringList headerList;
 
 public slots:
-    void editNameColumn(int checkedState);
-    void editSyntaxColumn(int checkedState);
-    void editSemanticColumn(int checkedState);
-    void editMetric1Column(int checkedState);
-    void editMetric2Column(int checkedState);
+    void editColumn(int checkState, int column);
     QStringList getHeaderList();
 };
 

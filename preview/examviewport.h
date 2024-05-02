@@ -1,9 +1,11 @@
 #ifndef EXAMVIEWPORT_H
 #define EXAMVIEWPORT_H
 
+#include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QObject>
-#include <QGraphicsPixmapItem>
+#include <QWheelEvent>
+#include "singlepage.h"
 
 namespace mViewPort
 {
@@ -24,10 +26,11 @@ protected:
 #if QT_CONFIG(wheelevent)
   void wheelEvent(QWheelEvent *e) override;
 #endif
-private slots:
+
+  private slots:
   void changeScale(qreal scale);
 
-signals:
+  signals:
   void scaleChanged(qreal scale);
 
 private:
@@ -38,7 +41,7 @@ private:
   // une scene ou deux ?
   QString currentImageFilename = "";
   QString currentJsonFilename = "";
-  QGraphicsPixmapItem *singleImage;
+  ExamSinglePage *singleImage;
   // QGraphicsScene *gScene;
 
   // Data

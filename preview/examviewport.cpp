@@ -1,6 +1,4 @@
 #include "examviewport.h"
-#include <QWheelEvent>
-#include <QGraphicsScene>
 
 using namespace mViewPort;
 
@@ -18,7 +16,7 @@ ExamViewPort::ExamViewPort(QGraphicsScene *gScene, QWidget *parent)
   setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
   setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
-  singleImage = new QGraphicsPixmapItem;
+  singleImage = new ExamSinglePage();
   gScene->addItem(singleImage);
 
   // test variables

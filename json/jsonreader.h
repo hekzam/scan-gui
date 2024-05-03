@@ -61,12 +61,12 @@ struct dataCopieJSON
     delete documentSizes;
   }
 
-  void addCoordinates(coordinates &c)
+  void addCoordinates(const coordinates &c)
   {
     documentFields->append(c);
   }
 
-  void addMarker(coordinates &m)
+  void addMarker(const coordinates &m)
   {
     documentMarkers->append(m);
     if (m.pagenum > pagecount)
@@ -93,7 +93,7 @@ public:
   // those are two seperate functions because then we can check for the
   // potential error code when loading the json
   int loadFromJSON(const QString filename);
-  void getCoordinates();
+  int getCoordinates();
   QList<dataCopieJSON *> *listeCopies;
   dataCopieJSON *a;
 

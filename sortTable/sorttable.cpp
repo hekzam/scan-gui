@@ -14,8 +14,9 @@ SortTable::SortTable(QWidget *parent) : QTableWidget(parent) {
     setSortingEnabled(true);
     connect(this,&QTableWidget::cellClicked,this,[this](int row, int col){
         QString fileAndJsonPath(item(row,COL_PATH)->text());
-        qDebug() << fileAndJsonPath;
-
+        QStringList paths = fileAndJsonPath.split("$$$");
+        qDebug() << paths[0];
+        qDebug() << paths[1];
     });
 }
 

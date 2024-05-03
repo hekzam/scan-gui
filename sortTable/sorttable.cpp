@@ -12,6 +12,11 @@ SortTable::SortTable(QWidget *parent) : QTableWidget(parent) {
     setShowGrid(true);
     setGridStyle(Qt::DotLine);
     setSortingEnabled(true);
+    connect(this,&QTableWidget::cellClicked,this,[this](int row, int col){
+        QString fileAndJsonPath(item(row,COL_PATH)->text());
+        qDebug() << fileAndJsonPath;
+
+    });
 }
 
 SortTable::~SortTable(){

@@ -12,13 +12,15 @@ class SortTable : public QTableWidget
 {
     Q_OBJECT
 public:
-    static int const NB_COL = 6;
-    static int const COL_PATH = 0;
-    static int const COL_NAME = 1;
-    static int const COL_SYNTAX = 2;
-    static int const COL_SEMANTIC = 3;
-    static int const COL_MET1 = 4;
-    static int const COL_MET2 = 5;
+    enum Columns {
+        COL_PATH = 0,
+        COL_NAME,
+        COL_SYNTAX,
+        COL_SEMANTIC,
+        COL_MET1,
+        COL_MET2,
+        NB_COL
+    };
 
     explicit SortTable(QWidget *parent=nullptr);
     void initSortTable(std::vector<JsonLinker::infoPage> paths);

@@ -70,7 +70,7 @@ int jsonreader::loadFromJSON(const QString filename)
   return ALLCLEAR;
 }
 
-void jsonreader::getCoordinates()
+int jsonreader::getCoordinates()
 {
   a = new dataCopieJSON;
   QJsonObject o;
@@ -78,6 +78,7 @@ void jsonreader::getCoordinates()
   // pour récupérer le nom de l'objet duquel on extrait les données
   QStringList jsonKeys = jsonObj->keys();
   // TODO : give user the possibility to change the name of the marker id
+  // TODO : what to do if some keys are missing (aside from crying)
   for (auto &clef : jsonKeys)
   {
     coo.clef = clef;
@@ -91,8 +92,11 @@ void jsonreader::getCoordinates()
       identifyFields(o, coo);
     }
   }
+
   calculateDocumentSize();
   listeCopies->append(a);
+
+  // UNCOMMENT FOR DEBUG INFO
   for (auto &c : *a->documentFields)
   {
     qDebug() << c.clef << c.x << c.y << c.h << c.w << c.pagenum;
@@ -106,6 +110,7 @@ void jsonreader::getCoordinates()
   {
     qDebug() << s.numpage << s.pS;
   }
+  return listeCopies->indexOf(a); // -1 on error
 }
 
 void jsonreader::parseValues(QJsonObject &o, coordinates &coo)

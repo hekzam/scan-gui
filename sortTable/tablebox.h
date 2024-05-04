@@ -30,7 +30,6 @@ private:
 
     QLabel *searchInfo;
 
-
     QString simpleOrMultipleTextPattern = "^\\s*(?:\\w+(?:\\s*,\\s*\\w+)*)\\s*$";
     QString tagPattern = "^\\s*(?:\\w+\\s*:\\s*\\w+(?:\\s*,\\s*\\w+)*)\\s*(?:;\\s*\\w+\\s*:\\s*\\w+(?:\\s*,\\s*\\w+)*)*\\s*$";
     QString combinedPattern = simpleOrMultipleTextPattern + "|" + tagPattern;
@@ -51,7 +50,12 @@ private:
     void initTableView(std::vector<JsonLinker::infoPage> paths);
     void initRegEx();
 
-private slots:
+    void sendNewFilePaths(int row, int col);
+
+  signals:
+    void currentElementChanged(const QStringList &);
+
+  private slots:
     void displayTableFilter();
     void searchProcessing();
 

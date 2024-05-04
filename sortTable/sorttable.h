@@ -26,7 +26,7 @@ public:
     void initSortTable(std::vector<JsonLinker::infoPage> paths);
     ~SortTable();
 
-private:
+  private:
     QList<QFile*> fileList;
     QStringList headerList;
 

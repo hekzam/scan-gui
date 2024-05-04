@@ -22,7 +22,8 @@ public:
 
 public slots:
   void setGroupBoxTitle();
-  void on_actionDialogClosedTriggered();
+  void onAction_DialogClosedTriggered();
+  void onAction_CurrentTableElementChanged(const QStringList &);
 
 protected:
   // ?

@@ -27,6 +27,8 @@ TableBox::TableBox(std::vector<JsonLinker::infoPage> paths, QWidget *dockParent,
     initRegEx();
     initTableFilter();
     initTableView(paths);
+    connect(sortTable, &QTableWidget::cellClicked, this,
+            &TableBox::sendNewFilePaths);
 }
 
 void TableBox::initTableFilter(){
@@ -120,6 +122,12 @@ void TableBox::initRegEx()
     regexTestPattern.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
 }
 
+void TableBox::sendNewFilePaths(int row, int col)
+{
+  QString fileAndJsonPath(sortTable->item(row, sortTable->COL_PATH)->text());
+  QStringList paths = fileAndJsonPath.split("$$$");
+  emit currentElementChanged(paths);
+}
 
 void TableBox::searchProcessing(){
     text = input.remove(" ");

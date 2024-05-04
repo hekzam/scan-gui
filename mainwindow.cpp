@@ -204,6 +204,9 @@ void MainWindow::createEvaluationView()
     verticalSplitter -> addWidget(informationBox);
     informationLayout -> addWidget(new QLabel("WIP Information",this));
 
+    connect(tableBox, &TableBox::currentElementChanged, previewBox,
+            &ExamPreview::onAction_CurrentTableElementChanged);
+
     mainStack->addWidget(evaluationView);
 }
 

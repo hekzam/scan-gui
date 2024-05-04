@@ -7,7 +7,7 @@ ExamPreview::ExamPreview(QWidget *parent)
       previewSizePolicy(QSizePolicy::MinimumExpanding,
                         QSizePolicy::MinimumExpanding)
 {
-  QVBoxLayout *previewLayout = new QVBoxLayout(this /*previewBox*/);
+  QVBoxLayout *previewLayout = new QVBoxLayout(this);
   setCheckable(false);
   setSizePolicy(previewSizePolicy);
 
@@ -20,14 +20,14 @@ ExamPreview::ExamPreview(QWidget *parent)
 
 QSize ExamPreview::sizeHint() const
 {
-  return QSize(640, 480);
+  return minPreviewSize;
 }
 
 ExamPreview::~ExamPreview(){}
 
 void ExamPreview::createPreviewStack()
 {
-  previewStack = new QStackedWidget(this /*previewBox*/);
+  previewStack = new QStackedWidget(this);
   createBasePreview();
   createGridPreview();
   createDialogPreview();
@@ -36,7 +36,7 @@ void ExamPreview::createPreviewStack()
 
 void ExamPreview::createPreviewButtonBox()
 {
-  previewButtonBox = new QGroupBox(this /*previewBox*/);
+  previewButtonBox = new QGroupBox(this);
   auto previewButtonLayout = new QHBoxLayout(previewButtonBox);
 
   auto viewWholePageButton =
@@ -106,14 +106,20 @@ void ExamPreview::createDialogPreview()
 {
   externalPreview = new externalPreviewDialog(this);
   connect(externalPreview, &externalPreviewDialog::dialogClosed, this,
-          &ExamPreview::on_actionDialogClosedTriggered);
+          &ExamPreview::onAction_DialogClosedTriggered);
 }
 
 void ExamPreview::setGroupBoxTitle() {}
 
-void ExamPreview::on_actionDialogClosedTriggered()
+void ExamPreview::onAction_DialogClosedTriggered()
 {
   showExternalPreview();
+}
+
+// TODO : change groupbox, external view title based on file name ?
+void ExamPreview::onAction_CurrentTableElementChanged(const QStringList &paths)
+{
+  baseViewport->loadImage(paths[0], paths[1]);
 }
 
 void ExamPreview::nextImage() {}

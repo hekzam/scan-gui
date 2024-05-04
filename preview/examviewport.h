@@ -9,7 +9,13 @@
 
 namespace mViewPort
 {
-static const QSize minPreviewSize(600, 400);
+enum scaleToFit
+{
+  height,
+  width,
+};
+
+static const QSize minPreviewSize(680, 600);
 static const qreal maxScalingFactor = 5.0;
 static const qreal minScalingFactor = 0.2;
 
@@ -20,22 +26,22 @@ public:
   ExamViewPort(QGraphicsScene *gScene, QWidget *parent);
   ~ExamViewPort();
 
-  void loadImage(QString &imgfilename, QString &jsonfilename);
+  void loadImage(const QString &imgfilename, const QString &jsonfilename);
 
 protected:
 #if QT_CONFIG(wheelevent)
   void wheelEvent(QWheelEvent *e) override;
 #endif
 
-  private slots:
+private slots:
   void changeScale(qreal scale);
 
-  signals:
+signals:
   void scaleChanged(qreal scale);
 
 private:
-  void loadAnswerSheet(QGraphicsView &, QGraphicsScene &);
-  void scaleToWidgetSize(QGraphicsView &, QGraphicsScene &);
+  void loadAnswerSheet();
+  void scaleToWidgetSize();
   void fitROIInView(QRect &);
 
   // une scene ou deux ?
@@ -43,6 +49,8 @@ private:
   QString m_currentJsonFilename = "";
   ExamSinglePage *m_singleImage;
   // QGraphicsScene *gScene;
+
+  scaleToFit dimensionToConsider;
 
   // Data
   qreal m_scale = 1.0;

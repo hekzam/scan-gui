@@ -39,14 +39,14 @@ private:
   void fitROIInView(QRect &);
 
   // une scene ou deux ?
-  QString currentImageFilename = "";
-  QString currentJsonFilename = "";
-  ExamSinglePage *singleImage;
+  QString m_currentImageFilename = "";
+  QString m_currentJsonFilename = "";
+  ExamSinglePage *m_singleImage;
   // QGraphicsScene *gScene;
 
   // Data
   qreal m_scale = 1.0;
-  QRect ROI = QRect(0, 0, 0, 0); // region of interest
+  QRect m_ROI = QRect(0, 0, 0, 0); // region of interest
 };
 } // namespace mViewPort
 #endif // EXAMVIEWPORT_H

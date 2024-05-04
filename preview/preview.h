@@ -8,8 +8,8 @@
 #include <QStackedWidget>
 #include <QVBoxLayout>
 #include <QGraphicsPixmapItem>
-#include <QDialog>
 #include "examviewport.h"
+#include "externalpreviewdialog.h"
 
 class ExamPreview : public QGroupBox
 {
@@ -22,6 +22,7 @@ public:
 
 public slots:
   void setGroupBoxTitle();
+  void on_actionDialogClosedTriggered();
 
 protected:
   // ?
@@ -57,7 +58,7 @@ private:
   QGroupBox *previewButtonBox;
   QStackedWidget *previewStack;
   QFrame *basePreview;
-  QDialog *floatableDialogPreview;
+  externalPreviewDialog *externalPreview;
 
   // show Grid
   // QGraphicsView *gridView;

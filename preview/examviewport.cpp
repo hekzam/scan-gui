@@ -5,8 +5,6 @@ using namespace mViewPort;
 ExamViewPort::ExamViewPort(QGraphicsScene *gScene, QWidget *parent)
     : QGraphicsView(gScene, parent)
 {
-  // setMinimumSize(minPreviewSize);
-
   gScene->setBackgroundBrush(Qt::gray);
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHints(QPainter::Antialiasing);
@@ -16,8 +14,8 @@ ExamViewPort::ExamViewPort(QGraphicsScene *gScene, QWidget *parent)
   setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
   setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
-  singleImage = new ExamSinglePage();
-  gScene->addItem(singleImage);
+  m_singleImage = new ExamSinglePage();
+  gScene->addItem(m_singleImage);
 
   // test variables
   QString exampleIFN = ":/preview/resources/jpegexample.jpg";
@@ -30,8 +28,8 @@ ExamViewPort::~ExamViewPort() {}
 
 void ExamViewPort::loadImage(QString &imgfilename, QString &jsonfilename)
 {
-  currentImageFilename = imgfilename;
-  currentJsonFilename = jsonfilename;
+  m_currentImageFilename = imgfilename;
+  m_currentJsonFilename = jsonfilename;
   loadAnswerSheet(*this, *this->scene());
 }
 
@@ -74,23 +72,23 @@ void ExamViewPort::changeScale(qreal scale)
 void ExamViewPort::loadAnswerSheet(QGraphicsView &gv, QGraphicsScene &gs)
 {
   QPixmap p;
-  if (!p.load(currentImageFilename))
+  if (!p.load(m_currentImageFilename))
   {
     qWarning() << "error loading the image";
   }
   else
   {
-    singleImage->setPixmap(p);
-    singleImage->setPos(QPointF(0, 0));
+    m_singleImage->setPixmap(p);
+    m_singleImage->setPos(QPointF(0, 0));
 
     scaleToWidgetSize(gv, gs);
-    gv.ensureVisible(ROI);
+    gv.ensureVisible(m_ROI);
   }
 }
 
 void ExamViewPort::scaleToWidgetSize(QGraphicsView &gv, QGraphicsScene &gs)
 {
-  QSize ps = singleImage->pixmap().size();
+  QSize ps = m_singleImage->pixmap().size();
   qreal scalefactor = (qreal) minPreviewSize.width() / ps.width();
   m_scale = scalefactor;
   this->scale(scalefactor, scalefactor);

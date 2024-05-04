@@ -28,14 +28,10 @@ ExamPreview::~ExamPreview(){}
 void ExamPreview::createPreviewStack()
 {
   previewStack = new QStackedWidget(this /*previewBox*/);
-  // previewStack->setSizePolicy(previewSizePolicy);
   createBasePreview();
   createGridPreview();
   createDialogPreview();
   previewStack->setCurrentIndex(0);
-  // previewStack->setMinimumSize(minPreviewSize);
-  // qDebug() << "current previewstack widget :" <<
-  // previewStack->currentWidget();
 }
 
 void ExamPreview::createPreviewButtonBox()
@@ -77,7 +73,6 @@ void ExamPreview::createBasePreview()
 
   basePreviewLayout->setContentsMargins(0, 0, 0, 0);
   basePreview->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
-  // basePreview->setMinimumSize(minPreviewSize);
 
   baseScene = new QGraphicsScene(basePreview);
   baseViewport = new ExamViewPort(baseScene, basePreview);
@@ -94,7 +89,6 @@ void ExamPreview::createGridPreview()
 
   gridPreviewLayout->setContentsMargins(0, 0, 0, 0);
   gridPreview->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
-  // gridPreview->setMinimumSize(minPreviewSize);
 
   gridScene = new QGraphicsScene(gridPreview);
   gridViewport = new ExamViewPort(gridScene, gridPreview);
@@ -108,18 +102,19 @@ void ExamPreview::createGridPreview()
   previewStack->addWidget(gridPreview);
 }
 
-// TODO: do we need to save the window position, if so, how ?
-// TODO: detect closeEvent to show the correct viewport in the correct place
 void ExamPreview::createDialogPreview()
 {
-  // subclass ?
-  floatableDialogPreview = new QDialog(this);
-  floatableDialogPreview->setWindowTitle("Whole sheet Preview - scan-gui");
-  floatableDialogPreview->setModal(false);
-  auto dialogLayout = new QVBoxLayout(floatableDialogPreview);
+  externalPreview = new externalPreviewDialog(this);
+  connect(externalPreview, &externalPreviewDialog::dialogClosed, this,
+          &ExamPreview::on_actionDialogClosedTriggered);
 }
 
 void ExamPreview::setGroupBoxTitle() {}
+
+void ExamPreview::on_actionDialogClosedTriggered()
+{
+  showExternalPreview();
+}
 
 void ExamPreview::nextImage() {}
 
@@ -128,15 +123,15 @@ void ExamPreview::previousImage() {}
 // Ping-pong
 void ExamPreview::showExternalPreview()
 {
-  if (floatableDialogPreview->isHidden())
+  if (externalPreview->isHidden())
   {
-    floatableDialogPreview->layout()->addWidget(baseViewport);
-    floatableDialogPreview->show();
+    externalPreview->layout()->addWidget(baseViewport);
+    externalPreview->show();
   }
   else
   {
     basePreview->layout()->addWidget(baseViewport);
-    floatableDialogPreview->hide();
+    externalPreview->hide();
   }
   previewStack->setCurrentIndex((previewStack->currentIndex() + 1) % 2);
 }

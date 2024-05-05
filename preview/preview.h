@@ -4,6 +4,8 @@
 #include <QDockWidget>
 #include <QGraphicsView>
 #include <QGroupBox>
+#include <QSlider>
+#include <QCheckBox>
 #include <QPushButton>
 #include <QStackedWidget>
 #include <QVBoxLayout>

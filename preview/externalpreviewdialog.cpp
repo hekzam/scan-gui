@@ -10,6 +10,11 @@ externalPreviewDialog::externalPreviewDialog(QWidget *parent)
   auto dialogLayout = new QVBoxLayout(this);
 }
 
+QSize externalPreviewDialog::minimumSizeHint() const
+{
+  return minDialogSize;
+}
+
 externalPreviewDialog::~externalPreviewDialog() {}
 
 void externalPreviewDialog::closeEvent(QCloseEvent *e)

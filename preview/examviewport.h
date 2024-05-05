@@ -27,22 +27,41 @@ public:
   ~ExamViewPort();
 
   void loadImage(const QString &imgfilename, const QString &jsonfilename);
+  void scaleToOneOnOne();
+
+public slots:
+  void changeDrawMode(bool state);
+  void rotateImage(int value);
+  void toggleFieldsVisibility(bool visible);
 
 protected:
 #if QT_CONFIG(wheelevent)
   void wheelEvent(QWheelEvent *e) override;
 #endif
 
+  // TODO
+  void mousePressEvent(QMouseEvent *e) override;
+  void mouseMoveEvent(QMouseEvent *e) override;
+  void mouseReleaseEvent(QMouseEvent *e) override;
+
 private slots:
   void changeScale(qreal scale);
 
 signals:
   void scaleChanged(qreal scale);
+  void imageRotationChanged(int angle);
 
 private:
   void loadAnswerSheet();
   void scaleToWidgetSize();
   void fitROIInView(QRect &);
+  // TODO
+  // QPoint mapJSONCoordonateToImage();
+  // QPoint mapImageCoordonateToJSON();
+  // void drawRectangle(x,y,w,h);
+  // void removeRectangle(???); // by clicking on one
+  // void removeAllrectangles // remove all children of single page
+  // comment sauvegarder ? nom du pixmap
 
   // une scene ou deux ?
   QString m_currentImageFilename = "";
@@ -54,7 +73,12 @@ private:
 
   // Data
   qreal m_scale = 1.0;
+  qreal m_rotation = 0;
   QRect m_ROI = QRect(0, 0, 0, 0); // region of interest
+
+  // Drawing
+  bool drawingMode = false;
+  QPen pen;
 };
 } // namespace mViewPort
 #endif // EXAMVIEWPORT_H

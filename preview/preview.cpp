@@ -37,7 +37,26 @@ void ExamPreview::createPreviewStack()
 void ExamPreview::createPreviewButtonBox()
 {
   previewButtonBox = new QGroupBox(this);
-  auto previewButtonLayout = new QHBoxLayout(previewButtonBox);
+  auto previewButtonLayout = new QGridLayout(previewButtonBox);
+
+  auto rotateSlider = new QSlider(Qt::Horizontal, previewButtonBox);
+  rotateSlider->setMinimum(-180);
+  rotateSlider->setMaximum(180);
+  rotateSlider->setPageStep(30);
+  rotateSlider->setSingleStep(10);
+  rotateSlider->setValue(0);
+  rotateSlider->setToolTip(tr("Ths slider controls the rotation of the page"));
+  auto resetRotation = new QPushButton(tr("reset Rotation"), previewButtonBox);
+
+  auto thresholdSlider = new QSlider(Qt::Horizontal, previewButtonBox);
+  thresholdSlider->setMinimum(0);
+  thresholdSlider->setMaximum(100);
+  thresholdSlider->setPageStep(10);
+  thresholdSlider->setSingleStep(1);
+  thresholdSlider->setValue(50);
+  thresholdSlider->setToolTip(
+      tr("Ths slider controls the detection threshold for "
+         "the greyed out fields of the page"));
 
   auto viewWholePageButton =
       new QPushButton(tr("Show the whole page"), previewButtonBox);
@@ -47,23 +66,50 @@ void ExamPreview::createPreviewButtonBox()
       new QPushButton(tr("Assign this page"), previewButtonBox);
   auto validatePageButton =
       new QPushButton(tr("Mark as verified/validated"), previewButtonBox);
+  // auto transformButton = new QPushButton(tr("transform"), previewButtonBox);
+  auto highlightFieldsCheckBox =
+      new QCheckBox(tr("HighlightFields"), previewButtonBox);
+  auto drawModeSelectorCheckBox =
+      new QCheckBox(tr("Draw Mode"), previewButtonBox);
+
+  highlightFieldsCheckBox->setChecked(true);
+  drawModeSelectorCheckBox->setChecked(false);
+
+  connect(rotateSlider, &QSlider::valueChanged, baseViewport,
+          &ExamViewPort::rotateImage);
+
+  connect(resetRotation, &QPushButton::clicked, rotateSlider,
+          [rotateSlider] { rotateSlider->setValue(0); });
+  connect(baseViewport, &ExamViewPort::imageRotationChanged, rotateSlider,
+          &QSlider::setValue);
+
+  // TODO : Threshold connect
 
   connect(viewWholePageButton, &QPushButton::clicked, this,
           &ExamPreview::showExternalPreview);
-
   connect(deletePageButton, &QPushButton::clicked, this,
           &ExamPreview::deletePage);
-
   connect(assignPageButton, &QPushButton::clicked, this,
           &ExamPreview::assignPage);
-
   connect(validatePageButton, &QPushButton::clicked, this,
           &ExamPreview::markExamSheetAsValidated);
 
-  previewButtonLayout->addWidget(viewWholePageButton);
-  previewButtonLayout->addWidget(deletePageButton);
-  previewButtonLayout->addWidget(assignPageButton);
-  previewButtonLayout->addWidget(validatePageButton);
+  // connect(transformButton....)
+  connect(highlightFieldsCheckBox, &QCheckBox::clicked, baseViewport,
+          &ExamViewPort::toggleFieldsVisibility);
+  connect(drawModeSelectorCheckBox, &QCheckBox::clicked, baseViewport,
+          &ExamViewPort::changeDrawMode);
+
+  previewButtonLayout->addWidget(rotateSlider, 0, 0, 1, 2);
+  previewButtonLayout->addWidget(resetRotation, 0, 2);
+  previewButtonLayout->addWidget(thresholdSlider, 0, 3, 1, 1);
+  previewButtonLayout->addWidget(viewWholePageButton, 1, 0);
+  previewButtonLayout->addWidget(deletePageButton, 1, 1);
+  previewButtonLayout->addWidget(assignPageButton, 1, 2);
+  previewButtonLayout->addWidget(validatePageButton, 1, 3);
+  // previewButtonLayout->addWidget(transformButton);
+  previewButtonLayout->addWidget(highlightFieldsCheckBox, 1, 4);
+  previewButtonLayout->addWidget(drawModeSelectorCheckBox, 1, 5);
 }
 
 void ExamPreview::createBasePreview()

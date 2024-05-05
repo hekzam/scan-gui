@@ -2,12 +2,14 @@
 #define EXTERNALPREVIEWDIALOG_H
 
 #include <QDialog>
+static const QSize minDialogSize(480, 720);
 
 class externalPreviewDialog : public QDialog
 {
   Q_OBJECT
 public:
   externalPreviewDialog(QWidget *parent = nullptr);
+  virtual QSize minimumSizeHint() const override;
   ~externalPreviewDialog();
 
 protected:

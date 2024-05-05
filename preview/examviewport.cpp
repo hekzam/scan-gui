@@ -13,6 +13,8 @@ ExamViewPort::ExamViewPort(QGraphicsScene *gScene, QWidget *parent)
   setOptimizationFlags(QGraphicsView::DontSavePainterState);
   setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
   setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+  // do we need this
+  // setAttribute(Qt::WA_StaticContents);
 
   m_singleImage = new ExamSinglePage();
   gScene->addItem(m_singleImage);
@@ -53,7 +55,20 @@ void ExamViewPort::wheelEvent(QWheelEvent *e)
         emit scaleChanged(0.8);
       }
     }
-    qDebug() << m_scale;
+    // qDebug() << m_scale;
+  }
+  else if (Qt::ShiftModifier & e->modifiers())
+  {
+    if (e->angleDelta().y() > 0)
+    {
+      if (m_rotation > -180)
+        emit imageRotationChanged(m_rotation - 30);
+    }
+    else
+    {
+      if (m_rotation < 180)
+        emit imageRotationChanged(m_rotation + 30);
+    }
   }
   else
   {
@@ -66,6 +81,28 @@ void ExamViewPort::changeScale(qreal scale)
 {
   m_scale *= scale;
   this->scale(scale, scale);
+}
+
+void ExamViewPort::changeDrawMode(bool state)
+{
+  drawingMode = state;
+  // TODO: enable drawing of rectangles by drag and drop, exit draw mode on
+  // mouse release ?
+  // other things to toggle here (dragmode...)
+}
+
+void ExamViewPort::rotateImage(int value)
+{
+  rotate(value - m_rotation);
+  m_rotation = value;
+}
+
+void ExamViewPort::toggleFieldsVisibility(bool visible)
+{
+  for (auto &c : m_singleImage->childItems())
+  {
+    c->setVisible(visible);
+  }
 }
 
 // throw some error here to let the preview window know?
@@ -112,6 +149,48 @@ void ExamViewPort::scaleToWidgetSize()
   // ROI = QRect(0, 0, ps.width(), gv.height());
   // qDebug() << ROI;
   // return ROI;
+}
+
+void ExamViewPort::scaleToOneOnOne()
+{
+  changeScale(1 / m_scale);
+}
+
+// TODO
+void ExamViewPort::mousePressEvent(QMouseEvent *e)
+{
+  if (drawingMode)
+  {
+    // TODO
+  }
+  else
+  {
+    QGraphicsView::mousePressEvent(e);
+  }
+}
+
+void ExamViewPort::mouseMoveEvent(QMouseEvent *e)
+{
+  if (drawingMode)
+  {
+    // TODO
+  }
+  else
+  {
+    QGraphicsView::mouseMoveEvent(e);
+  }
+}
+
+void ExamViewPort::mouseReleaseEvent(QMouseEvent *e)
+{
+  if (drawingMode)
+  {
+    // TODO
+  }
+  else
+  {
+    QGraphicsView::mouseReleaseEvent(e);
+  }
 }
 
 void ExamViewPort::fitROIInView(QRect &)

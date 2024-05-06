@@ -49,14 +49,13 @@ void ExamPreview::createPreviewButtonBox()
   auto resetRotation = new QPushButton(tr("reset Rotation"), previewButtonBox);
 
   auto thresholdSlider = new QSlider(Qt::Horizontal, previewButtonBox);
-  thresholdSlider->setMinimum(0);
-  thresholdSlider->setMaximum(100);
-  thresholdSlider->setPageStep(10);
-  thresholdSlider->setSingleStep(1);
-  thresholdSlider->setValue(50);
-  thresholdSlider->setToolTip(
-      tr("Ths slider controls the detection threshold for "
-         "the greyed out fields of the page"));
+  rotateSlider->setMinimum(0);
+  rotateSlider->setMaximum(100);
+  rotateSlider->setPageStep(10);
+  rotateSlider->setSingleStep(1);
+  rotateSlider->setValue(50);
+  rotateSlider->setToolTip(tr("Ths slider controls the detection threshold for "
+                              "the greyed out fields of the page"));
 
   auto viewWholePageButton =
       new QPushButton(tr("Show the whole page"), previewButtonBox);

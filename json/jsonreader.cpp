@@ -12,6 +12,8 @@ using namespace mJSON;
 // TODO : ERROR HANDLING !!!!!
 jsonreader::jsonreader()
 {
+  jsonDoc = new QJsonDocument;
+  jsonObj = new QJsonObject;
   listeCopies = new QList<dataCopieJSON *>;
 }
 
@@ -19,7 +21,11 @@ jsonreader::~jsonreader()
 {
   delete jsonDoc;
   delete jsonObj;
-  delete a; // ATTENTION LA STRUCTURE EST DETRUITE ICI, on perd les données
+  // ATTENTION LA STRUCTURE EST DETRUITE ICI, on perd les données
+  for (auto &c : *listeCopies)
+  {
+    delete c;
+  }
   delete listeCopies;
 }
 
@@ -44,7 +50,6 @@ int jsonreader::loadFromJSON(const QString filename)
   jsonFile.close();
 
   QJsonParseError jsonError;
-  jsonDoc = new QJsonDocument;
   *jsonDoc = QJsonDocument::fromJson(jsonByteArray, &jsonError);
   if (jsonError.error != QJsonParseError::NoError)
   {
@@ -58,7 +63,6 @@ int jsonreader::loadFromJSON(const QString filename)
   }
   if (jsonDoc->isObject())
   {
-    jsonObj = new QJsonObject;
     *jsonObj = jsonDoc->object();
   }
   else

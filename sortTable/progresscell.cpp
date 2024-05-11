@@ -2,6 +2,7 @@
 
 ProgressCell::ProgressCell(int value, QWidget *parent) : QProgressBar(parent),QTableWidgetItem(),m_value(value) {
     setValue(value);
+    setData(Qt::UserRole,QString::number(value));
 }
 
 bool ProgressCell::operator<(const QTableWidgetItem &other) const{

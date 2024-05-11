@@ -36,6 +36,12 @@ void TableBox::initTableFilter(){
     sortButton->setStyleSheet("background-color :#E1912F");
     connect(sortButton,&QPushButton::clicked,this,&TableBox::displayTableFilter);
 
+    QCheckBox *copy = new QCheckBox("Page",sortBox);
+    copy->setCheckState(Qt::Checked);
+    connect(copy,&QCheckBox::stateChanged,this,[this](int state){
+        sortTable -> editColumn(state, sortTable -> COL_COPY);
+    });
+
     QCheckBox *page = new QCheckBox("Page",sortBox);
     page->setCheckState(Qt::Checked);
     connect(page,&QCheckBox::stateChanged,this,[this](int state){
@@ -72,6 +78,7 @@ void TableBox::initTableFilter(){
 
     QVBoxLayout *sortBoxLayout = new QVBoxLayout;
     sortBoxLayout->setSpacing(10);
+    sortBoxLayout->addWidget(copy);
     sortBoxLayout->addWidget(page);
     sortBoxLayout->addWidget(field);
     sortBoxLayout->addWidget(syntax);
@@ -131,10 +138,11 @@ void TableBox::initRegEx()
 void TableBox::sendNewFilePaths(int row, int col)
 {
     QString filePath(sortTable->item(row,SortTable::COL_PATH)->text());
-    //QString fileName(sortTable->item(row,SortTable::COL_PAGE)->text());
+    QString syntaxVal(sortTable->item(row,SortTable::COL_SYNTAX)->data(Qt::UserRole).toString());
     QString fileIdentifier(sortTable->item(row,SortTable::COL_COPY)->text());
     dataCopieJSON const& data = *m_fileDataMap[fileIdentifier];
     qDebug() << "filePath" << filePath;
+    qDebug() << syntaxVal;
     for (coordinates const& coordinate : *data.documentFields){
         qDebug() << coordinate.clef << coordinate.x << coordinate.y << coordinate.h << coordinate.w;
     }
@@ -188,12 +196,12 @@ void TableBox::filterTextRows(QRegularExpression regex, QList<int> selectedColum
 
 
             QTableWidgetItem *item = sortTable->item(i, selectedIndex);
-
-
-
-            if (item && regex.match(item->text()).hasMatch()) {
-                match = true;
-                break;
+            if (item){
+                QString cellText = (selectedIndex == SortTable::COL_SYNTAX) ? item->data(Qt::UserRole).toString() : item->text();
+                if (item && regex.match(cellText).hasMatch()) {
+                    match = true;
+                    break;
+                }
             }
 
 
@@ -216,12 +224,15 @@ void TableBox::filterTaggedTextRows(QList <QRegularExpression> regexList, QList<
 
             QTableWidgetItem *item = sortTable->item(i, selectedIndex);
 
-            if (item && regexList[j].match(item->text()).hasMatch()){
-                match = true;
-            }
-            else{
-                match = false;
-                break;
+            if(item){
+                QString cellText = (selectedIndex == SortTable::COL_SYNTAX) ? item->data(Qt::UserRole).toString() : item->text();
+                if (item && regexList[j].match(cellText).hasMatch()){
+                    match = true;
+                }
+                else{
+                    match = false;
+                    break;
+                }
             }
         }
         sortTable->setRowHidden(i, !match);
@@ -306,7 +317,7 @@ void TableBox::tagsProcessing(QString query)
 
 
 void TableBox::cleanSortTable()
-{    
+{
     input = textZone->text();
     if (input.trimmed() == "") {
         searchProcessing();

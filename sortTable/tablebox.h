@@ -18,7 +18,7 @@ class TableBox : public QGroupBox
 {
     Q_OBJECT
 public:
-    TableBox(std::vector<JsonLinker::infoPage> paths, QWidget *dockParent, QWidget *parent = nullptr);
+    TableBox(QList<JsonLinker::fieldInfo> const& fields, QWidget *dockParent, QMap<QString,dataCopieJSON*> const& fileDataMap, QWidget *parent = nullptr);
 
 private:
     SortTable *sortTable;
@@ -29,7 +29,6 @@ private:
     QLineEdit *textZone;
 
     QLabel *searchInfo;
-
 
     QString simpleOrMultipleTextPattern = "^\\s*(?:\\w+(?:\\s*,\\s*\\w+)*)\\s*$";
     QString tagPattern = "^\\s*(?:\\w+\\s*:\\s*\\w+(?:\\s*,\\s*\\w+)*)\\s*(?:;\\s*\\w+\\s*:\\s*\\w+(?:\\s*,\\s*\\w+)*)*\\s*$";
@@ -45,13 +44,20 @@ private:
 
     QList<int> selectedColumns;
 
+    QMap<QString,dataCopieJSON *> const& m_fileDataMap;
+
     bool firstAppearence;
 
     void initTableFilter();
-    void initTableView(std::vector<JsonLinker::infoPage> paths);
+    void initTableView(QList<JsonLinker::fieldInfo> const& fields);
     void initRegEx();
 
-private slots:
+    void sendNewFilePaths(int row, int col);
+
+  signals:
+    void sendDataToPreview(QString const&, dataCopieJSON const&, const int);
+
+  private slots:
     void displayTableFilter();
     void searchProcessing();
 

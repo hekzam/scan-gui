@@ -7,7 +7,7 @@ ExamPreview::ExamPreview(QWidget *parent)
       previewSizePolicy(QSizePolicy::MinimumExpanding,
                         QSizePolicy::MinimumExpanding)
 {
-  QVBoxLayout *previewLayout = new QVBoxLayout(this /*previewBox*/);
+  QVBoxLayout *previewLayout = new QVBoxLayout(this);
   setCheckable(false);
   setSizePolicy(previewSizePolicy);
 
@@ -20,27 +20,23 @@ ExamPreview::ExamPreview(QWidget *parent)
 
 QSize ExamPreview::sizeHint() const
 {
-  return QSize(640, 480);
+  return minPreviewSize;
 }
 
 ExamPreview::~ExamPreview(){}
 
 void ExamPreview::createPreviewStack()
 {
-  previewStack = new QStackedWidget(this /*previewBox*/);
-  // previewStack->setSizePolicy(previewSizePolicy);
+  previewStack = new QStackedWidget(this);
   createBasePreview();
   createGridPreview();
   createDialogPreview();
   previewStack->setCurrentIndex(0);
-  // previewStack->setMinimumSize(minPreviewSize);
-  // qDebug() << "current previewstack widget :" <<
-  // previewStack->currentWidget();
 }
 
 void ExamPreview::createPreviewButtonBox()
 {
-  previewButtonBox = new QGroupBox(this /*previewBox*/);
+  previewButtonBox = new QGroupBox(this);
   auto previewButtonLayout = new QHBoxLayout(previewButtonBox);
 
   auto viewWholePageButton =
@@ -77,7 +73,6 @@ void ExamPreview::createBasePreview()
 
   basePreviewLayout->setContentsMargins(0, 0, 0, 0);
   basePreview->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
-  // basePreview->setMinimumSize(minPreviewSize);
 
   baseScene = new QGraphicsScene(basePreview);
   baseViewport = new ExamViewPort(baseScene, basePreview);
@@ -94,7 +89,6 @@ void ExamPreview::createGridPreview()
 
   gridPreviewLayout->setContentsMargins(0, 0, 0, 0);
   gridPreview->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
-  // gridPreview->setMinimumSize(minPreviewSize);
 
   gridScene = new QGraphicsScene(gridPreview);
   gridViewport = new ExamViewPort(gridScene, gridPreview);
@@ -108,18 +102,25 @@ void ExamPreview::createGridPreview()
   previewStack->addWidget(gridPreview);
 }
 
-// TODO: do we need to save the window position, if so, how ?
-// TODO: detect closeEvent to show the correct viewport in the correct place
 void ExamPreview::createDialogPreview()
 {
-  // subclass ?
-  floatableDialogPreview = new QDialog(this);
-  floatableDialogPreview->setWindowTitle("Whole sheet Preview - scan-gui");
-  floatableDialogPreview->setModal(false);
-  auto dialogLayout = new QVBoxLayout(floatableDialogPreview);
+  externalPreview = new externalPreviewDialog(this);
+  connect(externalPreview, &externalPreviewDialog::dialogClosed, this,
+          &ExamPreview::onAction_DialogClosedTriggered);
 }
 
 void ExamPreview::setGroupBoxTitle() {}
+
+void ExamPreview::onAction_DialogClosedTriggered()
+{
+  showExternalPreview();
+}
+
+// TODO : change groupbox, external view title based on file name ?
+void ExamPreview::onAction_CurrentTableElementChanged(const QString &imagePath, const mJSON::dataCopieJSON &data, const int)
+{
+    baseViewport->loadImage(imagePath,imagePath);
+}
 
 void ExamPreview::nextImage() {}
 
@@ -128,15 +129,15 @@ void ExamPreview::previousImage() {}
 // Ping-pong
 void ExamPreview::showExternalPreview()
 {
-  if (floatableDialogPreview->isHidden())
+  if (externalPreview->isHidden())
   {
-    floatableDialogPreview->layout()->addWidget(baseViewport);
-    floatableDialogPreview->show();
+    externalPreview->layout()->addWidget(baseViewport);
+    externalPreview->show();
   }
   else
   {
     basePreview->layout()->addWidget(baseViewport);
-    floatableDialogPreview->hide();
+    externalPreview->hide();
   }
   previewStack->setCurrentIndex((previewStack->currentIndex() + 1) % 2);
 }

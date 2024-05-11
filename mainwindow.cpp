@@ -140,14 +140,23 @@ void MainWindow::createCreateProjectView()
     buttonLayout -> setAlignment(Qt::AlignRight);
 
     QPushButton *nextButton = new QPushButton("Next");
-    nextButton -> setStyleSheet("font-size: 16px; background-color: green; color: white;");
-    nextButton -> setFixedSize(250, 50);
+    //nextButton -> setStyleSheet("font-size: 16px; background-color: green; color: white;");
+    //nextButton -> setFixedSize(250, 50);
+    nextButton -> setEnabled(false);
     connect(nextButton, &QPushButton::clicked, this, &MainWindow::showEvaluationView);
 
     QPushButton *backButton = new QPushButton("Back");
-    backButton -> setStyleSheet("font-size: 16px; background-color: orange; color: white;");
-    backButton -> setFixedSize(250, 50);
+    //backButton -> setStyleSheet("font-size: 16px; background-color: orange; color: white;");
+    //backButton -> setFixedSize(250, 50);
     connect(backButton, &QPushButton::clicked, this, &MainWindow::showWelcomeView);
+
+    connect(examImport, &QLineEdit::textChanged, this, [this, examImport, scanImport, nextButton]() {
+        checkInputs(examImport, scanImport, nextButton);
+    });
+
+    connect(scanImport, &QLineEdit::textChanged, this, [this, examImport, scanImport, nextButton]() {
+        checkInputs(examImport, scanImport, nextButton);
+    });
 
     buttonLayout -> addWidget(backButton);
     buttonLayout -> addWidget(nextButton);
@@ -181,13 +190,9 @@ void MainWindow::createEvaluationView()
 
     // Deuxième split / partie haute.
 
-    // TODO : add saveState() on this splitter
-    QStringList filePaths = QFileDialog::getOpenFileNames(this, ("Open files"), "../../../../scan-gui/resources/test_case/Fichiers", "*.png *.jpeg *.pdf");
-    QStringList jsonFilePaths = QFileDialog::getOpenFileNames(this, ("Open files"), "../../../../scan-gui/resources/test_case/Json", "*.json");
-    JsonLinker linker;
-    std::vector<JsonLinker::infoPage> paths = linker.linkFileToJson(filePaths, jsonFilePaths);
-    TableBox *tableBox = new TableBox(paths, this, evaluationView);
-
+    QList<JsonLinker::fieldInfo> paths = jsonLinker.collectFields(scanFilePaths, jsonFilePaths);
+    QMap<QString, dataCopieJSON*> const& fileDataMap = jsonLinker.getFileDataMap();
+    TableBox *tableBox = new TableBox(paths, this, fileDataMap, evaluationView);
 
     verticalSplitter -> addWidget(tableBox);
 
@@ -197,6 +202,8 @@ void MainWindow::createEvaluationView()
 
     verticalSplitter -> addWidget(informationBox);
     informationLayout -> addWidget(new QLabel("WIP Information",this));
+
+    connect(tableBox, &TableBox::sendDataToPreview, previewBox, &ExamPreview::onAction_CurrentTableElementChanged);
 
     mainStack->addWidget(evaluationView);
 }
@@ -213,6 +220,7 @@ void MainWindow::showCreateProjectView()
 
 void MainWindow::showEvaluationView()
 {
+    createEvaluationView();
     mainStack -> setCurrentWidget(evaluationView);
 }
 
@@ -224,11 +232,34 @@ void MainWindow::openFileExplorer()
     }
 }
 
-void MainWindow::openFileExplorerAlt(QLineEdit *file)
+void MainWindow::openFileExplorerAlt(QLineEdit *file, const QString &labelText)
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::homePath());
-    if (!fileName.isEmpty()) {
-        file -> setText(fileName);
+    if (labelText == "Exam data") {
+        jsonFilePaths = QFileDialog::getOpenFileNames(this, ("Open files"), "../../../../../scan-gui/resources/test_case/Json", "*.json");
+        if (!jsonFilePaths.isEmpty()) {
+            file -> setText(jsonFilePaths.at(0));
+        }
+    } else if (labelText == "Scan file(s)") {
+        scanFilePaths = QFileDialog::getOpenFileNames(this, ("Open files"), "../../../../../scan-gui/resources/test_case/Fichiers", "*.png *.jpeg *.pdf");
+        if (!scanFilePaths.isEmpty()) {
+            file -> setText(scanFilePaths.at(0));
+        }
+    } else {
+        QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::homePath());
+        if (!fileName.isEmpty()) {
+            file -> setText(fileName);
+        }
+    }
+}
+
+void MainWindow::checkInputs(QLineEdit *lineEdit1, QLineEdit *lineEdit2, QPushButton *pushButton) {
+    // Vérifier si les deux champs sont remplis
+    if (!lineEdit1 -> text().isEmpty() && !lineEdit2 -> text().isEmpty()) {
+        // Activer le bouton
+        pushButton->setEnabled(true);
+    } else {
+        // Désactiver le bouton
+        pushButton->setEnabled(false);
     }
 }
 
@@ -247,8 +278,8 @@ QHBoxLayout *MainWindow::createFileEntry(const QString &labelText, QLineEdit *li
     layout -> setStretch(1, 6);
     layout -> setStretch(2, 1);
 
-    connect(browseButton, &QPushButton::clicked, this, [this, lineEdit]() {
-        openFileExplorerAlt(lineEdit);
+    connect(browseButton, &QPushButton::clicked, this, [this, lineEdit, labelText]() {
+        openFileExplorerAlt(lineEdit, labelText);
     });
 
     return layout;

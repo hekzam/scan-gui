@@ -5,7 +5,7 @@
 
 #include "tablebox.h"
 
-TableBox::TableBox(std::vector<JsonLinker::infoPage> paths, QWidget *dockParent, QWidget *parent) : QGroupBox(parent), firstAppearence(true) {
+TableBox::TableBox(QList<JsonLinker::fieldInfo> const& fields, QWidget *dockParent, QMap<QString, dataCopieJSON*> const& fileDataMap, QWidget *parent) : QGroupBox(parent), firstAppearence(true), m_fileDataMap(fileDataMap) {
     setTitle("Evaluation table");
     sortBox = new QGroupBox(this);
 
@@ -26,7 +26,8 @@ TableBox::TableBox(std::vector<JsonLinker::infoPage> paths, QWidget *dockParent,
 
     initRegEx();
     initTableFilter();
-    initTableView(paths);
+    initTableView(fields);
+    connect(sortTable, &QTableWidget::cellClicked, this, &TableBox::sendNewFilePaths);
 }
 
 void TableBox::initTableFilter(){
@@ -35,10 +36,16 @@ void TableBox::initTableFilter(){
     sortButton->setStyleSheet("background-color :#E1912F");
     connect(sortButton,&QPushButton::clicked,this,&TableBox::displayTableFilter);
 
-    QCheckBox *name = new QCheckBox("Name",sortBox);
-    name->setCheckState(Qt::Checked);
-    connect(name,&QCheckBox::stateChanged,this,[this](int state){
-        sortTable -> editColumn(state, sortTable -> COL_NAME);
+    QCheckBox *page = new QCheckBox("Page",sortBox);
+    page->setCheckState(Qt::Checked);
+    connect(page,&QCheckBox::stateChanged,this,[this](int state){
+        sortTable -> editColumn(state, sortTable -> COL_PAGE);
+    });
+
+    QCheckBox *field = new QCheckBox("Field",sortBox);
+    field->setCheckState(Qt::Checked);
+    connect(field,&QCheckBox::stateChanged,this,[this](int state){
+        sortTable -> editColumn(state, sortTable -> COL_FIELD);
     });
 
     QCheckBox *syntax = new QCheckBox("Syntax",sortBox);
@@ -65,7 +72,8 @@ void TableBox::initTableFilter(){
 
     QVBoxLayout *sortBoxLayout = new QVBoxLayout;
     sortBoxLayout->setSpacing(10);
-    sortBoxLayout->addWidget(name);
+    sortBoxLayout->addWidget(page);
+    sortBoxLayout->addWidget(field);
     sortBoxLayout->addWidget(syntax);
     sortBoxLayout->addWidget(semantic);
     sortBoxLayout->addWidget(metric1);
@@ -92,7 +100,7 @@ void TableBox::displayTableFilter(){
     }
 }
 
-void TableBox::initTableView(std::vector<JsonLinker::infoPage> paths){
+void TableBox::initTableView(QList<JsonLinker::fieldInfo> const& fields){
 
     QHBoxLayout *sortButtonLayout = new QHBoxLayout;
     sortButtonLayout->addWidget(textZone);
@@ -108,7 +116,7 @@ void TableBox::initTableView(std::vector<JsonLinker::infoPage> paths){
 
     evalLayout->addWidget(sortTable);
 
-    sortTable->initSortTable(paths);
+    sortTable->initSortTable(fields);
 
     setLayout(evalLayout);
 }
@@ -120,6 +128,18 @@ void TableBox::initRegEx()
     regexTestPattern.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
 }
 
+void TableBox::sendNewFilePaths(int row, int col)
+{
+    QString filePath(sortTable->item(row,SortTable::COL_PATH)->text());
+    //QString fileName(sortTable->item(row,SortTable::COL_PAGE)->text());
+    QString fileIdentifier(sortTable->item(row,SortTable::COL_COPY)->text());
+    dataCopieJSON const& data = *m_fileDataMap[fileIdentifier];
+    qDebug() << "filePath" << filePath;
+    for (coordinates const& coordinate : *data.documentFields){
+        qDebug() << coordinate.clef << coordinate.x << coordinate.y << coordinate.h << coordinate.w;
+    }
+    emit sendDataToPreview(filePath, data, col);
+}
 
 void TableBox::searchProcessing(){
     text = input.remove(" ");

@@ -14,7 +14,9 @@ class SortTable : public QTableWidget
 public:
     enum Columns {
         COL_PATH = 0,
-        COL_NAME,
+        COL_COPY,
+        COL_PAGE,
+        COL_FIELD,
         COL_SYNTAX,
         COL_SEMANTIC,
         COL_MET1,
@@ -23,10 +25,10 @@ public:
     };
 
     explicit SortTable(QWidget *parent=nullptr);
-    void initSortTable(std::vector<JsonLinker::infoPage> paths);
+    void initSortTable(QList<JsonLinker::fieldInfo> const& fields);
     ~SortTable();
 
-private:
+  private:
     QList<QFile*> fileList;
     QStringList headerList;
 

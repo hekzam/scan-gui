@@ -17,12 +17,19 @@ enum JSONERROR
 
 };
 
+// coordonnées des éléments présents dans une copie
+// une copie peut comprendre plusieures pages.
 struct coordinates
 {
-  int x, y, h, w = 0;
+  int x, y, h, w;
   QString clef;
+  int pagenum;
 
-  coordinates(){};
+  coordinates()
+  {
+    x = y = h = w = 0;
+    pagenum = 1;
+  };
   ~coordinates(){};
 
   coordinates(double xx, double yy, double hh, double ww)
@@ -34,32 +41,45 @@ struct coordinates
   }
 };
 
-struct coordArray
+struct dataCopieJSON
 {
-  QSize documentSize;
+  struct pageSize
+  {
+    int numpage;
+    QSize pS;
+  };
+
+  QList<pageSize> *documentSizes;
   QList<coordinates> *documentFields;
   QList<coordinates> *documentMarkers;
+  int pagecount = 0;
 
-  ~coordArray()
+  ~dataCopieJSON()
   {
     delete documentFields;
     delete documentMarkers;
+    delete documentSizes;
   }
 
-  void addCoordinates(coordinates &c)
+  void addCoordinates(const coordinates &c)
   {
     documentFields->append(c);
   }
 
-  void addMarker(coordinates &m)
+  void addMarker(const coordinates &m)
   {
     documentMarkers->append(m);
+    if (m.pagenum > pagecount)
+    {
+      pagecount = m.pagenum;
+    }
   }
 
-  coordArray()
+  dataCopieJSON()
   {
     documentFields = new QList<coordinates>;
     documentMarkers = new QList<coordinates>;
+    documentSizes = new QList<pageSize>;
   }
 };
 
@@ -70,10 +90,12 @@ public:
   jsonreader();
   ~jsonreader();
 
+  // those are two seperate functions because then we can check for the
+  // potential error code when loading the json
   int loadFromJSON(const QString filename);
-  void getCoordinates();
-  // QString jsonFilename;
-  coordArray *a;
+  int getCoordinates();
+  QList<dataCopieJSON *> *listeCopies;
+  dataCopieJSON *a;
 
 private:
   void parseValues(QJsonObject &, coordinates &);

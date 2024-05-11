@@ -1,14 +1,10 @@
 #include "examviewport.h"
-#include <QWheelEvent>
-#include <QGraphicsScene>
 
 using namespace mViewPort;
 
 ExamViewPort::ExamViewPort(QGraphicsScene *gScene, QWidget *parent)
-    : QGraphicsView(gScene, parent)
+    : QGraphicsView(gScene, parent), dimensionToConsider{scaleToFit::height}
 {
-  // setMinimumSize(minPreviewSize);
-
   gScene->setBackgroundBrush(Qt::gray);
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHints(QPainter::Antialiasing);
@@ -18,23 +14,23 @@ ExamViewPort::ExamViewPort(QGraphicsScene *gScene, QWidget *parent)
   setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
   setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 
-  singleImage = new QGraphicsPixmapItem;
-  gScene->addItem(singleImage);
+  m_singleImage = new ExamSinglePage();
+  gScene->addItem(m_singleImage);
 
   // test variables
-  QString exampleIFN = ":/preview/resources/jpegexample.jpg";
-  QString exJFN = "";
-  loadImage(exampleIFN, exJFN);
+  // QString exampleIFN = ":/preview/resources/jpegexample.jpg";
+  // QString exJFN = "";
+  // loadImage(exampleIFN, exJFN);
   connect(this, &ExamViewPort::scaleChanged, this, &ExamViewPort::changeScale);
 }
 
 ExamViewPort::~ExamViewPort() {}
 
-void ExamViewPort::loadImage(QString &imgfilename, QString &jsonfilename)
+void ExamViewPort::loadImage(const QString &imgfilename, const QString &jsonfilename)
 {
-  currentImageFilename = imgfilename;
-  currentJsonFilename = jsonfilename;
-  loadAnswerSheet(*this, *this->scene());
+    m_currentImageFilename = imgfilename;
+    m_currentJsonFilename = jsonfilename;
+    loadAnswerSheet();
 }
 
 #if QT_CONFIG(wheelevent)
@@ -46,7 +42,6 @@ void ExamViewPort::wheelEvent(QWheelEvent *e)
     {
       if (m_scale < maxScalingFactor)
       {
-        m_scale *= 1.25;
         emit scaleChanged(1.25);
       }
     }
@@ -54,7 +49,6 @@ void ExamViewPort::wheelEvent(QWheelEvent *e)
     {
       if (m_scale > minScalingFactor)
       {
-        m_scale *= 0.8;
         emit scaleChanged(0.8);
       }
     }
@@ -69,33 +63,50 @@ void ExamViewPort::wheelEvent(QWheelEvent *e)
 
 void ExamViewPort::changeScale(qreal scale)
 {
+  m_scale *= scale;
   this->scale(scale, scale);
 }
 
 // throw some error here to let the preview window know?
-void ExamViewPort::loadAnswerSheet(QGraphicsView &gv, QGraphicsScene &gs)
+void ExamViewPort::loadAnswerSheet()
 {
   QPixmap p;
-  if (!p.load(currentImageFilename))
+  if (!p.load(m_currentImageFilename))
   {
     qWarning() << "error loading the image";
   }
   else
   {
-    singleImage->setPixmap(p);
-    singleImage->setPos(QPointF(0, 0));
+    m_singleImage->setPixmap(p);
+    m_singleImage->setPos(QPointF(0, 0));
 
-    scaleToWidgetSize(gv, gs);
-    gv.ensureVisible(ROI);
+    scaleToWidgetSize();
+    // gv.ensureVisible(m_ROI);
   }
 }
 
-void ExamViewPort::scaleToWidgetSize(QGraphicsView &gv, QGraphicsScene &gs)
+void ExamViewPort::scaleToWidgetSize()
 {
-  QSize ps = singleImage->pixmap().size();
-  qreal scalefactor = (qreal) minPreviewSize.width() / ps.width();
-  m_scale = scalefactor;
-  this->scale(scalefactor, scalefactor);
+  int imageDim;
+  int widgetDim;
+  int minWidgetDim;
+  switch (dimensionToConsider)
+  {
+  case scaleToFit::height:
+    imageDim = m_singleImage->pixmap().height();
+    widgetDim = height();
+    minWidgetDim = minPreviewSize.height();
+    break;
+  default:
+    imageDim = m_singleImage->pixmap().width();
+    widgetDim = width();
+    minWidgetDim = minPreviewSize.width();
+    break;
+  }
+  qreal baseScaleFactor =
+      (qreal) (minWidgetDim > widgetDim ? minWidgetDim : widgetDim) / imageDim;
+  auto scaleBy = baseScaleFactor / m_scale;
+  changeScale(scaleBy);
   // qDebug() << ps;
   // ROI = QRect(0, 0, ps.width(), gv.height());
   // qDebug() << ROI;

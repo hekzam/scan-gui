@@ -2,22 +2,16 @@
 
 SortTable::SortTable(QWidget *parent) : QTableWidget(parent) {
     setColumnCount(NB_COL);
-    headerList << "Paths" << "Name" << "Syntax" << "Semantic" << "Metric 1" << "Metric 2";
     hideColumn(COL_PATH);
     hideColumn(COL_MET1);
     hideColumn(COL_MET2);
+    headerList << "Paths" << "Copy" << "Page" << "Field" << "Syntax" << "Semantic" << "Metric 1" << "Metric 2";
     setHorizontalHeaderLabels(headerList);
     setEditTriggers(QAbstractItemView::NoEditTriggers);
     setSelectionMode(QAbstractItemView::SingleSelection);
     setShowGrid(true);
     setGridStyle(Qt::DotLine);
     setSortingEnabled(true);
-    connect(this,&QTableWidget::cellClicked,this,[this](int row, int col){
-        QString fileAndJsonPath(item(row,COL_PATH)->text());
-        QStringList paths = fileAndJsonPath.split("$$$");
-        qDebug() << paths[0];
-        qDebug() << paths[1];
-    });
 }
 
 SortTable::~SortTable(){
@@ -25,17 +19,19 @@ SortTable::~SortTable(){
         delete fichier;
 }
 
-void SortTable::initSortTable(std::vector<JsonLinker::infoPage> paths){
+void SortTable::initSortTable(QList<JsonLinker::fieldInfo> const& fields){
     std::srand(std::time(nullptr));
     int ligne(0);
-    setRowCount(paths.size());
-    for(JsonLinker::infoPage const& path : paths){
+    setRowCount(fields.size());
+    for(JsonLinker::fieldInfo const& field : fields){
         //qDebug() << path.filePath;
         int progress = std::rand() % 101;
         int semantique = std::rand() % 2;
         ProgressCell *progression = new ProgressCell(progress,this);
-        setItem(ligne,COL_PATH, new QTableWidgetItem(path.filePath + "$$$" + path.jsonPath));
-        setItem(ligne,COL_NAME,new QTableWidgetItem(path.fileName));
+        setItem(ligne,COL_PATH, new QTableWidgetItem(field.m_filePath));
+        setItem(ligne,COL_COPY, new QTableWidgetItem(field.m_copyName));
+        setItem(ligne,COL_PAGE,new QTableWidgetItem(field.m_pageName));
+        setItem(ligne,COL_FIELD,new QTableWidgetItem(field.m_fieldName));
         setCellWidget(ligne,COL_SYNTAX, progression);
         setItem(ligne,COL_SYNTAX, progression);
         setItem(ligne,COL_SEMANTIC,new QTableWidgetItem(QString::number(semantique)));

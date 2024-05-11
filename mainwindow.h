@@ -27,7 +27,8 @@ private slots:
     void showCreateProjectView();
     void showEvaluationView();
     void openFileExplorer();
-    void openFileExplorerAlt(QLineEdit *lineEdit);
+    void openFileExplorerAlt(QLineEdit *lineEdit, const QString &labelText);
+    void checkInputs(QLineEdit *lineEdit1, QLineEdit *lineEdit2, QPushButton *pushButton);
     QHBoxLayout *createFileEntry(const QString &labelText, QLineEdit *lineEdit);
     void handleUndo();
     void handleRedo();
@@ -49,9 +50,14 @@ private:
     QStackedWidget *mainStack;
     // ExamPreview *previewBox;
 
+    QStringList scanFilePaths;
+    QStringList jsonFilePaths;
+
     QWidget *welcomeView;
     QWidget *createProjectView;
     QWidget *evaluationView;
+
+    JsonLinker jsonLinker;
 };
 
 #endif // MAINWINDOW_H

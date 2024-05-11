@@ -8,8 +8,9 @@
 #include <QStackedWidget>
 #include <QVBoxLayout>
 #include <QGraphicsPixmapItem>
-#include <QDialog>
+#include "../json/jsonreader.h"
 #include "examviewport.h"
+#include "externalpreviewdialog.h"
 
 class ExamPreview : public QGroupBox
 {
@@ -22,6 +23,8 @@ public:
 
 public slots:
   void setGroupBoxTitle();
+  void onAction_DialogClosedTriggered();
+  void onAction_CurrentTableElementChanged(const QString &, const mJSON::dataCopieJSON &, const int);
 
 protected:
   // ?
@@ -57,7 +60,7 @@ private:
   QGroupBox *previewButtonBox;
   QStackedWidget *previewStack;
   QFrame *basePreview;
-  QDialog *floatableDialogPreview;
+  externalPreviewDialog *externalPreview;
 
   // show Grid
   // QGraphicsView *gridView;

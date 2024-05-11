@@ -10,13 +10,17 @@ using namespace mJSON;
  *
  */
 // TODO : ERROR HANDLING !!!!!
-jsonreader::jsonreader() {}
+jsonreader::jsonreader()
+{
+  listeCopies = new QList<dataCopieJSON *>;
+}
 
 jsonreader::~jsonreader()
 {
-  delete jsonDoc;
-  delete jsonObj;
-  delete a; // ATTENTION LA STRUCTURE EST DETRUITE ICI, on perd les données
+    delete jsonDoc;
+    delete jsonObj;
+    delete a;
+    delete listeCopies;
 }
 
 int jsonreader::loadFromJSON(const QString filename)
@@ -66,14 +70,15 @@ int jsonreader::loadFromJSON(const QString filename)
   return ALLCLEAR;
 }
 
-void jsonreader::getCoordinates()
+int jsonreader::getCoordinates()
 {
-  a = new coordArray;
+  a = new dataCopieJSON;
   QJsonObject o;
   coordinates coo = coordinates();
   // pour récupérer le nom de l'objet duquel on extrait les données
   QStringList jsonKeys = jsonObj->keys();
   // TODO : give user the possibility to change the name of the marker id
+  // TODO : what to do if some keys are missing (aside from crying)
   for (auto &clef : jsonKeys)
   {
     coo.clef = clef;
@@ -87,17 +92,25 @@ void jsonreader::getCoordinates()
       identifyFields(o, coo);
     }
   }
-  for (auto &stuff : *a->documentFields)
+
+  calculateDocumentSize();
+  listeCopies->append(a);
+
+  // UNCOMMENT FOR DEBUG INFO
+  for (auto &c : *a->documentFields)
   {
-    qDebug() << stuff.clef << stuff.x << stuff.y << stuff.h << stuff.w;
+    qDebug() << c.clef << c.x << c.y << c.h << c.w << c.pagenum;
   }
   qDebug() << "markers";
   for (auto &c : *a->documentMarkers)
   {
-    qDebug() << c.clef << c.x << c.y << c.h << c.w;
+    qDebug() << c.clef << c.x << c.y << c.h << c.w << c.pagenum;
   }
-  calculateDocumentSize();
-  qDebug() << a->documentSize;
+  for (auto &s : *a->documentSizes)
+  {
+    qDebug() << s.numpage << s.pS;
+  }
+  return listeCopies->indexOf(a); // -1 on error
 }
 
 void jsonreader::parseValues(QJsonObject &o, coordinates &coo)
@@ -105,7 +118,8 @@ void jsonreader::parseValues(QJsonObject &o, coordinates &coo)
   QStringList cKeys = (QStringList() << "x"
                                      << "y"
                                      << "height"
-                                     << "width");
+                                     << "width"
+                                     << "page");
   if (const QJsonValue v = o[cKeys.at(0)]; v.isDouble())
   {
     coo.x = qFloor(v.toDouble());
@@ -122,6 +136,10 @@ void jsonreader::parseValues(QJsonObject &o, coordinates &coo)
   {
     coo.w = round(v.toDouble());
   }
+  if (const QJsonValue v = o[cKeys.at(4)]; v.isDouble())
+  {
+    coo.pagenum = qFloor(v.toDouble());
+  }
 }
 
 void jsonreader::identifyFields(QJsonObject &o, coordinates &coo)
@@ -136,27 +154,42 @@ void jsonreader::identifyMarkers(QJsonObject &o, coordinates &coo)
   a->addMarker(coo);
 }
 
+// la taille de chaque doc tel que rapportée par le parser devrait être la même
 void jsonreader::calculateDocumentSize()
 {
   coordinates topleft;
   coordinates bottomright;
+  dataCopieJSON::pageSize ps;
+  // could be optimised
   if (!a->documentMarkers->empty())
   {
-    for (auto i = a->documentMarkers->cbegin(),
-              rend = a->documentMarkers->cend();
-         i != rend; ++i)
+    for (int c = 1; c <= a->pagecount; c++)
     {
-      if (i->clef.contains("tl"))
+      for (auto i = a->documentMarkers->cbegin(),
+                rend = a->documentMarkers->cend();
+           i != rend; ++i)
       {
-        topleft = *i;
+        if (i->clef.contains("tl") && i->pagenum == c)
+        {
+          topleft = *i;
+        }
+        if (i->clef.contains("br") && i->pagenum == c)
+        {
+          bottomright = *i;
+        }
       }
-      if (i->clef.contains("br"))
+      if (topleft.pagenum == bottomright.pagenum)
       {
-        bottomright = *i;
+        QSize ds = QSize(topleft.x + bottomright.x, topleft.y + bottomright.y);
+        ps.numpage = c;
+        ps.pS = ds;
+        a->documentSizes->append(ps);
+      }
+      else
+      {
+        qWarning() << "insufficient markers found for page" << c;
       }
     }
-    QSize ds = QSize(topleft.x + bottomright.x, topleft.y + bottomright.y);
-    a->documentSize = ds;
   }
   else
   {

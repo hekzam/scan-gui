@@ -72,6 +72,9 @@ CMakeLists.txt.user*
 *.dll
 *.exe
 
+#MacOS build files
+build/
+
 inner*.png
 
 # Nix output files

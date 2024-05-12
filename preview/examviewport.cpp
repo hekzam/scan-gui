@@ -33,7 +33,7 @@ void ExamViewPort::loadImage(const QString &imgfilename,
                              const dataCopieJSON &data)
 {
   m_currentImageFilename = imgfilename;
-  m_jsonData = data;
+  m_jsonData = &data;
   loadAnswerSheet();
 }
 

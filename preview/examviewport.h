@@ -70,7 +70,7 @@ private:
   // une scene ou deux ?
   QString m_currentImageFilename = "";
   QString m_currentJsonFilename = "";
-  mJSON::dataCopieJSON m_jsonData;
+  const mJSON::dataCopieJSON *m_jsonData;
   ExamSinglePage *m_singleImage;
   // QGraphicsScene *gScene;
 

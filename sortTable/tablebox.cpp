@@ -2,8 +2,6 @@
 
 using namespace std;
 
-using namespace std;
-
 TableBox::TableBox(QList<JsonLinker::fieldInfo> const& fields, QWidget *dockParent, QMap<QString, dataCopieJSON*> const& fileDataMap, QWidget *parent) : QGroupBox(parent), firstAppearence(true), m_fileDataMap(fileDataMap) {
     setTitle("Evaluation table");
     sortBox = new QGroupBox(this);
@@ -185,71 +183,56 @@ void TableBox::searchProcessing(){
 
 void TableBox::filterTextRows(QRegularExpression regex, QList<int> selectedColumns)
 {
+    // first we clean our list of meant words
+
     meantSearchesList.clear();
-
     for (int i = 0; i < sortTable->rowCount(); ++i) {
-
         bool match = false;
-
         for (int j = 0; j < selectedColumns.size(); j++) {
 
-            int selectedIndex = selectedColumns[j];
-            QTableWidgetItem *item = sortTable->item(i, selectedIndex);
+            int selectedJIndex = selectedColumns[j];
+            QTableWidgetItem *item = sortTable->item(i, selectedJIndex);
 
+            if (item){
 
-        if (item){
-            QString cellText = (selectedIndex == SortTable::COL_SYNTAX) ? item->data(Qt::UserRole).toString() : item->text();
-            if (item && regex.match(item->text()).hasMatch()) {
-                match = true;
-                break;
+                QString cellText = (selectedJIndex == SortTable::COL_SYNTAX) ? item->data(Qt::UserRole).toString() : item->text();
+                if (regex.match(cellText).hasMatch()) {
+                    match = true;
+                    emptySearchRes = false;
+                    break;
+                }
+                //we want to limit to the three nearest words of our input
+                if(meantSearchesList.size()<3){
+                    qDebug()<<"size ça passe";
+                    meantSearchesList = fuzzySearch(meantSearchesList, cellText, regex, 3);
+                }
             }
+
         }
-
-
-            if(meantSearchesList.size()<3){
-                qDebug()<<"size ça passe";
-
-
-                //TO-DO : à changer quand on utilisera data
-                QString textItem = "";
-
-                if (item->text()!=nullptr) {
-                    text = item->text();
-                }
-
-
-                if(!(meantSearchesList.contains(textItem)))
-                {
-
-                    qDebug()<<"contains ça passe ";
-                    if(levenshteinDistance(item->text(), regex.pattern())<=3)
-                    {
-                        qDebug()<<"distance ça passe";
-                        meantSearchesList.push_back(item->text());
-                        qDebug()<<"push back ça passe";
-                    }
-                }
-            }
-
-
         sortTable->setRowHidden(i, !match);
-
-        }
     }
 
-    if ((emptySearchRes)&&(meantSearchesList.size())) {
-        QString sentence = "Do you mean : ";
+    if ((emptySearchRes)&&(meantSearchesList.size()))
+    {
+        QString sentence = "Did you mean : ";
+        int sizeList = meantSearchesList.size();
+        for (int var = 0; var < sizeList; var++)
+        {
+            sentence += meantSearchesList[var];
+            if(var < sizeList - 1)
+            {
+                sentence += " or ";
+            }
 
-        for (int var = 0; var < meantSearchesList.size(); var++) {
-            sentence += (meantSearchesList[var] + " ? ");
         }
+        sentence += " ?";
         searchInfo->setText(sentence);
     }
 }
 
 
 
-
+// to-do : try to factorize with the function above
 void TableBox::filterTaggedTextRows(QList <QRegularExpression> regexList, QList<int> selectedColumns)
 {
     for (int i = 0; i < sortTable->rowCount(); i++) {
@@ -419,6 +402,21 @@ int TableBox::levenshteinDistance(QString str1, QString str2){
         }
     }
     return dist[len1][len2];
+}
+
+QStringList TableBox::fuzzySearch(QStringList meantSearchesList, QString cellText, QRegularExpression regex, int threshold)
+{
+    if(!(meantSearchesList.contains(cellText)))
+    {
+        qDebug()<<"contains ça passe ";
+        if(levenshteinDistance(cellText, regex.pattern())<=3)
+        {
+            qDebug()<<"distance ça passe";
+            meantSearchesList.push_back(cellText);
+            qDebug()<<"push back ça passe";
+        }
+    }
+    return meantSearchesList;
 }
 
 

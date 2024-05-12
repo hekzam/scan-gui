@@ -53,7 +53,7 @@ private:
     bool firstAppearence;
 
     bool emptySearchRes;
-    QList<QString> meantSearchesList;
+    QStringList meantSearchesList;
 
     void initTableFilter();
     void initTableView(QList<JsonLinker::fieldInfo> const& fields);
@@ -78,6 +78,8 @@ private:
 
     void initSelectedColumns(bool isTagSearch);
     int levenshteinDistance(QString str1, QString str2);
+    QStringList fuzzySearch(QStringList meantSearchesList, QString cellText, QRegularExpression regex, int threshold);
+
 };
 
 #endif // TABLEBOX_H

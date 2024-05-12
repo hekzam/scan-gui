@@ -39,14 +39,15 @@ void ExamPreview::createPreviewButtonBox()
   previewButtonBox = new QGroupBox(this);
   auto previewButtonLayout = new QGridLayout(previewButtonBox);
 
-  auto rotateSlider = new QSlider(Qt::Horizontal, previewButtonBox);
-  rotateSlider->setMinimum(-180);
-  rotateSlider->setMaximum(180);
-  rotateSlider->setPageStep(30);
-  rotateSlider->setSingleStep(10);
-  rotateSlider->setValue(0);
-  rotateSlider->setToolTip(tr("Ths slider controls the rotation of the page"));
-  auto resetRotation = new QPushButton(tr("reset Rotation"), previewButtonBox);
+  // auto rotateSlider = new QSlider(Qt::Horizontal, previewButtonBox);
+  // rotateSlider->setMinimum(-180);
+  // rotateSlider->setMaximum(180);
+  // rotateSlider->setPageStep(30);
+  // rotateSlider->setSingleStep(10);
+  // rotateSlider->setValue(0);
+  // rotateSlider->setToolTip(tr("Ths slider controls the rotation of the
+  // page")); auto resetRotation = new QPushButton(tr("reset Rotation"),
+  // previewButtonBox);
 
   auto thresholdSlider = new QSlider(Qt::Horizontal, previewButtonBox);
   thresholdSlider->setMinimum(0);
@@ -75,13 +76,13 @@ void ExamPreview::createPreviewButtonBox()
   highlightFieldsCheckBox->setChecked(true);
   drawModeSelectorCheckBox->setChecked(false);
 
-  connect(rotateSlider, &QSlider::valueChanged, baseViewport,
-          &ExamViewPort::rotateImage);
+  // connect(rotateSlider, &QSlider::valueChanged, baseViewport,
+  //         &ExamViewPort::rotateImage);
 
-  connect(resetRotation, &QPushButton::clicked, rotateSlider,
-          [rotateSlider] { rotateSlider->setValue(0); });
-  connect(baseViewport, &ExamViewPort::imageRotationChanged, rotateSlider,
-          &QSlider::setValue);
+  // connect(resetRotation, &QPushButton::clicked, rotateSlider,
+  //         [rotateSlider] { rotateSlider->setValue(0); });
+  // connect(baseViewport, &ExamViewPort::imageRotationChanged, rotateSlider,
+  //         &QSlider::setValue);
 
   // TODO : Threshold connect
 
@@ -100,8 +101,8 @@ void ExamPreview::createPreviewButtonBox()
   connect(drawModeSelectorCheckBox, &QCheckBox::clicked, baseViewport,
           &ExamViewPort::changeDrawMode);
 
-  previewButtonLayout->addWidget(rotateSlider, 0, 0, 1, 2);
-  previewButtonLayout->addWidget(resetRotation, 0, 2);
+  // previewButtonLayout->addWidget(rotateSlider, 0, 0, 1, 2);
+  // previewButtonLayout->addWidget(resetRotation, 0, 2);
   previewButtonLayout->addWidget(thresholdSlider, 0, 3, 1, 1);
   previewButtonLayout->addWidget(viewWholePageButton, 1, 0);
   previewButtonLayout->addWidget(deletePageButton, 1, 1);
@@ -177,6 +178,7 @@ void ExamPreview::showExternalPreview()
 {
   if (externalPreview->isHidden())
   {
+
     externalPreview->layout()->addWidget(baseViewport);
     externalPreview->show();
   }

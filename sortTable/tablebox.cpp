@@ -1,11 +1,10 @@
-/*TO-DO
- *       -> ajouter les recherches avancées (avec des balises à la façon de Gmail
- *       ex:  student: Emilien,Marco ; id: 221 )
-*/
-
 #include "tablebox.h"
 
-TableBox::TableBox(std::vector<JsonLinker::infoPage> paths, QWidget *dockParent, QWidget *parent) : QGroupBox(parent), firstAppearence(true) {
+using namespace std;
+
+using namespace std;
+
+TableBox::TableBox(QList<JsonLinker::fieldInfo> const& fields, QWidget *dockParent, QMap<QString, dataCopieJSON*> const& fileDataMap, QWidget *parent) : QGroupBox(parent), firstAppearence(true), m_fileDataMap(fileDataMap) {
     setTitle("Evaluation table");
     sortBox = new QGroupBox(this);
 
@@ -26,9 +25,14 @@ TableBox::TableBox(std::vector<JsonLinker::infoPage> paths, QWidget *dockParent,
 
     initRegEx();
     initTableFilter();
+<<<<<<< HEAD
     initTableView(paths);
     connect(sortTable, &QTableWidget::cellClicked, this,
             &TableBox::sendNewFilePaths);
+=======
+    initTableView(fields);
+    connect(sortTable, &QTableWidget::cellClicked, this, &TableBox::sendNewFilePaths);
+>>>>>>> sortTable
 }
 
 void TableBox::initTableFilter(){
@@ -37,10 +41,22 @@ void TableBox::initTableFilter(){
     sortButton->setStyleSheet("background-color :#E1912F");
     connect(sortButton,&QPushButton::clicked,this,&TableBox::displayTableFilter);
 
-    QCheckBox *name = new QCheckBox("Name",sortBox);
-    name->setCheckState(Qt::Checked);
-    connect(name,&QCheckBox::stateChanged,this,[this](int state){
-        sortTable -> editColumn(state, sortTable -> COL_NAME);
+    QCheckBox *copy = new QCheckBox("Page",sortBox);
+    copy->setCheckState(Qt::Checked);
+    connect(copy,&QCheckBox::stateChanged,this,[this](int state){
+        sortTable -> editColumn(state, sortTable -> COL_COPY);
+    });
+
+    QCheckBox *page = new QCheckBox("Page",sortBox);
+    page->setCheckState(Qt::Checked);
+    connect(page,&QCheckBox::stateChanged,this,[this](int state){
+        sortTable -> editColumn(state, sortTable -> COL_PAGE);
+    });
+
+    QCheckBox *field = new QCheckBox("Field",sortBox);
+    field->setCheckState(Qt::Checked);
+    connect(field,&QCheckBox::stateChanged,this,[this](int state){
+        sortTable -> editColumn(state, sortTable -> COL_FIELD);
     });
 
     QCheckBox *syntax = new QCheckBox("Syntax",sortBox);
@@ -67,7 +83,9 @@ void TableBox::initTableFilter(){
 
     QVBoxLayout *sortBoxLayout = new QVBoxLayout;
     sortBoxLayout->setSpacing(10);
-    sortBoxLayout->addWidget(name);
+    sortBoxLayout->addWidget(copy);
+    sortBoxLayout->addWidget(page);
+    sortBoxLayout->addWidget(field);
     sortBoxLayout->addWidget(syntax);
     sortBoxLayout->addWidget(semantic);
     sortBoxLayout->addWidget(metric1);
@@ -94,7 +112,7 @@ void TableBox::displayTableFilter(){
     }
 }
 
-void TableBox::initTableView(std::vector<JsonLinker::infoPage> paths){
+void TableBox::initTableView(QList<JsonLinker::fieldInfo> const& fields){
 
     QHBoxLayout *sortButtonLayout = new QHBoxLayout;
     sortButtonLayout->addWidget(textZone);
@@ -110,7 +128,7 @@ void TableBox::initTableView(std::vector<JsonLinker::infoPage> paths){
 
     evalLayout->addWidget(sortTable);
 
-    sortTable->initSortTable(paths);
+    sortTable->initSortTable(fields);
 
     setLayout(evalLayout);
 }
@@ -124,12 +142,20 @@ void TableBox::initRegEx()
 
 void TableBox::sendNewFilePaths(int row, int col)
 {
-  QString fileAndJsonPath(sortTable->item(row, sortTable->COL_PATH)->text());
-  QStringList paths = fileAndJsonPath.split("$$$");
-  emit currentElementChanged(paths);
+    QString filePath(sortTable->item(row,SortTable::COL_PATH)->text());
+    QString syntaxVal(sortTable->item(row,SortTable::COL_SYNTAX)->data(Qt::UserRole).toString());
+    QString fileIdentifier(sortTable->item(row,SortTable::COL_COPY)->text());
+    dataCopieJSON const& data = *m_fileDataMap[fileIdentifier];
+    qDebug() << "filePath" << filePath;
+    qDebug() << syntaxVal;
+    for (coordinates const& coordinate : *data.documentFields){
+        qDebug() << coordinate.clef << coordinate.x << coordinate.y << coordinate.h << coordinate.w;
+    }
+    emit sendDataToPreview(filePath, data, col);
 }
 
 void TableBox::searchProcessing(){
+    emptySearchRes = true;
     text = input.remove(" ");
 
     if (text.isEmpty()){
@@ -143,6 +169,7 @@ void TableBox::searchProcessing(){
             qDebug()<<"tag";
             tagsProcessing(text);
         }
+
         else if (text.contains(",")){
             initSelectedColumns(false);
             qDebug()<<"multiple";
@@ -156,7 +183,7 @@ void TableBox::searchProcessing(){
     }
     else{
         qDebug()<<"Le pattern est PAS BON";
-        searchInfo->setText("Le format n'est pas bon !!!");
+        searchInfo->setText("Incorrect search. For further informations, head to the help.");
         return;
     }
 }
@@ -164,29 +191,65 @@ void TableBox::searchProcessing(){
 
 void TableBox::filterTextRows(QRegularExpression regex, QList<int> selectedColumns)
 {
+    meantSearchesList.clear();
+
     for (int i = 0; i < sortTable->rowCount(); ++i) {
 
         bool match = false;
 
-
-
         for (int j = 0; j < selectedColumns.size(); j++) {
 
             int selectedIndex = selectedColumns[j];
-
-
             QTableWidgetItem *item = sortTable->item(i, selectedIndex);
 
 
-
+        if (item){
+            QString cellText = (selectedIndex == SortTable::COL_SYNTAX) ? item->data(Qt::UserRole).toString() : item->text();
             if (item && regex.match(item->text()).hasMatch()) {
                 match = true;
                 break;
             }
+        }
 
+
+            if(meantSearchesList.size()<3){
+                qDebug()<<"size ça passe";
+
+
+                //TO-DO : à changer quand on utilisera data
+                QString textItem = "";
+
+                if (item->text()!=nullptr) {
+                    text = item->text();
+                }
+
+
+                if(!(meantSearchesList.contains(textItem)))
+                {
+
+                    qDebug()<<"contains ça passe ";
+                    if(levenshteinDistance(item->text(), regex.pattern())<=3)
+                    {
+                        qDebug()<<"distance ça passe";
+                        meantSearchesList.push_back(item->text());
+                        qDebug()<<"push back ça passe";
+                    }
+                }
+            }
+
+
+        sortTable->setRowHidden(i, !match);
 
         }
-        sortTable->setRowHidden(i, !match);
+    }
+
+    if ((emptySearchRes)&&(meantSearchesList.size())) {
+        QString sentence = "Do you mean : ";
+
+        for (int var = 0; var < meantSearchesList.size(); var++) {
+            sentence += (meantSearchesList[var] + " ? ");
+        }
+        searchInfo->setText(sentence);
     }
 }
 
@@ -204,12 +267,15 @@ void TableBox::filterTaggedTextRows(QList <QRegularExpression> regexList, QList<
 
             QTableWidgetItem *item = sortTable->item(i, selectedIndex);
 
-            if (item && regexList[j].match(item->text()).hasMatch()){
-                match = true;
-            }
-            else{
-                match = false;
-                break;
+            if(item){
+                QString cellText = (selectedIndex == SortTable::COL_SYNTAX) ? item->data(Qt::UserRole).toString() : item->text();
+                if (item && regexList[j].match(cellText).hasMatch()){
+                    match = true;
+                }
+                else{
+                    match = false;
+                    break;
+                }
             }
         }
         sortTable->setRowHidden(i, !match);
@@ -275,9 +341,12 @@ void TableBox::tagsProcessing(QString query)
     initSelectedColumns(true);
 
     for (int var = 0; var < sortTable->getHeaderList().size(); var++) {
-        if (searchedTags.contains(sortTable->getHeaderList()[var],Qt::CaseInsensitive)){
+        QString *word = new QString(sortTable->getHeaderList()[var]);
+
+        if (searchedTags.contains(*word,Qt::CaseInsensitive)){
             selectedColumns.append(var);
         }
+        delete word;
     }
     if(selectedColumns.size()!= searchedTags.size()){
         qDebug()<<"tag pas bon";
@@ -294,11 +363,12 @@ void TableBox::tagsProcessing(QString query)
 
 
 void TableBox::cleanSortTable()
-{    
+{
     input = textZone->text();
     if (input.trimmed() == "") {
         searchProcessing();
     }
+    //TO-Do : changer le clean
     searchInfo->setText("");
 }
 
@@ -318,6 +388,43 @@ void TableBox::initSelectedColumns(bool isTagSearch)
         }
     }
 
+}
+
+int TableBox::levenshteinDistance(QString str1, QString str2){
+
+    int substitutionCost, len1(str1.size()), len2(str2.size());
+
+    // Create a matrix to store the distances
+    vector< vector<int> > dist(len1+1, vector<int>(len2+1));
+
+    //matrice init
+    for (int i = 0; i <= len1; ++i)
+        dist[i][0] =i;
+
+    for (int j = 0; j <= len2; ++j)
+        dist[0][j] = j;
+
+
+    for (int i = 1; i <= len1; ++i)
+    {
+        for (int j = 1; j <= len2; ++j)
+        {
+            if (str1[i-1]== str2[j-1])
+            {
+                substitutionCost =0;
+            }
+            else
+            {
+                substitutionCost = 1;
+            }
+
+            dist[i][j] = min(dist[i - 1][j] + 1,
+                             min(dist[i][j - 1] + 1,
+                                 dist[i - 1][j - 1] + substitutionCost));
+
+        }
+    }
+    return dist[len1][len2];
 }
 
 

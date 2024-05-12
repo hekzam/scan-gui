@@ -117,9 +117,9 @@ void ExamPreview::onAction_DialogClosedTriggered()
 }
 
 // TODO : change groupbox, external view title based on file name ?
-void ExamPreview::onAction_CurrentTableElementChanged(const QStringList &paths)
+void ExamPreview::onAction_CurrentTableElementChanged(const QString &imagePath, const mJSON::dataCopieJSON &data, const int)
 {
-  baseViewport->loadImage(paths[0], paths[1]);
+    baseViewport->loadImage(imagePath,imagePath);
 }
 
 void ExamPreview::nextImage() {}

@@ -1,6 +1,7 @@
 #include "examviewport.h"
 
 using namespace mViewPort;
+using namespace mJSON;
 
 ExamViewPort::ExamViewPort(QGraphicsScene *gScene, QWidget *parent)
     : QGraphicsView(gScene, parent), dimensionToConsider{scaleToFit::height}
@@ -27,10 +28,16 @@ ExamViewPort::ExamViewPort(QGraphicsScene *gScene, QWidget *parent)
 ExamViewPort::~ExamViewPort() {}
 
 void ExamViewPort::loadImage(const QString &imgfilename,
-                             const QString &jsonfilename)
+                             const dataCopieJSON &data)
 {
   m_currentImageFilename = imgfilename;
-  m_currentJsonFilename = jsonfilename;
+  m_jsonData = data;
+  loadAnswerSheet();
+}
+
+void ExamViewPort::loadImage(const QString &imgfilename)
+{
+  m_currentImageFilename = imgfilename;
   loadAnswerSheet();
 }
 

@@ -25,14 +25,8 @@ TableBox::TableBox(QList<JsonLinker::fieldInfo> const& fields, QWidget *dockPare
 
     initRegEx();
     initTableFilter();
-<<<<<<< HEAD
-    initTableView(paths);
-    connect(sortTable, &QTableWidget::cellClicked, this,
-            &TableBox::sendNewFilePaths);
-=======
     initTableView(fields);
     connect(sortTable, &QTableWidget::cellClicked, this, &TableBox::sendNewFilePaths);
->>>>>>> sortTable
 }
 
 void TableBox::initTableFilter(){

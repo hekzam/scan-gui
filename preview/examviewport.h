@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QWheelEvent>
 #include "singlepage.h"
+#include "../json/jsonreader.h"
 
 namespace mViewPort
 {
@@ -26,7 +27,9 @@ public:
   ExamViewPort(QGraphicsScene *gScene, QWidget *parent);
   ~ExamViewPort();
 
-  void loadImage(const QString &imgfilename, const QString &jsonfilename);
+  // is the data really const ???
+  void loadImage(const QString &imgfilename, const mJSON::dataCopieJSON &data);
+  void loadImage(const QString &imgfilename);
 
 protected:
 #if QT_CONFIG(wheelevent)
@@ -47,6 +50,7 @@ private:
   // une scene ou deux ?
   QString m_currentImageFilename = "";
   QString m_currentJsonFilename = "";
+  mJSON::dataCopieJSON m_jsonData;
   ExamSinglePage *m_singleImage;
   // QGraphicsScene *gScene;
 

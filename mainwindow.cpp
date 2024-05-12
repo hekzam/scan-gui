@@ -190,10 +190,9 @@ void MainWindow::createEvaluationView()
 
     // Deuxième split / partie haute.
 
-    JsonLinker linker;
-    std::vector<JsonLinker::infoPage> paths = linker.linkFileToJson(scanFilePaths, jsonFilePaths);
-
-    TableBox *tableBox = new TableBox(paths, this, evaluationView);
+    QList<JsonLinker::fieldInfo> paths = jsonLinker.collectFields(scanFilePaths, jsonFilePaths);
+    QMap<QString, dataCopieJSON*> const& fileDataMap = jsonLinker.getFileDataMap();
+    TableBox *tableBox = new TableBox(paths, this, fileDataMap, evaluationView);
 
     verticalSplitter -> addWidget(tableBox);
 
@@ -204,8 +203,7 @@ void MainWindow::createEvaluationView()
     verticalSplitter -> addWidget(informationBox);
     informationLayout -> addWidget(new QLabel("WIP Information",this));
 
-    connect(tableBox, &TableBox::currentElementChanged, previewBox,
-            &ExamPreview::onAction_CurrentTableElementChanged);
+    connect(tableBox, &TableBox::sendDataToPreview, previewBox, &ExamPreview::onAction_CurrentTableElementChanged);
 
     mainStack->addWidget(evaluationView);
 }
@@ -237,12 +235,12 @@ void MainWindow::openFileExplorer()
 void MainWindow::openFileExplorerAlt(QLineEdit *file, const QString &labelText)
 {
     if (labelText == "Exam data") {
-        jsonFilePaths = QFileDialog::getOpenFileNames(this, ("Open files"), "../../../../scan-gui/resources/test_case/Json", "*.json");
+        jsonFilePaths = QFileDialog::getOpenFileNames(this, ("Open files"), "../../../../../scan-gui/resources/test_case/Json", "*.json");
         if (!jsonFilePaths.isEmpty()) {
             file -> setText(jsonFilePaths.at(0));
         }
     } else if (labelText == "Scan file(s)") {
-        scanFilePaths = QFileDialog::getOpenFileNames(this, ("Open files"), "../../../../scan-gui/resources/test_case/Fichiers", "*.png *.jpeg *.pdf");
+        scanFilePaths = QFileDialog::getOpenFileNames(this, ("Open files"), "../../../../../scan-gui/resources/test_case/Fichiers", "*.png *.jpeg *.pdf");
         if (!scanFilePaths.isEmpty()) {
             file -> setText(scanFilePaths.at(0));
         }

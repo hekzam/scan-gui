@@ -142,7 +142,7 @@ void ExamPreview::createGridPreview()
 
   // *** TEST ***
   QString ut3_testfn = ":/preview/resources/logo-UT3 modif.png";
-  gridViewport->loadImage(ut3_testfn, ut3_testfn);
+  gridViewport->loadImage(ut3_testfn);
   // *** END TEST ***
 
   gridPreviewLayout->addWidget(gridViewport);
@@ -164,9 +164,10 @@ void ExamPreview::onAction_DialogClosedTriggered()
 }
 
 // TODO : change groupbox, external view title based on file name ?
-void ExamPreview::onAction_CurrentTableElementChanged(const QStringList &paths)
+void ExamPreview::onAction_CurrentTableElementChanged(
+    const QString &imagePath, const mJSON::dataCopieJSON &data, const int)
 {
-  baseViewport->loadImage(paths[0], paths[1]);
+  baseViewport->loadImage(imagePath, data);
 }
 
 void ExamPreview::nextImage() {}

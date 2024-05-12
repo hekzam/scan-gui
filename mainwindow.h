@@ -56,6 +56,8 @@ private:
     QWidget *welcomeView;
     QWidget *createProjectView;
     QWidget *evaluationView;
+
+    JsonLinker jsonLinker;
 };
 
 #endif // MAINWINDOW_H

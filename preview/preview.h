@@ -10,6 +10,7 @@
 #include <QStackedWidget>
 #include <QVBoxLayout>
 #include <QGraphicsPixmapItem>
+#include "../json/jsonreader.h"
 #include "examviewport.h"
 #include "externalpreviewdialog.h"
 
@@ -25,7 +26,7 @@ public:
 public slots:
   void setGroupBoxTitle();
   void onAction_DialogClosedTriggered();
-  void onAction_CurrentTableElementChanged(const QStringList &);
+  void onAction_CurrentTableElementChanged(const QString &, const mJSON::dataCopieJSON &, const int);
 
 protected:
   // ?

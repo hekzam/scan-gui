@@ -11,3 +11,6 @@ bool ProgressCell::operator<(const QTableWidgetItem &other) const{
         return m_value < compareProg->m_value;
     return false;
 }
+
+
+

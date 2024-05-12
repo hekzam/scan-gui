@@ -13,6 +13,10 @@
 #include <QDebug>
 #include "sorttable.h"
 #include "../json/jsonlinker.h"
+#include <vector>
+#include <algorithm>
+#include <iostream>
+
 
 class TableBox : public QGroupBox
 {
@@ -30,8 +34,8 @@ private:
 
     QLabel *searchInfo;
 
-    QString simpleOrMultipleTextPattern = "^\\s*(?:\\w+(?:\\s*,\\s*\\w+)*)\\s*$";
-    QString tagPattern = "^\\s*(?:\\w+\\s*:\\s*\\w+(?:\\s*,\\s*\\w+)*)\\s*(?:;\\s*\\w+\\s*:\\s*\\w+(?:\\s*,\\s*\\w+)*)*\\s*$";
+    QString simpleOrMultipleTextPattern = "^\\s*(?:[\\w.-]+(?:\\s*,\\s*[\\w.-]+)*)\\s*$";
+    QString tagPattern = "^\\s*(?:[\\w.-]+\\s*:\\s*[\\w.-]+(?:\\s*,\\s*[\\w.-]+)*)\\s*(?:;\\s*[\\w.-]+\\s*:\\s*[\\w.-]+(?:\\s*,\\s*[\\w.-]+)*)*\\s*$";
     QString combinedPattern = simpleOrMultipleTextPattern + "|" + tagPattern;
 
     QRegularExpression regexTestPattern;
@@ -47,6 +51,9 @@ private:
     QMap<QString,dataCopieJSON *> const& m_fileDataMap;
 
     bool firstAppearence;
+
+    bool emptySearchRes;
+    QList<QString> meantSearchesList;
 
     void initTableFilter();
     void initTableView(QList<JsonLinker::fieldInfo> const& fields);
@@ -70,6 +77,7 @@ private:
     void cleanSortTable();
 
     void initSelectedColumns(bool isTagSearch);
+    int levenshteinDistance(QString str1, QString str2);
 };
 
 #endif // TABLEBOX_H

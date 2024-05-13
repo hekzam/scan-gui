@@ -30,28 +30,27 @@ private:
     QGroupBox *sortBox;
     QPushButton *sortButton;
 
+    //search zone
     QLineEdit *textZone;
-
     QLabel *searchInfo;
 
+    //patterns and regex
     QString simpleOrMultipleTextPattern = "^\\s*(?:[\\w.-]+(?:\\s*,\\s*[\\w.-]+)*)\\s*$";
     QString tagPattern = "^\\s*(?:[\\w.-]+\\s*:\\s*[\\w.-]+(?:\\s*,\\s*[\\w.-]+)*)\\s*(?:;\\s*[\\w.-]+\\s*:\\s*[\\w.-]+(?:\\s*,\\s*[\\w.-]+)*)*\\s*$";
     QString combinedPattern = simpleOrMultipleTextPattern + "|" + tagPattern;
-
     QRegularExpression regexTestPattern;
 
+    //user input
     QString input;
-    QString text;
 
-
-    QStringList queriesList;
-
+    // selected columns for search
     QList<int> selectedColumns;
 
     QMap<QString,dataCopieJSON *> const& m_fileDataMap;
 
     bool firstAppearence;
 
+    // to delete ??
     bool emptySearchRes;
     QStringList meantSearchesList;
 
@@ -66,19 +65,34 @@ private:
 
   private slots:
     void displayTableFilter();
+
+    // process the user search
     void searchProcessing();
 
-    void tagsProcessing(QString query);
-    void multipleTextProcessing(QString query);
-    void simpleTextProcessing(QString query);
-
-    void filterTextRows(QRegularExpression regex, QList<int> selectedColumns);
-    void filterTaggedTextRows(QList <QRegularExpression> regexList, QList<int> selectedColumns);
+    //clean the sort table by printing all the rows and delete the warning message if necessary
     void cleanSortTable();
 
+    // process the different type of search
+    //the simple search
+    void simpleTextProcessing(QString& querylocale);
+    //the multiple text search
+    void multipleTextProcessing(QString& querylocale);
+    //the tag search
+    void tagsProcessing(QString& querylocale);
+
+    //filter the rows
+    void filterRows(QList<QRegularExpression> regexList);
+    void filterTextRows(QRegularExpression regex);
+    void filterTaggedTextRows(QList <QRegularExpression> regexList);
+
+    //initialize the needed columns for the search
     void initSelectedColumns(bool isTagSearch);
+
+    //Fuzzy search
     int levenshteinDistance(QString str1, QString str2);
     QStringList fuzzySearch(QStringList meantSearchesList, QString cellText, QRegularExpression regex, int threshold);
+    void printFuzzySearchRes(QStringList meantSearchesList);
+
 
 };
 

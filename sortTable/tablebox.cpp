@@ -147,45 +147,117 @@ void TableBox::sendNewFilePaths(int row, int col)
 }
 
 void TableBox::searchProcessing(){
-    emptySearchRes = true;
-    text = input.remove(" ");
+    searchInfo->setText("");
 
-    if (text.isEmpty()){
-        for (int i = 0; i < sortTable->rowCount(); ++i)
-            sortTable->setRowHidden(i, false);
-        return;
-    }
+    input = textZone->text();
+    emptySearchRes = true;
+
+    QString text = input.remove(" ");
+
     if (regexTestPattern.match(text).hasMatch()){
-        qDebug()<<"Le pattern est bon";
+        //qDebug()<<"Le pattern est bon";
         if (text.contains(":")){
-            qDebug()<<"tag";
             tagsProcessing(text);
         }
-
         else if (text.contains(",")){
             initSelectedColumns(false);
-            qDebug()<<"multiple";
             multipleTextProcessing(text);
         }
         else{
             initSelectedColumns(false);
-            qDebug()<<"simple";
             simpleTextProcessing(text);
         }
     }
     else{
-        qDebug()<<"Le pattern est PAS BON";
+        //qDebug()<<"Le pattern n'est pas bon";
         searchInfo->setText("Incorrect search. For further informations, head to the help.");
         return;
     }
 }
 
+void TableBox::cleanSortTable()
+{
+    if (((textZone->text()).remove(" ")).isEmpty()) {
+        for (int i = 0; i < sortTable->rowCount(); ++i)
+        {
+            sortTable->setRowHidden(i, false);
+        }
+        searchInfo->setText("");
+    }
+}
 
-void TableBox::filterTextRows(QRegularExpression regex, QList<int> selectedColumns)
+
+void TableBox::simpleTextProcessing(QString& querylocale)
+{
+    QRegularExpression regex(querylocale, QRegularExpression::CaseInsensitiveOption);
+    filterTextRows(regex);
+}
+
+
+void TableBox::multipleTextProcessing(QString& querylocale)
+{
+    QStringList queriesList= querylocale.split(",", Qt::SkipEmptyParts);
+    QString pattern = queriesList.join("|");
+    QRegularExpression regex(pattern, QRegularExpression::CaseInsensitiveOption);
+    filterTextRows(regex);
+}
+
+void TableBox::tagsProcessing(QString& querylocale)
+{
+    QStringList queriesList = querylocale.split(";", Qt::SkipEmptyParts);
+    QStringList *searchedTags = new QStringList();
+    QList<QRegularExpression> regexList;
+
+    for (QString &elem : queriesList){
+        QStringList *elemList = new QStringList(elem.split(":"));
+        searchedTags->append((*elemList)[0].trimmed());
+        QString pattern = (*elemList)[1].split(",", Qt::SkipEmptyParts).join("|");
+        QRegularExpression regex(pattern, QRegularExpression::CaseInsensitiveOption);
+        regexList.append(regex);
+
+        delete elemList;
+    }
+
+    // column selection for tagged search
+    initSelectedColumns(true);
+    for (int var = 0; var < sortTable->getHeaderList().size(); var++) {
+
+        QString *word = new QString((sortTable->getHeaderList()).at(var));
+
+        if (searchedTags->contains(*word, Qt::CaseInsensitive)){
+            selectedColumns.append(var);
+        }
+        delete word;
+    }
+    if(selectedColumns.size()!= searchedTags->size()){
+        searchInfo->setText("Incorrect search. For further informations, head to the help.");
+        delete searchedTags;
+        return;
+    }
+    delete searchedTags;
+    filterTaggedTextRows(regexList);
+}
+
+void TableBox::initSelectedColumns(bool isTagSearch)
+{
+    selectedColumns.clear();
+
+    if(!(isTagSearch)){
+        for (int var = 0; var < sortTable->rowCount(); var++) {
+            if(!(sortTable->isColumnHidden(var))){
+                selectedColumns.append(var);
+            }
+        }
+    }
+}
+
+
+void TableBox::filterTextRows(QRegularExpression regex)
 {
     // first we clean our list of meant words
-
     meantSearchesList.clear();
+
+
     for (int i = 0; i < sortTable->rowCount(); ++i) {
         bool match = false;
         for (int j = 0; j < selectedColumns.size(); j++) {
@@ -194,7 +266,6 @@ void TableBox::filterTextRows(QRegularExpression regex, QList<int> selectedColum
             QTableWidgetItem *item = sortTable->item(i, selectedJIndex);
 
             if (item){
-
                 QString cellText = (selectedJIndex == SortTable::COL_SYNTAX) ? item->data(Qt::UserRole).toString() : item->text();
                 if (regex.match(cellText).hasMatch()) {
                     match = true;
@@ -203,7 +274,7 @@ void TableBox::filterTextRows(QRegularExpression regex, QList<int> selectedColum
                 }
                 //we want to limit to the three nearest words of our input
                 if(meantSearchesList.size()<3){
-                    qDebug()<<"size ça passe";
+                    //qDebug()<<"size ça passe";
                     meantSearchesList = fuzzySearch(meantSearchesList, cellText, regex, 3);
                 }
             }
@@ -212,42 +283,29 @@ void TableBox::filterTextRows(QRegularExpression regex, QList<int> selectedColum
         sortTable->setRowHidden(i, !match);
     }
 
-    if ((emptySearchRes)&&(meantSearchesList.size()))
-    {
-        QString sentence = "Did you mean : ";
-        int sizeList = meantSearchesList.size();
-        for (int var = 0; var < sizeList; var++)
-        {
-            sentence += meantSearchesList[var];
-            if(var < sizeList - 1)
-            {
-                sentence += " or ";
-            }
-
-        }
-        sentence += " ?";
-        searchInfo->setText(sentence);
-    }
+    //print the resultat of the fuzzy search
+    printFuzzySearchRes(meantSearchesList);
 }
 
 
 
 // to-do : try to factorize with the function above
-void TableBox::filterTaggedTextRows(QList <QRegularExpression> regexList, QList<int> selectedColumns)
+void TableBox::filterTaggedTextRows(QList <QRegularExpression> regexList)
 {
+
     for (int i = 0; i < sortTable->rowCount(); i++) {
         bool match = false;
 
         for (int j = 0; j < selectedColumns.size(); j++) {
 
             int selectedIndex = selectedColumns[j];
-
             QTableWidgetItem *item = sortTable->item(i, selectedIndex);
 
             if(item){
                 QString cellText = (selectedIndex == SortTable::COL_SYNTAX) ? item->data(Qt::UserRole).toString() : item->text();
-                if (item && regexList[j].match(cellText).hasMatch()){
+                if (regexList[j].match(cellText).hasMatch()){
                     match = true;
+
                 }
                 else{
                     match = false;
@@ -255,117 +313,66 @@ void TableBox::filterTaggedTextRows(QList <QRegularExpression> regexList, QList<
                 }
             }
         }
+        emptySearchRes = false;
         sortTable->setRowHidden(i, !match);
     }
 }
 
 
-void TableBox::simpleTextProcessing(QString query)
-{
 
-    QRegularExpression regex(query, QRegularExpression::CaseInsensitiveOption);
-    filterTextRows(regex, selectedColumns);
-}
+void TableBox::filterRows(QList<QRegularExpression> regexList){
+    meantSearchesList.clear();
+    int regexListSize = regexList.size();
+    for (int i = 0; i < sortTable->rowCount(); i++)
+    {
+        bool match = false;
 
+        for (int j = 0; j < selectedColumns.size(); j++)
+        {
+            int selectedJIndex = selectedColumns[j];
+            QTableWidgetItem *item = sortTable->item(i, selectedJIndex);
 
-void TableBox::multipleTextProcessing(QString query)
-{
+            if(item)
+            {
+                QString *cellText = new QString((selectedJIndex == SortTable::COL_SYNTAX) ? item->data(Qt::UserRole).toString() : item->text());
 
-    queriesList= query.split(",", Qt::SkipEmptyParts);
+                // cas de la recherche simple ou multiple
+                if ( (regexListSize==0) && (regexList[0].match(*cellText).hasMatch()) ) {
+                    match = true;
+                    emptySearchRes = false;
+                    delete cellText;
+                    break;
+                }
 
-    //cleaning elements
-    for (QString &elem : queriesList) {
-        elem = elem.trimmed();
-        qDebug()<<elem;
-    }
+                // cas du tagged search -> liste de regex
+                else if((regexListSize>0)&&(regexList[j].match(*cellText).hasMatch()))
+                {
+                    match = true;
+                }
+                else{
+                    match = false;
+                    delete cellText;
+                    break;
+                }
 
-    QString pattern = queriesList.join("|");
-    qDebug()<<pattern;
-    QRegularExpression regex(pattern, QRegularExpression::CaseInsensitiveOption);
+                //we want to limit to the *three* nearest words of our input
+                if(meantSearchesList.size()<3){
+                    meantSearchesList = fuzzySearch(meantSearchesList, *cellText, ((regexListSize==0)?regexList[0]:regexList[j]), 3);
+                }
 
-    filterTextRows(regex, selectedColumns);
-}
-
-void TableBox::tagsProcessing(QString query)
-{
-    //on vérifie que les tags sont bon
-    //ensuite on prend seulement les colonnes qui nous intéressent
-    //
-
-
-
-    queriesList = query.split(";", Qt::SkipEmptyParts);
-    qDebug()<<queriesList;
-
-
-    QStringList searchedTags;
-    QList<QRegularExpression> regexList;
-
-    for (QString &elem : queriesList){
-        QStringList elemList = elem.split(":");
-        searchedTags.append(elemList[0].trimmed());
-        QString pattern = elemList[1].split(",", Qt::SkipEmptyParts).join("|");
-        QRegularExpression regex(pattern, QRegularExpression::CaseInsensitiveOption);
-        regexList.append(regex);
-        qDebug()<<pattern;
-    }
-
-    qDebug()<<searchedTags;
-
-    qDebug()<<sortTable->getHeaderList();
-
-
-    initSelectedColumns(true);
-
-    for (int var = 0; var < sortTable->getHeaderList().size(); var++) {
-        QString *word = new QString(sortTable->getHeaderList()[var]);
-
-        if (searchedTags.contains(*word,Qt::CaseInsensitive)){
-            selectedColumns.append(var);
-        }
-        delete word;
-    }
-    if(selectedColumns.size()!= searchedTags.size()){
-        qDebug()<<"tag pas bon";
-        searchInfo->setText("Le format des tags n'est pas bon !");
-        return;
-    }
-
-    qDebug()<<selectedColumns;
-    qDebug()<<regexList;
-
-    filterTaggedTextRows(regexList, selectedColumns);
-
-}
-
-
-void TableBox::cleanSortTable()
-{
-    input = textZone->text();
-    if (input.trimmed() == "") {
-        searchProcessing();
-    }
-    //TO-Do : changer le clean
-    searchInfo->setText("");
-}
-
-void TableBox::initSelectedColumns(bool isTagSearch)
-{
-
-    selectedColumns.clear();
-
-    if(isTagSearch){
-        return;
-    }
-    else{
-        for (int var = 0; var < sortTable->rowCount(); var++) {
-            if(!(sortTable->isColumnHidden(var))){
-                selectedColumns.append(var);
+                delete cellText;
             }
         }
-    }
 
+        emptySearchRes = match;
+        sortTable->setRowHidden(i, !match);
+    }
+    //print the resultat of the fuzzy search
+    printFuzzySearchRes(meantSearchesList);
 }
+
+
+
 
 int TableBox::levenshteinDistance(QString str1, QString str2){
 
@@ -408,15 +415,32 @@ QStringList TableBox::fuzzySearch(QStringList meantSearchesList, QString cellTex
 {
     if(!(meantSearchesList.contains(cellText)))
     {
-        qDebug()<<"contains ça passe ";
-        if(levenshteinDistance(cellText, regex.pattern())<=3)
+        if(levenshteinDistance(cellText, regex.pattern())<=threshold)
         {
-            qDebug()<<"distance ça passe";
             meantSearchesList.push_back(cellText);
-            qDebug()<<"push back ça passe";
         }
     }
     return meantSearchesList;
+}
+
+void TableBox::printFuzzySearchRes(QStringList meantSearchesList)
+{
+    if ((emptySearchRes)&&(meantSearchesList.size()))
+    {
+        QString sentence = "Did you mean : ";
+        int sizeList = meantSearchesList.size();
+        for (int var = 0; var < sizeList; var++)
+        {
+            sentence += meantSearchesList[var];
+            if(var < sizeList - 1)
+            {
+                sentence += " or ";
+            }
+
+        }
+        sentence += " ?";
+        searchInfo->setText(sentence);
+    }
 }
 
 

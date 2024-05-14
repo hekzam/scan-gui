@@ -33,7 +33,7 @@ void TableBox::initTableFilter(){
     sortButton->setStyleSheet("background-color :#E1912F");
     connect(sortButton,&QPushButton::clicked,this,&TableBox::displayTableFilter);
 
-    QCheckBox *copy = new QCheckBox("Page",sortBox);
+    QCheckBox *copy = new QCheckBox("Copy",sortBox);
     copy->setCheckState(Qt::Checked);
     connect(copy,&QCheckBox::stateChanged,this,[this](int state){
         sortTable -> editColumn(state, sortTable -> COL_COPY);
@@ -108,8 +108,6 @@ void TableBox::initTableView(QList<JsonLinker::fieldInfo> const& fields){
 
     QHBoxLayout *sortButtonLayout = new QHBoxLayout;
     sortButtonLayout->addWidget(textZone);
-
-    sortButtonLayout->addWidget(searchInfo);
 
     sortButtonLayout->addWidget(sortButton);
 

@@ -243,12 +243,14 @@ void TableBox::initSelectedColumns(bool isTagSearch)
     selectedColumns.clear();
 
     if(!(isTagSearch)){
-        for (int var = 0; var < sortTable->rowCount(); var++) {
+        for (int var = 0; var < sortTable->columnCount(); var++) {
             if(!(sortTable->isColumnHidden(var))){
                 selectedColumns.append(var);
             }
         }
     }
+
+    qDebug()<< selectedColumns;
 }
 
 
@@ -363,8 +365,6 @@ void TableBox::filterRows(QList<QRegularExpression> regexList){
                 delete cellText;
             }
         }
-
-        emptySearchRes = match;
         sortTable->setRowHidden(i, !match);
     }
     //print the resultat of the fuzzy search

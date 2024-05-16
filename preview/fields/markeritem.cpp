@@ -4,6 +4,7 @@ MarkerItem::MarkerItem(QGraphicsItem *parent) : FieldItem(parent)
 {
   setFlag(QGraphicsItem::ItemIsMovable);
   setFlag(QGraphicsItem::ItemIsSelectable);
+  m_Type = fieldType::marker;
 }
 
 MarkerItem::~MarkerItem() {}

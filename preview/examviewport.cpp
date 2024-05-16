@@ -86,9 +86,12 @@ void ExamViewPort::changeScale(qreal scale)
   this->scale(scale, scale);
 }
 
-void ExamViewPort::toggleDrawMode(bool state)
+void ExamViewPort::toggleCalibrationMode(bool state)
 {
-  editionMode = state;
+  calibrationMode = state;
+  m_singleImage->toggleAtomicBoxVisibility(!state);
+  m_singleImage->toggleMarkerVisibility(state);
+  m_singleImage->toggleMarkerEdition(state);
   // TODO: enable drawing of polygons by drag and drop, exit draw mode on
   // mouse release ?
   // other things to toggle here (dragmode...)
@@ -168,38 +171,38 @@ void ExamViewPort::scaleToOneOnOne()
 // TODO
 void ExamViewPort::mousePressEvent(QMouseEvent *e)
 {
-  if (editionMode)
-  {
-    // TODO
-  }
-  else
-  {
-    QGraphicsView::mousePressEvent(e);
-  }
+  // if (calibrationMode)
+  // {
+  //   // TODO
+  // }
+  // else
+  // {
+  QGraphicsView::mousePressEvent(e);
+  // }
 }
 
 void ExamViewPort::mouseMoveEvent(QMouseEvent *e)
 {
-  if (editionMode)
-  {
-    // TODO
-  }
-  else
-  {
-    QGraphicsView::mouseMoveEvent(e);
-  }
+  // if (calibrationMode)
+  // {
+  //   // TODO
+  // }
+  // else
+  // {
+  QGraphicsView::mouseMoveEvent(e);
+  // }
 }
 
 void ExamViewPort::mouseReleaseEvent(QMouseEvent *e)
 {
-  if (editionMode)
-  {
-    // TODO
-  }
-  else
-  {
-    QGraphicsView::mouseReleaseEvent(e);
-  }
+  // if (calibrationMode)
+  // {
+  //   // TODO
+  // }
+  // else
+  // {
+  QGraphicsView::mouseReleaseEvent(e);
+  // }
 }
 
 void ExamViewPort::fitROIInView(QRect &)

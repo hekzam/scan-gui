@@ -35,7 +35,7 @@ public:
   void loadImage(const QString &imgfilename);
 
 public slots:
-  void toggleDrawMode(bool state);
+  void toggleCalibrationMode(bool state);
   void rotateImage(int value);
   void toggleFieldsVisibility(bool visible);
 
@@ -86,7 +86,7 @@ private:
 
   // Drawing
   // enum ? for the mode ? edition, view and calibration
-  bool editionMode = false;
+  bool calibrationMode = false;
   QPen pen;
 };
 } // namespace mViewPort

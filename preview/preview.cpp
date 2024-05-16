@@ -70,11 +70,11 @@ void ExamPreview::createPreviewButtonBox()
   // auto transformButton = new QPushButton(tr("transform"), previewButtonBox);
   auto highlightFieldsCheckBox =
       new QCheckBox(tr("HighlightFields"), previewButtonBox);
-  auto drawModeSelectorCheckBox =
-      new QCheckBox(tr("Draw Mode"), previewButtonBox);
+  auto calibrationModeSelectorCheckBox =
+      new QCheckBox(tr("Calibration Mode"), previewButtonBox);
 
   highlightFieldsCheckBox->setChecked(true);
-  drawModeSelectorCheckBox->setChecked(false);
+  calibrationModeSelectorCheckBox->setChecked(false);
 
   // connect(rotateSlider, &QSlider::valueChanged, baseViewport,
   //         &ExamViewPort::rotateImage);
@@ -98,8 +98,8 @@ void ExamPreview::createPreviewButtonBox()
   // connect(transformButton....)
   connect(highlightFieldsCheckBox, &QCheckBox::clicked, baseViewport,
           &ExamViewPort::toggleFieldsVisibility);
-  connect(drawModeSelectorCheckBox, &QCheckBox::clicked, baseViewport,
-          &ExamViewPort::toggleDrawMode);
+  connect(calibrationModeSelectorCheckBox, &QCheckBox::clicked, baseViewport,
+          &ExamViewPort::toggleCalibrationMode);
 
   // previewButtonLayout->addWidget(rotateSlider, 0, 0, 1, 2);
   // previewButtonLayout->addWidget(resetRotation, 0, 2);
@@ -110,7 +110,7 @@ void ExamPreview::createPreviewButtonBox()
   previewButtonLayout->addWidget(validatePageButton, 1, 3);
   // previewButtonLayout->addWidget(transformButton);
   previewButtonLayout->addWidget(highlightFieldsCheckBox, 1, 4);
-  previewButtonLayout->addWidget(drawModeSelectorCheckBox, 1, 5);
+  previewButtonLayout->addWidget(calibrationModeSelectorCheckBox, 1, 5);
 }
 
 void ExamPreview::createBasePreview()

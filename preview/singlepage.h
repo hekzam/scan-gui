@@ -19,14 +19,17 @@ public:
   void setJSONData(const mJSON::dataCopieJSON *data);
   void setPageNum(int pageNum);
   void setImageSize(QSize imgSize);
-  // void setDocSize(QSize docSize);
+
+  void toggleMarkerVisibility(bool state);
+  void toggleMarkerEdition(bool state);
+  void toggleAtomicBoxVisibility(bool state);
 
 protected:
   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
 
 private:
   const mJSON::dataCopieJSON *m_JSONData = nullptr;
-  // one-indexed :-) I don't make the rules
+  // page number is one-indexed ? I don't make the rules
   int m_pageNumber;
   QList<MarkerItem *> m_currentMarkerItems;
   QList<atomicBoxItem *> m_currentAtomicBoxItems;

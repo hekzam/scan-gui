@@ -4,6 +4,14 @@
 #include <QGraphicsPolygonItem>
 #include <QPen>
 
+enum fieldType
+{
+  undef,
+  marker,
+  atomicBox,
+  ocr,
+};
+
 class FieldItem : public QGraphicsPolygonItem
 {
 public:
@@ -14,12 +22,6 @@ public:
   qreal getPenWidth();
 
 protected:
-  enum fieldType
-  {
-    marker,
-    atomicBox,
-    ocr,
-  };
 
   /*
    * This will send data to the TypstLib :
@@ -48,6 +50,7 @@ protected:
   QSize fieldSizeDocRel;
   QSize fieldSizeImageRel;
   QString m_clef;
+  fieldType m_Type;
 
   QPen pen;
 };

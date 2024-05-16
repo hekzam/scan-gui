@@ -10,6 +10,7 @@ atomicBoxItem::atomicBoxItem(QGraphicsItem *parent, bool checked)
     pen.setStyle(Qt::DashLine);
   }
   setPen(pen);
+  m_Type = fieldType::atomicBox;
 }
 
 atomicBoxItem::atomicBoxItem(QGraphicsItem *parent)

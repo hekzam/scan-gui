@@ -70,6 +70,30 @@ void ExamSinglePage::setImageSize(QSize imgSize)
   m_imageSize = imgSize;
 }
 
+void ExamSinglePage::toggleMarkerVisibility(bool state)
+{
+  for (auto &m : m_currentMarkerItems) // MarkerItem*
+  {
+    m->setVisible(state);
+  }
+}
+
+void ExamSinglePage::toggleMarkerEdition(bool state)
+{
+  for (auto &m : m_currentMarkerItems) // MarkerItem*
+  {
+    m->setEnabled(state);
+  }
+}
+
+void ExamSinglePage::toggleAtomicBoxVisibility(bool state)
+{
+  for (auto &m : m_currentAtomicBoxItems) // AtomicBoxItem *
+  {
+    m->setVisible(state);
+  }
+}
+
 void ExamSinglePage::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
   // needed ?
@@ -81,6 +105,8 @@ void ExamSinglePage::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
   QGraphicsItem::mouseDoubleClickEvent(event);
 }
 
+// We delete and create the list everytime because at this time we don't have a
+// way to store application data
 // we already checked that we have JSONdata
 void ExamSinglePage::addKnownMarkers()
 {

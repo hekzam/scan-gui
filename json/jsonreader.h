@@ -21,7 +21,7 @@ enum JSONERROR
 // une copie peut comprendre plusieures pages.
 struct coordinates
 {
-  int x, y, h, w;
+  qreal x, y, h, w;
   QString clef;
   int pagenum;
 
@@ -32,23 +32,26 @@ struct coordinates
   };
   ~coordinates(){};
 
-  coordinates(double xx, double yy, double hh, double ww)
+  coordinates(qreal xx, qreal yy, qreal hh, qreal ww)
   {
-    x = round(xx);
-    y = round(yy);
-    h = round(hh);
-    w = round(ww);
+    x = /*round*/ (xx);
+    y = /*round*/ (yy);
+    h = /*round*/ (hh);
+    w = /*round*/ (ww);
   }
 };
 
 struct dataCopieJSON
 {
+  // refactor this to have one struct per page ?
   struct pageSize
   {
     int numpage;
     QSize pS;
   };
 
+  // QMap<int,QList<coordinates>
+  // enlever les pointeurs ?
   QList<pageSize> *documentSizes;
   QList<coordinates> *documentFields;
   QList<coordinates> *documentMarkers;

@@ -126,19 +126,19 @@ void jsonreader::parseValues(QJsonObject &o, coordinates &coo)
                                      << "page");
   if (const QJsonValue v = o[cKeys.at(0)]; v.isDouble())
   {
-    coo.x = qFloor(v.toDouble());
+    coo.x = /*qFloor*/ (v.toDouble());
   }
   if (const QJsonValue v = o[cKeys.at(1)]; v.isDouble())
   {
-    coo.y = qFloor(v.toDouble());
+    coo.y = /*qFloor*/ (v.toDouble());
   }
   if (const QJsonValue v = o[cKeys.at(2)]; v.isDouble())
   {
-    coo.h = round(v.toDouble());
+    coo.h = /* round*/ (v.toDouble());
   }
   if (const QJsonValue v = o[cKeys.at(3)]; v.isDouble())
   {
-    coo.w = round(v.toDouble());
+    coo.w = /* round*/ (v.toDouble());
   }
   if (const QJsonValue v = o[cKeys.at(4)]; v.isDouble())
   {
@@ -158,7 +158,8 @@ void jsonreader::identifyMarkers(QJsonObject &o, coordinates &coo)
   a->addMarker(coo);
 }
 
-// la taille de chaque doc tel que rapportée par le parser devrait être la même
+// la taille de chaque doc telle que rapportée par le parser devrait être la
+// même
 void jsonreader::calculateDocumentSize()
 {
   coordinates topleft;
@@ -184,7 +185,8 @@ void jsonreader::calculateDocumentSize()
       }
       if (topleft.pagenum == bottomright.pagenum)
       {
-        QSize ds = QSize(topleft.x + bottomright.x, topleft.y + bottomright.y);
+        QSize ds =
+            QSize(2 * topleft.x + bottomright.x, 2 * topleft.y + bottomright.y);
         ps.numpage = c;
         ps.pS = ds;
         a->documentSizes->append(ps);

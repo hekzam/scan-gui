@@ -235,20 +235,26 @@ void MainWindow::openFileExplorer()
 void MainWindow::openFileExplorerAlt(QLineEdit *file, const QString &labelText)
 {
     if (labelText == "Exam data") {
-        jsonFilePaths = QFileDialog::getOpenFileNames(this, ("Open files"), "../../../../../scan-gui/resources/test_case/Json", "*.json");
-        if (!jsonFilePaths.isEmpty()) {
-            file -> setText(jsonFilePaths.at(0));
-        }
+      jsonFilePaths = QFileDialog::getOpenFileNames(
+          this, ("Open files"), QDir::currentPath(), "*.json");
+      if (!jsonFilePaths.isEmpty())
+      {
+        file->setText(jsonFilePaths.at(0));
+      }
     } else if (labelText == "Scan file(s)") {
-        scanFilePaths = QFileDialog::getOpenFileNames(this, ("Open files"), "../../../../../scan-gui/resources/test_case/Fichiers", "*.png *.jpeg *.pdf");
-        if (!scanFilePaths.isEmpty()) {
-            file -> setText(scanFilePaths.at(0));
-        }
+      scanFilePaths = QFileDialog::getOpenFileNames(this, ("Open files"), "",
+                                                    "*.png *.jpeg *.pdf");
+      if (!scanFilePaths.isEmpty())
+      {
+        file->setText(scanFilePaths.at(0));
+      }
     } else {
-        QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::homePath());
-        if (!fileName.isEmpty()) {
-            file -> setText(fileName);
-        }
+      QString fileName =
+          QFileDialog::getOpenFileName(this, tr("Open File"), QDir::homePath());
+      if (!fileName.isEmpty())
+      {
+        file->setText(fileName);
+      }
     }
 }
 

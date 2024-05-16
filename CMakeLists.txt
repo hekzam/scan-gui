@@ -29,9 +29,14 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         json/jsonreader.h json/jsonreader.cpp
         test_case.qrc
         preview/preview.h preview/preview.cpp
+        preview/examscene.h preview/examscene.cpp
         preview/examviewport.h preview/examviewport.cpp
-        preview/singlepage.h preview/singlepage.cpp
         preview/externalpreviewdialog.h preview/externalpreviewdialog.cpp
+        preview/singlepage.h preview/singlepage.cpp
+        preview/fields/fielditem.h preview/fields/fielditem.cpp
+        preview/fields/markeritem.h preview/fields/markeritem.cpp
+        preview/fields/atomicboxitem.h preview/fields/atomicboxitem.cpp
+        preview/fields/ocritem.h preview/fields/ocritem.cpp
         sortTable/tablebox.h sortTable/tablebox.cpp
         sortTable/tablebox.h sortTable/tablebox.cpp
         sortTable/sorttable.h sortTable/sorttable.cpp

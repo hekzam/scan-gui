@@ -3,10 +3,10 @@
 using namespace mViewPort;
 using namespace mJSON;
 
-ExamViewPort::ExamViewPort(QGraphicsScene *gScene, QWidget *parent)
-    : QGraphicsView(gScene, parent), dimensionToConsider{scaleToFit::height}
+ExamViewPort::ExamViewPort(ExamScene *gScene, QWidget *parent)
+    : QGraphicsView(gScene, parent), dimensionToConsider{scaleToFit::height},
+      m_currentPageNum(1)
 {
-  gScene->setBackgroundBrush(Qt::gray);
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHints(QPainter::Antialiasing);
 
@@ -20,17 +20,13 @@ ExamViewPort::ExamViewPort(QGraphicsScene *gScene, QWidget *parent)
   m_singleImage = new ExamSinglePage();
   gScene->addItem(m_singleImage);
 
-  // test variables
-  // QString exampleIFN = ":/preview/resources/jpegexample.jpg";
-  // QString exJFN = "";
-  // loadImage(exampleIFN, exJFN);
   connect(this, &ExamViewPort::scaleChanged, this, &ExamViewPort::changeScale);
 }
 
 ExamViewPort::~ExamViewPort() {}
 
 void ExamViewPort::loadImage(const QString &imgfilename,
-                             const dataCopieJSON &data)
+                             const dataCopieJSON &data, const int col)
 {
   m_currentImageFilename = imgfilename;
   m_jsonData = &data;
@@ -90,10 +86,10 @@ void ExamViewPort::changeScale(qreal scale)
   this->scale(scale, scale);
 }
 
-void ExamViewPort::changeDrawMode(bool state)
+void ExamViewPort::toggleDrawMode(bool state)
 {
-  drawingMode = state;
-  // TODO: enable drawing of rectangles by drag and drop, exit draw mode on
+  editionMode = state;
+  // TODO: enable drawing of polygons by drag and drop, exit draw mode on
   // mouse release ?
   // other things to toggle here (dragmode...)
 }
@@ -123,11 +119,17 @@ void ExamViewPort::loadAnswerSheet()
   else
   {
     m_singleImage->setPixmap(p);
-    m_singleImage->setPos(QPointF(0, 0));
 
-    scaleToWidgetSize();
+    m_singleImage->setImageSize(p.size());
+
     // gv.ensureVisible(m_ROI);
   }
+  if (m_jsonData)
+  {
+    m_singleImage->setPageNum(m_currentPageNum);
+    m_singleImage->setJSONData(m_jsonData);
+  }
+  scaleToWidgetSize();
 }
 
 void ExamViewPort::scaleToWidgetSize()
@@ -166,7 +168,7 @@ void ExamViewPort::scaleToOneOnOne()
 // TODO
 void ExamViewPort::mousePressEvent(QMouseEvent *e)
 {
-  if (drawingMode)
+  if (editionMode)
   {
     // TODO
   }
@@ -178,7 +180,7 @@ void ExamViewPort::mousePressEvent(QMouseEvent *e)
 
 void ExamViewPort::mouseMoveEvent(QMouseEvent *e)
 {
-  if (drawingMode)
+  if (editionMode)
   {
     // TODO
   }
@@ -190,7 +192,7 @@ void ExamViewPort::mouseMoveEvent(QMouseEvent *e)
 
 void ExamViewPort::mouseReleaseEvent(QMouseEvent *e)
 {
-  if (drawingMode)
+  if (editionMode)
   {
     // TODO
   }

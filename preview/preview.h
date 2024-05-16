@@ -26,7 +26,9 @@ public:
 public slots:
   void setGroupBoxTitle();
   void onAction_DialogClosedTriggered();
-  void onAction_CurrentTableElementChanged(const QString &, const mJSON::dataCopieJSON &, const int);
+  void onAction_CurrentTableElementChanged(const QString &,
+                                           const mJSON::dataCopieJSON &,
+                                           const int col);
 
 protected:
   // ?
@@ -54,8 +56,8 @@ private:
 
   mViewPort::ExamViewPort *baseViewport;
   mViewPort::ExamViewPort *gridViewport;
-  QGraphicsScene *baseScene;
-  QGraphicsScene *gridScene;
+  ExamScene *baseScene;
+  ExamScene *gridScene;
 
   // QGroupBox *previewBox;
 

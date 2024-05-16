@@ -1,23 +1,14 @@
 #include "mainwindow.h"
-#include "json/jsonreader.h"
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>
 #include <qprogressbar.h>
 #include <QString>
 
-// #include "sortTable/controller.h"
-
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     QStringList args = QApplication::arguments();
-
-    // mJSON::jsonreader j;
-    // j.loadFromJSON(":/resources/test_case/basic-3-1-1/atomic-boxes.json");
-    // j.getCoordinates();
-    // j.loadFromJSON(":/resources/test_case/basic-3-1-0/atomic-boxes.json");
-    // j.getCoordinates();
 
     QTranslator translator;
     const QStringList uiLanguages = QLocale::system().uiLanguages();
@@ -30,18 +21,6 @@ int main(int argc, char *argv[])
     }
     MainWindow w;
     w.show();
-
-    /*QTableWidget *tw = new QTableWidget(2,2);
-    QProgressBar *pg1 = new QProgressBar();
-    QProgressBar *pg2 = new QProgressBar();
-    pg1->setValue(25);
-    pg2->setValue(76);
-    tw->setCellWidget(0,0,pg1);
-    tw->setCellWidget(1,0,pg2);
-    tw->setItem(0,1,new QTableWidgetItem("hihihih"));
-    tw->setItem(1,1,new QTableWidgetItem("lalala"));
-    tw->setSortingEnabled(true);
-    tw->show();*/
 
     return a.exec();
 }

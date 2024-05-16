@@ -99,7 +99,7 @@ void ExamPreview::createPreviewButtonBox()
   connect(highlightFieldsCheckBox, &QCheckBox::clicked, baseViewport,
           &ExamViewPort::toggleFieldsVisibility);
   connect(drawModeSelectorCheckBox, &QCheckBox::clicked, baseViewport,
-          &ExamViewPort::changeDrawMode);
+          &ExamViewPort::toggleDrawMode);
 
   // previewButtonLayout->addWidget(rotateSlider, 0, 0, 1, 2);
   // previewButtonLayout->addWidget(resetRotation, 0, 2);
@@ -121,7 +121,7 @@ void ExamPreview::createBasePreview()
   basePreviewLayout->setContentsMargins(0, 0, 0, 0);
   basePreview->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
 
-  baseScene = new QGraphicsScene(basePreview);
+  baseScene = new ExamScene(basePreview);
   baseViewport = new ExamViewPort(baseScene, basePreview);
 
   basePreviewLayout->addWidget(baseViewport);
@@ -137,7 +137,7 @@ void ExamPreview::createGridPreview()
   gridPreviewLayout->setContentsMargins(0, 0, 0, 0);
   gridPreview->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
 
-  gridScene = new QGraphicsScene(gridPreview);
+  gridScene = new ExamScene(gridPreview);
   gridViewport = new ExamViewPort(gridScene, gridPreview);
 
   // *** TEST ***
@@ -163,11 +163,12 @@ void ExamPreview::onAction_DialogClosedTriggered()
   showExternalPreview();
 }
 
+// TODO : ask for the page number too ?
 // TODO : change groupbox, external view title based on file name ?
 void ExamPreview::onAction_CurrentTableElementChanged(
-    const QString &imagePath, const mJSON::dataCopieJSON &data, const int)
+    const QString &imagePath, const mJSON::dataCopieJSON &data, const int col)
 {
-  baseViewport->loadImage(imagePath, data);
+  baseViewport->loadImage(imagePath, data, col);
 }
 
 void ExamPreview::nextImage() {}

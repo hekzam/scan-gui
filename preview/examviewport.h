@@ -1,10 +1,10 @@
 #ifndef EXAMVIEWPORT_H
 #define EXAMVIEWPORT_H
 
-#include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QObject>
 #include <QWheelEvent>
+#include "examscene.h"
 #include "singlepage.h"
 #include "../json/jsonreader.h"
 
@@ -24,17 +24,18 @@ class ExamViewPort : public QGraphicsView
 {
   Q_OBJECT
 public:
-  ExamViewPort(QGraphicsScene *gScene, QWidget *parent);
+  ExamViewPort(ExamScene *gScene, QWidget *parent);
   ~ExamViewPort();
 
   void scaleToOneOnOne();
 
   // is the data really const ???
-  void loadImage(const QString &imgfilename, const mJSON::dataCopieJSON &data);
+  void loadImage(const QString &imgfilename, const mJSON::dataCopieJSON &data,
+                 const int col);
   void loadImage(const QString &imgfilename);
 
 public slots:
-  void changeDrawMode(bool state);
+  void toggleDrawMode(bool state);
   void rotateImage(int value);
   void toggleFieldsVisibility(bool visible);
 
@@ -43,7 +44,7 @@ protected:
   void wheelEvent(QWheelEvent *e) override;
 #endif
 
-  // TODO
+  // TODO ?
   void mousePressEvent(QMouseEvent *e) override;
   void mouseMoveEvent(QMouseEvent *e) override;
   void mouseReleaseEvent(QMouseEvent *e) override;
@@ -69,8 +70,10 @@ private:
 
   // une scene ou deux ?
   QString m_currentImageFilename = "";
-  QString m_currentJsonFilename = "";
-  const mJSON::dataCopieJSON *m_jsonData;
+  // QString m_currentJsonFilename = "";
+  // this can't be const, I WANT to be able to modify this
+  const mJSON::dataCopieJSON *m_jsonData = nullptr;
+  int m_currentPageNum;
   ExamSinglePage *m_singleImage;
   // QGraphicsScene *gScene;
 
@@ -82,7 +85,8 @@ private:
   QRect m_ROI = QRect(0, 0, 0, 0); // region of interest
 
   // Drawing
-  bool drawingMode = false;
+  // enum ? for the mode ? edition, view and calibration
+  bool editionMode = false;
   QPen pen;
 };
 } // namespace mViewPort

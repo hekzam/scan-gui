@@ -1,5 +1,4 @@
 #include "singlepage.h"
-#include "qpainter.h"
 
 // todo : add atomic boxes
 ExamSinglePage::ExamSinglePage()

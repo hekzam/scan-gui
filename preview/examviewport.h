@@ -5,9 +5,6 @@
 #include <QObject>
 #include <QWheelEvent>
 #include "examscene.h"
-#include "pagemask.h"
-#include "singlepage.h"
-#include "../json/jsonreader.h"
 
 namespace mViewPort
 {

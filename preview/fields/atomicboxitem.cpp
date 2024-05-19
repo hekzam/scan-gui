@@ -4,7 +4,7 @@ atomicBoxItem::atomicBoxItem(QGraphicsItem *parent, bool checked)
     : FieldItem(parent), value(checked), penFieldChecked(pen),
       penFieldNotChecked(pen)
 {
-  penFieldNotChecked.setColor(QColorConstants::Blue);
+  penFieldNotChecked.setColor(QColorConstants::Gray);
   penFieldNotChecked.setStyle(Qt::DashLine);
   penFieldChecked.setColor(QColorConstants::DarkBlue);
   penFieldChecked.setStyle(Qt::SolidLine);

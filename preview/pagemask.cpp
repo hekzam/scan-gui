@@ -2,7 +2,6 @@
 
 PageMask::PageMask()
 {
-  // setPath(m_path);
   setZValue(2.0); // in front of everything
   m_brush.setColor(QColor(255, 255, 255, 200));
   setBrush(m_brush);
@@ -18,3 +17,13 @@ void PageMask::setMaskSize(QSize size)
   m_path.closeSubpath();
   setPath(m_path);
 }
+
+void PageMask::addFieldToHighlight(QPolygonF PS)
+{
+  // baseRectPath.moveTo(PS.topLeft());
+  m_path.addPolygon(PS);
+  m_path.closeSubpath();
+  setPath(m_path);
+}
+
+// TODO add transparent rects on items we want to focus on

@@ -34,7 +34,7 @@ private:
   const mJSON::dataCopieJSON *m_jsonData = nullptr;
   int m_currentPageNum;
   ExamSinglePage *m_singleImage;
-  PageMask *m_mask;
+  PageMask *m_maskItem;
 
   // Drawing
   // enum ? for the mode ? edition, view and calibration

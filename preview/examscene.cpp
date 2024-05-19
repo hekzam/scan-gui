@@ -6,9 +6,9 @@ ExamScene::ExamScene(QObject *parent)
 {
   setBackgroundBrush(Qt::gray);
   m_singleImage = new ExamSinglePage();
-  m_mask = new PageMask();
+  m_maskItem = new PageMask();
   addItem(m_singleImage);
-  addItem(m_mask);
+  addItem(m_maskItem);
 }
 
 ExamScene::~ExamScene() {}
@@ -42,7 +42,7 @@ void ExamScene::toggleCalibrationMode(bool state)
 
 void ExamScene::setMaskOpacityLevel(int value)
 {
-  m_mask->setBrush(QColor(255, 255, 255, value));
+  m_maskItem->setBrush(QColor(255, 255, 255, value));
 }
 
 void ExamScene::toggleFieldsVisibility(bool state)
@@ -63,7 +63,7 @@ void ExamScene::loadAnswerSheet()
   {
     m_singleImage->setPixmap(p);
     m_singleImage->setImageSize(p.size());
-    m_mask->setMaskSize(p.size());
+    m_maskItem->setMaskSize(p.size());
   }
   if (m_jsonData)
   {
@@ -71,6 +71,10 @@ void ExamScene::loadAnswerSheet()
     m_singleImage->setJSONData(m_jsonData);
     toggleCalibrationMode(calibrationMode);
     toggleFieldsVisibility(fieldsAreVisible);
+    for (auto &a : m_singleImage->currentAtomicBoxItems())
+    {
+      m_maskItem->addFieldToHighlight(a->polygon());
+    }
   }
   emit newPageLoaded(p.size());
 }

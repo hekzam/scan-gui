@@ -3,8 +3,10 @@
 FieldItem::FieldItem(QGraphicsItem *parent) : QGraphicsPolygonItem(parent)
 {
   pen.setWidth(4);
-  pen.setColor(Qt::red);
+  pen.setColor(QColorConstants::Red); // can be replaced by Qt::red
+  brush.setStyle(Qt::NoBrush);
   setPen(pen);
+  setBrush(brush);
 }
 
 FieldItem::~FieldItem() {}
@@ -19,50 +21,42 @@ qreal FieldItem::getPenWidth()
   return pen.widthF();
 }
 
+fieldType FieldItem::getType()
+{
+  return m_Type;
+}
+
+void FieldItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e)
+{
+  // QGraphicsItem::mouseDoubleClickEvent(e);
+}
+
 QMap<QString, QList<QVariant>> FieldItem::sendNewDataToLib(fieldType type,
                                                            QString identifier,
                                                            QList<QVariant> data)
 {
   QMap<QString, QList<QVariant>> map;
 
-  /* maybe there's no need for a switch case if there's no further manipulations
+  /* no need for a switch case if there's no further manipulations
    * to be done on the data
    */
-
   switch (type)
   {
-  case marker:
-    map[identifier] << QPoint(10, 10) << QPoint(10, 20) << QPoint(20, 20)
-                    << QPoint(20, 10);
+  case ItemTypeMarker:
     break;
-  case atomicBox:
-    map[identifier] << false;
+  case ItemTypeAtomicBox:
     break;
-  case ocr:
-    map[identifier] << QString("what the hell");
+  case ItemTypeOCR:
     break;
   default:
     qWarning() << "what is you doing";
   }
+  map[identifier] = data;
+  qDebug() << map;
   return map;
 }
 
-QPoint FieldItem::getFieldDocPosition()
+QPointF FieldItem::getFieldImgPosition()
 {
-  return fieldPositionDocRel;
-}
-
-QPoint FieldItem::getFieldImgPosition()
-{
-  return fieldPositionImageRelative;
-}
-
-QSize FieldItem::getSizeImageRelative()
-{
-  return fieldSizeImageRel;
-}
-
-QSize FieldItem::getSizeDocRelative()
-{
-  return fieldSizeDocRel;
+  return pos();
 }

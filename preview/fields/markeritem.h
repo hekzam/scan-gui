@@ -17,6 +17,8 @@ public:
   // void setPosition(const QPoint pos);
   // void setPosition(const QPointF pos);
 
+protected:
+  // mouse events
 private:
   // QList<QPoint> points;
   // QPoint position;

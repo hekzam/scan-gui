@@ -32,6 +32,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         preview/examscene.h preview/examscene.cpp
         preview/examviewport.h preview/examviewport.cpp
         preview/externalpreviewdialog.h preview/externalpreviewdialog.cpp
+        preview/pagemask.h preview/pagemask.cpp
         preview/singlepage.h preview/singlepage.cpp
         preview/fields/fielditem.h preview/fields/fielditem.cpp
         preview/fields/markeritem.h preview/fields/markeritem.cpp

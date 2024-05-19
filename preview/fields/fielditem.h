@@ -2,14 +2,17 @@
 #define FIELDITEM_H
 
 #include <QGraphicsPolygonItem>
+#include <QGraphicsSceneMouseEvent>
 #include <QPen>
+
+// #include "../../json/jsonreader.h"
 
 enum fieldType
 {
-  undef,
-  marker,
-  atomicBox,
-  ocr,
+  ItemTypeUndef,
+  ItemTypeMarker,
+  ItemTypeAtomicBox,
+  ItemTypeOCR,
 };
 
 class FieldItem : public QGraphicsPolygonItem
@@ -20,8 +23,10 @@ public:
 
   void setClef(QString clef);
   qreal getPenWidth();
+  fieldType getType();
 
 protected:
+  void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
 
   /*
    * This will send data to the TypstLib :
@@ -35,16 +40,11 @@ protected:
   QMap<QString, QList<QVariant>>
   sendNewDataToLib(fieldType type, QString identifier, QList<QVariant> data);
 
-  // relative to the image ? relative to the JSON ?
-  QPoint getFieldDocPosition();
-  QPoint getFieldImgPosition();
-  // same question here
-  // also doesn't make sense if every item can be a polygon
-  QSize getSizeImageRelative();
-  QSize getSizeDocRelative();
+  // relative to the image ?
+  QPointF getFieldImgPosition();
 
   bool visible = true; // true by default ?
-  // ??
+  // maybe not useful
   QPoint fieldPositionDocRel;
   QPoint fieldPositionImageRelative;
   QSize fieldSizeDocRel;
@@ -53,6 +53,7 @@ protected:
   fieldType m_Type;
 
   QPen pen;
+  QBrush brush;
 };
 
 #endif // FIELDITEM_H

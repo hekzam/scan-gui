@@ -4,7 +4,9 @@ OCRItem::OCRItem(QGraphicsItem *parent) : FieldItem(parent)
 {
 
   pen.setColor(Qt::green);
-  m_Type = fieldType::ocr;
+  setPen(pen);
+  // setBrush(brush);
+  m_Type = fieldType::ItemTypeOCR;
 }
 
 OCRItem::~OCRItem() {}

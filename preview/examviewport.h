@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QWheelEvent>
 #include "examscene.h"
+#include "pagemask.h"
 #include "singlepage.h"
 #include "../json/jsonreader.h"
 
@@ -29,15 +30,18 @@ public:
 
   void scaleToOneOnOne();
 
-  // is the data really const ???
-  void loadImage(const QString &imgfilename, const mJSON::dataCopieJSON &data,
-                 const int col);
-  void loadImage(const QString &imgfilename);
+  // // is the data really const ???
+  // void loadImage(const QString &imgfilename, const mJSON::dataCopieJSON
+  // &data,
+  //                const int col);
+  // void loadImage(const QString &imgfilename);
 
 public slots:
-  void toggleCalibrationMode(bool state);
+  // void toggleCalibrationMode(bool state);
   void rotateImage(int value);
-  void toggleFieldsVisibility(bool visible);
+  void scaleToWidgetSize(QSize newImageSize);
+  // void setMaskOpacityLevel(int value);
+  // void toggleFieldsVisibility(bool state);
 
 protected:
 #if QT_CONFIG(wheelevent)
@@ -57,25 +61,7 @@ signals:
   void imageRotationChanged(int angle);
 
 private:
-  void loadAnswerSheet();
-  void scaleToWidgetSize();
   void fitROIInView(QRect &);
-  // TODO
-  // QPoint mapJSONCoordonateToImage();
-  // QPoint mapImageCoordonateToJSON();
-  // void drawRectangle(x,y,w,h);
-  // void removeRectangle(???); // by clicking on one
-  // void removeAllrectangles // remove all children of single page
-  // comment sauvegarder ? nom du pixmap
-
-  // une scene ou deux ?
-  QString m_currentImageFilename = "";
-  // QString m_currentJsonFilename = "";
-  // this can't be const, I WANT to be able to modify this
-  const mJSON::dataCopieJSON *m_jsonData = nullptr;
-  int m_currentPageNum;
-  ExamSinglePage *m_singleImage;
-  // QGraphicsScene *gScene;
 
   scaleToFit dimensionToConsider;
 
@@ -83,11 +69,6 @@ private:
   qreal m_scale = 1.0;
   qreal m_rotation = 0;
   QRect m_ROI = QRect(0, 0, 0, 0); // region of interest
-
-  // Drawing
-  // enum ? for the mode ? edition, view and calibration
-  bool calibrationMode = false;
-  QPen pen;
 };
 } // namespace mViewPort
 #endif // EXAMVIEWPORT_H

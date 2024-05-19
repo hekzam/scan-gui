@@ -1,16 +1,16 @@
 #include "atomicboxitem.h"
 
 atomicBoxItem::atomicBoxItem(QGraphicsItem *parent, bool checked)
-    : FieldItem(parent)
+    : FieldItem(parent), value(checked), penFieldChecked(pen),
+      penFieldNotChecked(pen)
 {
-  // get data from the JSON somehow and init the value of the atomicbox
-  pen.setColor(Qt::blue);
-  if (!checked)
-  {
-    pen.setStyle(Qt::DashLine);
-  }
-  setPen(pen);
-  m_Type = fieldType::atomicBox;
+  penFieldNotChecked.setColor(QColorConstants::Blue);
+  penFieldNotChecked.setStyle(Qt::DashLine);
+  penFieldChecked.setColor(QColorConstants::DarkBlue);
+  penFieldChecked.setStyle(Qt::SolidLine);
+
+  setPen(value ? penFieldChecked : penFieldNotChecked);
+  m_Type = fieldType::ItemTypeAtomicBox;
 }
 
 atomicBoxItem::atomicBoxItem(QGraphicsItem *parent)
@@ -19,3 +19,21 @@ atomicBoxItem::atomicBoxItem(QGraphicsItem *parent)
 }
 
 atomicBoxItem::~atomicBoxItem() {}
+
+void atomicBoxItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e)
+{
+  if (e->button() == Qt::LeftButton)
+  {
+    changeValue();
+  }
+  FieldItem::mouseDoubleClickEvent(e);
+}
+
+void atomicBoxItem::changeValue()
+{
+  value = !value; // inv
+  setPen(value ? penFieldChecked : penFieldNotChecked);
+  QList<QVariant> data;
+  data << value;
+  sendNewDataToLib(m_Type, m_clef, data);
+}

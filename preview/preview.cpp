@@ -39,15 +39,14 @@ void ExamPreview::createPreviewButtonBox()
   previewButtonBox = new QGroupBox(this);
   auto previewButtonLayout = new QGridLayout(previewButtonBox);
 
-  // auto rotateSlider = new QSlider(Qt::Horizontal, previewButtonBox);
-  // rotateSlider->setMinimum(-180);
-  // rotateSlider->setMaximum(180);
-  // rotateSlider->setPageStep(30);
-  // rotateSlider->setSingleStep(10);
-  // rotateSlider->setValue(0);
-  // rotateSlider->setToolTip(tr("Ths slider controls the rotation of the
-  // page")); auto resetRotation = new QPushButton(tr("reset Rotation"),
-  // previewButtonBox);
+  auto opacitySlider = new QSlider(Qt::Horizontal, previewButtonBox);
+  opacitySlider->setMinimum(0);
+  opacitySlider->setMaximum(255); // rgba value
+  opacitySlider->setPageStep(25);
+  opacitySlider->setSingleStep(5);
+  opacitySlider->setValue(0);
+  opacitySlider->setToolTip(tr("This slider controls the opacity of the mask"));
+  auto resetOpacity = new QPushButton(tr("reset Opacity"), previewButtonBox);
 
   auto thresholdSlider = new QSlider(Qt::Horizontal, previewButtonBox);
   thresholdSlider->setMinimum(0);
@@ -76,12 +75,12 @@ void ExamPreview::createPreviewButtonBox()
   highlightFieldsCheckBox->setChecked(true);
   calibrationModeSelectorCheckBox->setChecked(false);
 
-  // connect(rotateSlider, &QSlider::valueChanged, baseViewport,
-  //         &ExamViewPort::rotateImage);
+  connect(opacitySlider, &QSlider::valueChanged, baseScene,
+          &ExamScene::setMaskOpacityLevel);
 
-  // connect(resetRotation, &QPushButton::clicked, rotateSlider,
-  //         [rotateSlider] { rotateSlider->setValue(0); });
-  // connect(baseViewport, &ExamViewPort::imageRotationChanged, rotateSlider,
+  connect(resetOpacity, &QPushButton::clicked, opacitySlider,
+          [opacitySlider] { opacitySlider->setValue(0); });
+  // connect(baseViewport, &ExamViewPort::imageRotationChanged, opacitySlider,
   //         &QSlider::setValue);
 
   // TODO : Threshold connect
@@ -96,14 +95,14 @@ void ExamPreview::createPreviewButtonBox()
           &ExamPreview::markExamSheetAsValidated);
 
   // connect(transformButton....)
-  connect(highlightFieldsCheckBox, &QCheckBox::clicked, baseViewport,
-          &ExamViewPort::toggleFieldsVisibility);
-  connect(calibrationModeSelectorCheckBox, &QCheckBox::clicked, baseViewport,
-          &ExamViewPort::toggleCalibrationMode);
+  connect(highlightFieldsCheckBox, &QCheckBox::clicked, baseScene,
+          &ExamScene::toggleFieldsVisibility);
+  connect(calibrationModeSelectorCheckBox, &QCheckBox::clicked, baseScene,
+          &ExamScene::toggleCalibrationMode);
 
-  // previewButtonLayout->addWidget(rotateSlider, 0, 0, 1, 2);
-  // previewButtonLayout->addWidget(resetRotation, 0, 2);
-  previewButtonLayout->addWidget(thresholdSlider, 0, 3, 1, 1);
+  previewButtonLayout->addWidget(opacitySlider, 0, 0, 1, 2);
+  previewButtonLayout->addWidget(resetOpacity, 0, 2);
+  previewButtonLayout->addWidget(thresholdSlider, 0, 3);
   previewButtonLayout->addWidget(viewWholePageButton, 1, 0);
   previewButtonLayout->addWidget(deletePageButton, 1, 1);
   previewButtonLayout->addWidget(assignPageButton, 1, 2);
@@ -124,6 +123,9 @@ void ExamPreview::createBasePreview()
   baseScene = new ExamScene(basePreview);
   baseViewport = new ExamViewPort(baseScene, basePreview);
 
+  connect(baseScene, &ExamScene::newPageLoaded, baseViewport,
+          &ExamViewPort::scaleToWidgetSize);
+
   basePreviewLayout->addWidget(baseViewport);
   previewStack->addWidget(basePreview);
 }
@@ -142,8 +144,11 @@ void ExamPreview::createGridPreview()
 
   // *** TEST ***
   QString ut3_testfn = ":/preview/resources/logo-UT3 modif.png";
-  gridViewport->loadImage(ut3_testfn);
+  /*gridViewport*/ gridScene->loadImage(ut3_testfn);
   // *** END TEST ***
+
+  // connect(gridScene, &ExamScene::rescale, gridViewport,
+  //         &ExamViewPort::scaleToWidgetSize);
 
   gridPreviewLayout->addWidget(gridViewport);
   previewStack->addWidget(gridPreview);
@@ -168,7 +173,7 @@ void ExamPreview::onAction_DialogClosedTriggered()
 void ExamPreview::onAction_CurrentTableElementChanged(
     const QString &imagePath, const mJSON::dataCopieJSON &data, const int col)
 {
-  baseViewport->loadImage(imagePath, data, col);
+  baseScene->loadImage(imagePath, data, col);
 }
 
 void ExamPreview::nextImage() {}

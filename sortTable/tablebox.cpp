@@ -2,7 +2,8 @@
 
 using namespace std;
 
-TableBox::TableBox(QList<JsonLinker::fieldInfo> const& fields, QWidget *dockParent, QMap<QString, dataCopieJSON*> const& fileDataMap, QWidget *parent) : QGroupBox(parent), firstAppearence(true), m_fileDataMap(fileDataMap) {
+
+TableBox::TableBox(QMap<QString, CopyInfo> const& copies, QWidget *dockParent, QWidget *parent) : QGroupBox(parent), firstAppearence(true) {
     setTitle("Evaluation table");
     sortBox = new QGroupBox(this);
 
@@ -23,7 +24,7 @@ TableBox::TableBox(QList<JsonLinker::fieldInfo> const& fields, QWidget *dockPare
 
     initRegEx();
     initTableFilter();
-    initTableView(fields);
+    initTableView(copies);
     connect(sortTable, &QTableWidget::cellClicked, this, &TableBox::sendNewFilePaths);
 }
 
@@ -104,7 +105,7 @@ void TableBox::displayTableFilter(){
     }
 }
 
-void TableBox::initTableView(QList<JsonLinker::fieldInfo> const& fields){
+void TableBox::initTableView(QMap<QString, CopyInfo> const& copies){
 
     QHBoxLayout *sortButtonLayout = new QHBoxLayout;
     sortButtonLayout->addWidget(textZone);
@@ -118,7 +119,7 @@ void TableBox::initTableView(QList<JsonLinker::fieldInfo> const& fields){
 
     evalLayout->addWidget(sortTable);
 
-    sortTable->initSortTable(fields);
+    sortTable->initSortTable(copies);
 
     setLayout(evalLayout);
 }
@@ -132,16 +133,15 @@ void TableBox::initRegEx()
 
 void TableBox::sendNewFilePaths(int row, int col)
 {
-    QString filePath(sortTable->item(row,SortTable::COL_PATH)->text());
-    QString syntaxVal(sortTable->item(row,SortTable::COL_SYNTAX)->data(Qt::UserRole).toString());
-    QString fileIdentifier(sortTable->item(row,SortTable::COL_COPY)->text());
-    dataCopieJSON const& data = *m_fileDataMap[fileIdentifier];
-    qDebug() << "filePath" << filePath;
-    qDebug() << syntaxVal;
-    for (coordinates const& coordinate : *data.documentFields){
+    //QString filePath(sortTable->item(row,SortTable::COL_PATH)->text());
+    //QString syntaxVal(sortTable->item(row,SortTable::COL_SYNTAX)->data(Qt::UserRole).toString());
+    //QString fileIdentifier(sortTable->item(row,SortTable::COL_COPY)->text());
+    //qDebug() << "filePath" << filePath;
+    //qDebug() << syntaxVal;
+    /*for (coordinates const& coordinate : *data.documentFields){
         qDebug() << coordinate.clef << coordinate.x << coordinate.y << coordinate.h << coordinate.w;
-    }
-    emit sendDataToPreview(filePath, data, col);
+    }*/
+    //emit sendDataToPreview(filePath, data, col);
 }
 
 void TableBox::searchProcessing(){

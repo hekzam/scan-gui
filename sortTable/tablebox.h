@@ -22,7 +22,7 @@ class TableBox : public QGroupBox
 {
     Q_OBJECT
 public:
-    TableBox(QList<JsonLinker::fieldInfo> const& fields, QWidget *dockParent, QMap<QString,dataCopieJSON*> const& fileDataMap, QWidget *parent = nullptr);
+    TableBox(QMap<QString, CopyInfo> const& copies, QWidget *dockParent, QWidget *parent = nullptr);
 
 private:
     SortTable *sortTable;
@@ -46,8 +46,6 @@ private:
     // selected columns for search
     QList<int> selectedColumns;
 
-    QMap<QString,dataCopieJSON *> const& m_fileDataMap;
-
     bool firstAppearence;
 
     // to delete ??
@@ -55,7 +53,7 @@ private:
     QStringList meantSearchesList;
 
     void initTableFilter();
-    void initTableView(QList<JsonLinker::fieldInfo> const& fields);
+    void initTableView(QMap<QString, CopyInfo> const& copies);
     void initRegEx();
 
     void sendNewFilePaths(int row, int col);

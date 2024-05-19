@@ -25,12 +25,16 @@ public:
     };
 
     explicit SortTable(QWidget *parent=nullptr);
-    void initSortTable(QList<JsonLinker::fieldInfo> const& fields);
+    void initSortTable(QMap<QString, CopyInfo> const& copies);
     ~SortTable();
 
   private:
     QList<QFile*> fileList;
     QStringList headerList;
+
+    void insertCopy(int& ligne, CopyInfo const& copy);
+    int insertPage(int& line, PageInfo const& page, CopyInfo const& copy);
+    void insertField(int& line, FieldInfo const& field, PageInfo const& page, CopyInfo const& copy);
 
 public slots:
     void editColumn(int checkState, int column);

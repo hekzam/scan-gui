@@ -37,6 +37,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         sortTable/sorttable.h sortTable/sorttable.cpp
         sortTable/progresscell.h sortTable/progresscell.cpp
         json/jsonlinker.h json/jsonlinker.cpp
+        scaninfo.h
+
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET scan-gui APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

@@ -190,9 +190,8 @@ void MainWindow::createEvaluationView()
 
     // Deuxième split / partie haute.
 
-    QList<JsonLinker::fieldInfo> paths = jsonLinker.collectFields(scanFilePaths, jsonFilePaths);
-    QMap<QString, dataCopieJSON*> const& fileDataMap = jsonLinker.getFileDataMap();
-    TableBox *tableBox = new TableBox(paths, this, fileDataMap, evaluationView);
+    QMap<QString,CopyInfo> const& copies = jsonLinker.collectFields(scanFilePaths, jsonFilePaths);
+    TableBox *tableBox = new TableBox(copies, this, evaluationView);
 
     verticalSplitter -> addWidget(tableBox);
 

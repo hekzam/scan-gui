@@ -101,20 +101,20 @@ int jsonreader::getCoordinates()
   listeCopies->append(a);
 
   // UNCOMMENT FOR DEBUG INFO
-  for (auto &c : *a->documentFields)
-  {
-    qDebug() << c.clef << c.x << c.y << c.h << c.w << c.pagenum;
-  }
-  qDebug() << "markers";
-  for (auto &c : *a->documentMarkers)
-  {
-    qDebug() << c.clef << c.x << c.y << c.h << c.w << c.pagenum;
-  }
-  for (auto &s : *a->documentSizes)
-  {
-    qDebug() << s.numpage << s.pS;
-  }
-  return listeCopies->indexOf(a); // -1 on error
+  // for (auto &c : *a->documentFields)
+  // {
+  //   qDebug() << c.clef << c.x << c.y << c.h << c.w << c.pagenum;
+  // }
+  // qDebug() << "markers";
+  // for (auto &c : *a->documentMarkers)
+  // {
+  //   qDebug() << c.clef << c.x << c.y << c.h << c.w << c.pagenum;
+  // }
+  // for (auto &s : *a->documentSizes)
+  // {
+  //   qDebug() << s.numpage << s.pS;
+  // }
+  return listeCopies->indexOf(a); // -1 on error (defined by Qt)
 }
 
 void jsonreader::parseValues(QJsonObject &o, coordinates &coo)
@@ -126,19 +126,19 @@ void jsonreader::parseValues(QJsonObject &o, coordinates &coo)
                                      << "page");
   if (const QJsonValue v = o[cKeys.at(0)]; v.isDouble())
   {
-    coo.x = /*qFloor*/ (v.toDouble());
+    coo.x = v.toDouble();
   }
   if (const QJsonValue v = o[cKeys.at(1)]; v.isDouble())
   {
-    coo.y = /*qFloor*/ (v.toDouble());
+    coo.y = v.toDouble();
   }
   if (const QJsonValue v = o[cKeys.at(2)]; v.isDouble())
   {
-    coo.h = /* round*/ (v.toDouble());
+    coo.h = v.toDouble();
   }
   if (const QJsonValue v = o[cKeys.at(3)]; v.isDouble())
   {
-    coo.w = /* round*/ (v.toDouble());
+    coo.w = v.toDouble();
   }
   if (const QJsonValue v = o[cKeys.at(4)]; v.isDouble())
   {
@@ -158,14 +158,12 @@ void jsonreader::identifyMarkers(QJsonObject &o, coordinates &coo)
   a->addMarker(coo);
 }
 
-// la taille de chaque doc telle que rapportée par le parser devrait être la
-// même
 void jsonreader::calculateDocumentSize()
 {
   coordinates topleft;
   coordinates bottomright;
   dataCopieJSON::pageSize ps;
-  // could be optimised
+  // could be optimised, we're just trying to make stuff work
   if (!a->documentMarkers->empty())
   {
     for (int c = 1; c <= a->pagecount; c++)
@@ -183,10 +181,11 @@ void jsonreader::calculateDocumentSize()
           bottomright = *i;
         }
       }
+      // could check if we actually find them beforehand
       if (topleft.pagenum == bottomright.pagenum)
       {
-        QSize ds =
-            QSize(2 * topleft.x + bottomright.x, 2 * topleft.y + bottomright.y);
+        QSize ds = QSize(bottomright.x + bottomright.w + topleft.x,
+                         bottomright.y + bottomright.h + topleft.y);
         ps.numpage = c;
         ps.pS = ds;
         a->documentSizes->append(ps);

@@ -8,6 +8,8 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     setMinimumSize(1280,720);
+    settings.loadSettings();
+    setGeometry(QRect(settings.getWindowPosition(), settings.getWindowSize()));
     createMenuBar();
     createMainStack();
     createWelcomeView();
@@ -17,6 +19,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    settings.setWindowPosition(pos());
+    settings.setWindowSize(size());
+    settings.saveSettings();
 }
 
 void MainWindow::createMenuBar()

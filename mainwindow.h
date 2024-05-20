@@ -12,6 +12,7 @@
 #include <QLineEdit>
 #include "sortTable/tablebox.h"
 #include "json/jsonlinker.h"
+#include "data/settings.h"
 
 class ExamPreview;
 class MainWindow : public QMainWindow
@@ -58,6 +59,8 @@ private:
     QWidget *evaluationView;
 
     JsonLinker jsonLinker;
+
+    Settings settings;
 };
 
 #endif // MAINWINDOW_H

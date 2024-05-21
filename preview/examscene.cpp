@@ -2,7 +2,7 @@
 using namespace mJSON;
 
 ExamScene::ExamScene(QObject *parent)
-    : QGraphicsScene{parent}, m_currentPageNum(1)
+    : QGraphicsScene{parent}, m_currentPageNum(1) //
 {
   setBackgroundBrush(Qt::gray);
   m_singleImage = new ExamSinglePage();
@@ -18,6 +18,7 @@ void ExamScene::loadImage(const QString &imgfilename, const dataCopieJSON &data,
 {
   m_currentImageFilename = imgfilename;
   m_jsonData = &data;
+  // m_currentPageNum = ??? // set the correct page number here if it exists
   loadAnswerSheet();
 }
 
@@ -30,12 +31,8 @@ void ExamScene::loadImage(const QString &imgfilename)
 void ExamScene::toggleCalibrationMode(bool state)
 {
   calibrationMode = state;
-  // if (fieldsAreVisible && calibrationMode)
-  // {
-  //   toggleFieldsVisibility(false);
-  // }
   m_singleImage->toggleMarkerVisibility(state);
-  // TODO: enable drawing of polygons by drag and drop, exit draw mode on
+  // TODO ? : enable drawing of polygons by drag and drop, exit draw mode on
   // mouse release ?
   // other things to toggle here (dragmode...)
 }

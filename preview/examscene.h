@@ -30,9 +30,9 @@ private:
   void loadAnswerSheet();
 
   QString m_currentImageFilename = "";
-  // this can't be const, I WANT to be able to modify this
   const mJSON::dataCopieJSON *m_jsonData = nullptr;
-  int m_currentPageNum;
+  int m_currentPageNum; // holds the num of the page being viewed (initialized
+                        // to 1 in the constructor)
   ExamSinglePage *m_singleImage;
   PageMask *m_maskItem;
 

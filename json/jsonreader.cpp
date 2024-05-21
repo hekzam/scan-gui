@@ -184,8 +184,10 @@ void jsonreader::calculateDocumentSize()
       // could check if we actually find them beforehand
       if (topleft.pagenum == bottomright.pagenum)
       {
-        QSize ds = QSize(bottomright.x + bottomright.w + topleft.x,
-                         bottomright.y + bottomright.h + topleft.y);
+        // here the page is assumed to always be standard A4
+        QSize ds = QSize(210, 297);
+        // QSize ds = QSize(bottomright.x + bottomright.w + topleft.x,
+        //                  bottomright.y + bottomright.h + topleft.y);
         ps.numpage = c;
         ps.pS = ds;
         a->documentSizes->append(ps);

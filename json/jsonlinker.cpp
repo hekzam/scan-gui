@@ -17,19 +17,18 @@ void JsonLinker::initialiseMaps(QStringList const& jsonPaths){
         QString copyName = jsonNameAndExtension.section("-",0,2); //(ex : 1-0-0)
         //We store the data structure in a map in order to give the informations to the preview later
         dataCopieJSON *data(loadAndGetJsonCoords(jsonPath));
-        if(!fileCopyMap.contains(copyName))
+        if(fileCopyMap.find(copyName) == fileCopyMap.end())
             fileCopyMap[copyName] = CopyInfo(copyName,data);
         //For each field we search for the corresponding file name in the map
         //We store the fields even though we already store the data in order to display them on the table according to the file they belong to
         for (coordinates const& coordinate : *data->documentFields){
             QString const pageName = "page" + QString::number(coordinate.pagenum); // (ex : page1)
             fileCopyMap[copyName].addFieldToPage(pageName,coordinate.clef);
-            qDebug() << "Page in JSON : " << copyName+"-"+pageName;
         }
     }
 }
 
-QMap<QString,CopyInfo> const& JsonLinker::collectFields(QStringList const& filePaths, QStringList const& jsonPaths){
+std::map<QString,CopyInfo>& JsonLinker::collectFields(QStringList const& filePaths, QStringList const& jsonPaths){
     initialiseMaps(jsonPaths);
     //For each file, we collect the fields and add them to the field list
     for (QString const& filePath : filePaths){
@@ -38,7 +37,7 @@ QMap<QString,CopyInfo> const& JsonLinker::collectFields(QStringList const& fileP
         QString copyName = fileNameAndExtension.section("-",0,2); //(ex : 1-0-0)
         QString pageName = fileName.section("-",3); //(ex : page1)
 
-        if (!fileCopyMap.contains(copyName))
+        if (fileCopyMap.find(copyName) == fileCopyMap.end())
             //If a copy was not added during the json loading we add it in order to collect the pages that will not be associated to any JSON
             fileCopyMap[copyName] = CopyInfo(copyName);
 

@@ -11,8 +11,12 @@
 #include <QLabel>
 #include <QRegularExpression>
 #include <QDebug>
+#include <QStackedWidget>
+#include <QScrollBar>
 #include "sorttable.h"
 #include "../json/jsonlinker.h"
+#include "fieldviewtable.h"
+#include "groupviewtable.h"
 #include <vector>
 #include <algorithm>
 #include <iostream>
@@ -22,10 +26,12 @@ class TableBox : public QGroupBox
 {
     Q_OBJECT
 public:
-    TableBox(QMap<QString, CopyInfo> const& copies, QWidget *dockParent, QWidget *parent = nullptr);
+    TableBox(std::map<QString, CopyInfo>& copies, QWidget *dockParent, QWidget *parent = nullptr);
 
 private:
-    SortTable *sortTable;
+    QStackedWidget *tableWidget;
+    SortTable *groupTable;
+    SortTable *fieldTable;
     QDockWidget *sortDock;
     QGroupBox *sortBox;
     QPushButton *sortButton;
@@ -53,13 +59,15 @@ private:
     QStringList meantSearchesList;
 
     void initTableFilter();
-    void initTableView(QMap<QString, CopyInfo> const& copies);
+    void initTableView();
     void initRegEx();
 
-    void sendNewFilePaths(int row, int col);
+    void collectDataGroup(int row, int col);
+    void collectDataField(int row, int col);
+
 
   signals:
-    void sendDataToPreview(QString const&, dataCopieJSON const&, const int);
+    void sendDataToPreview(QString const&);
 
   private slots:
     void displayTableFilter();

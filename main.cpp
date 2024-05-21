@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
             break;
         }
     }
+    qRegisterMetaType<CopyInfo*>("CopyInfo*");
     MainWindow w;
     w.show();
 

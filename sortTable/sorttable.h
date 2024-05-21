@@ -13,8 +13,7 @@ class SortTable : public QTableWidget
     Q_OBJECT
 public:
     enum Columns {
-        COL_PATH = 0,
-        COL_COPY,
+        COL_COPY = 0,
         COL_PAGE,
         COL_FIELD,
         COL_SYNTAX,
@@ -24,17 +23,14 @@ public:
         NB_COL
     };
 
-    explicit SortTable(QWidget *parent=nullptr);
-    void initSortTable(QMap<QString, CopyInfo> const& copies);
-    ~SortTable();
+    SortTable(std::map<QString, CopyInfo>& copies, QWidget *parent=nullptr);
+    virtual void initSortTable() = 0;
 
-  private:
-    QList<QFile*> fileList;
+private:
     QStringList headerList;
 
-    void insertCopy(int& ligne, CopyInfo const& copy);
-    int insertPage(int& line, PageInfo const& page, CopyInfo const& copy);
-    void insertField(int& line, FieldInfo const& field, PageInfo const& page, CopyInfo const& copy);
+protected:
+    std::map<QString, CopyInfo>& copyMap;
 
 public slots:
     void editColumn(int checkState, int column);

@@ -38,6 +38,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         sortTable/progresscell.h sortTable/progresscell.cpp
         json/jsonlinker.h json/jsonlinker.cpp
         scaninfo.h
+        sortTable/fieldviewtable.h sortTable/fieldviewtable.cpp
+        sortTable/groupviewtable.h sortTable/groupviewtable.cpp
 
     )
 # Define target properties for Android with Qt 6 as:

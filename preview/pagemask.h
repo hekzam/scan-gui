@@ -18,6 +18,7 @@ private:
   QPainterPath m_path;
   QPainterPath fieldHighlightPath;
   QBrush m_brush;
+  QPen m_pen;
 };
 
 #endif // PAGEMASK_H

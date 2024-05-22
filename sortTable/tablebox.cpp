@@ -3,7 +3,7 @@
 using namespace std;
 
 
-TableBox::TableBox(std::map<QString, CopyInfo>& copies, QWidget *dockParent, QWidget *parent) : QGroupBox(parent), firstAppearence(true) {
+TableBox::TableBox(std::map<QString, SubjectInfo>& copies, QWidget *dockParent, QWidget *parent) : QGroupBox(parent), firstAppearence(true) {
     setTitle("Evaluation table");
     sortBox = new QGroupBox(this);
 
@@ -37,6 +37,13 @@ void TableBox::initTableFilter(){
     sortButton->setFixedSize(50,50);
     sortButton->setStyleSheet("background-color :#E1912F");
     connect(sortButton,&QPushButton::clicked,this,&TableBox::displayTableFilter);
+
+    QCheckBox *subject = new QCheckBox("Subject",sortBox);
+    subject->setCheckState(Qt::Checked);
+    connect(subject,&QCheckBox::stateChanged,this,[this](int state){
+        groupTable -> editColumn(state, groupTable -> COL_SUBJECT);
+        fieldTable -> editColumn(state, fieldTable -> COL_SUBJECT);
+    });
 
     QCheckBox *copy = new QCheckBox("Copy",sortBox);
     copy->setCheckState(Qt::Checked);
@@ -87,6 +94,7 @@ void TableBox::initTableFilter(){
 
     QVBoxLayout *sortBoxLayout = new QVBoxLayout;
     sortBoxLayout->setSpacing(10);
+    sortBoxLayout->addWidget(subject);
     sortBoxLayout->addWidget(copy);
     sortBoxLayout->addWidget(page);
     sortBoxLayout->addWidget(field);
@@ -177,28 +185,56 @@ void TableBox::initRegEx()
 
 void TableBox::collectDataGroup(int row, int col)
 {
-    QString pageName(groupTable->item(row,SortTable::COL_PAGE)->text());
-    if (groupTable->item(row,SortTable::COL_FIELD))
-        QString fieldName(groupTable->item(row,SortTable::COL_FIELD)->text());
-    QVariant copyVariant = groupTable->item(row,SortTable::COL_COPY)->data(Qt::UserRole);
-    CopyInfo *copy = copyVariant.value<CopyInfo*>();
-    QString const& filePath = copy->m_copyPageMap[pageName].m_filePath;
-    qDebug() << copy->m_copyName << copy->m_copyPageMap[pageName].m_pageName << filePath;
-    if (filePath != "")
-        emit sendDataToPreview(filePath);
+    QTableWidgetItem *item = groupTable->item(row,col);
+    if(!item)
+        return;
+    QVariant dataVariant = item->data(Qt::UserRole);
+    if (!dataVariant.isValid())
+        qDebug() << "No data for this cell";
+    else
+        transferData(dataVariant,col);
 }
 
 void TableBox::collectDataField(int row, int col)
 {
-    QString pageName(fieldTable->item(row,SortTable::COL_PAGE)->text());
-    if (fieldTable->item(row,SortTable::COL_FIELD))
-        QString fieldName(fieldTable->item(row,SortTable::COL_FIELD)->text());
-    QVariant copyVariant = fieldTable->item(row,SortTable::COL_COPY)->data(Qt::UserRole);
-    CopyInfo *copy = copyVariant.value<CopyInfo*>();
-    QString const& filePath = copy->m_copyPageMap[pageName].m_filePath;
-    qDebug() << copy->m_copyName << copy->m_copyPageMap[pageName].m_pageName << filePath;
-    if (filePath != "")
-        emit sendDataToPreview(filePath);
+    QTableWidgetItem *item = fieldTable->item(row,col);
+    if(!item)
+        return;
+    QVariant dataVariant = item->data(Qt::UserRole);
+    if (!dataVariant.isValid())
+        qDebug() << "No data for this cell";
+    else
+        transferData(dataVariant,col);
+}
+
+void TableBox::transferData(QVariant& dataVariant, int col){
+    switch(col){
+        case(SortTable::COL_SUBJECT):{
+            SubjectInfo *subject = dataVariant.value<SubjectInfo *>();
+            QStringList pagePaths = subject->getCopiesPathList();
+            qDebug() << pagePaths;
+            break;
+        }
+        case(SortTable::COL_COPY):{
+            CopyInfo *copy = dataVariant.value<CopyInfo *>();
+            QStringList copiesPaths = copy->getPagesPathList();
+            qDebug() << copiesPaths;
+            break;
+        }
+        case(SortTable::COL_PAGE):{
+            PageInfo *page = dataVariant.value<PageInfo *>();
+            QString pagePath = page->getFilePath();
+            qDebug() << pagePath;
+            break;
+        }
+        case(SortTable::COL_FIELD):{
+            FieldInfo *field = dataVariant.value<FieldInfo *>();
+            QString fieldName = field->getFieldName();
+            qDebug() << fieldName;
+            break;
+        }
+    }
+    //emit sendDataToPreview(filePath);
 }
 
 void TableBox::searchProcessing(){

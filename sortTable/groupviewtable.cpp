@@ -1,91 +1,128 @@
 #include "groupviewtable.h"
 
-GroupViewTable::GroupViewTable(std::map<QString, CopyInfo>& copies, QWidget *parent) : SortTable(copies, parent) {}
+GroupViewTable::GroupViewTable(std::map<QString, SubjectInfo>& copies, QWidget *parent) : SortTable(copies, parent){
+    setSortingEnabled(false);
+}
 
-void GroupViewTable::insertField(int line, FieldInfo& field, PageInfo& page, CopyInfo& copy){
+void GroupViewTable::insertField(int& line, SubjectInfo& subject, CopyInfo& copy, PageInfo& page, FieldInfo& field){
     int progress = std::rand() % 101;
     int semantique = std::rand() % 2;
-    field.m_syntax = progress;
-    field.m_value = "value";
+    field.setSyntax(progress);
+    field.setValue("value");
 
-    QTableWidgetItem *copyItem = new QTableWidgetItem(copy.m_copyName);
+    QTableWidgetItem *subjectItem = new QTableWidgetItem(subject.getSubjectName());
+    subjectItem->setData(Qt::UserRole,QVariant::fromValue(&subject));
+    QTableWidgetItem *copyItem = new QTableWidgetItem(copy.getCopyName());
     copyItem->setData(Qt::UserRole,QVariant::fromValue(&copy));
-    QTableWidgetItem *pageItem = new QTableWidgetItem(page.m_pageName);
-    QTableWidgetItem *fieldItem = new QTableWidgetItem(field.m_fieldName);
+    QTableWidgetItem *pageItem = new QTableWidgetItem(page.getPageName());
+    pageItem->setData(Qt::UserRole,QVariant::fromValue(&page));
+    QTableWidgetItem *fieldItem = new QTableWidgetItem(field.getFieldName());
+    fieldItem->setData(Qt::UserRole,QVariant::fromValue(&field));
     ProgressCell *progression = new ProgressCell(progress,this);
 
+    insertRow(line);
+    setItem(line,COL_SUBJECT, subjectItem);
     setItem(line,COL_COPY, copyItem);
     setItem(line,COL_PAGE, pageItem);
     setItem(line,COL_FIELD, fieldItem);
     setCellWidget(line,COL_SYNTAX, progression);
     setItem(line,COL_SYNTAX, progression);
     setItem(line,COL_SEMANTIC,new QTableWidgetItem(QString::number(semantique)));
+    line++;
 }
 
 
-void GroupViewTable::insertPage(int& line, PageInfo& page, CopyInfo& copy){
-    //qDebug() << "Line : " << line << "Page : " << copy.m_copyName + "-" + page.m_pageName << "Page span : " << page.m_pageSpan;
-    if (page.m_pageSpan >= 2)
-       setSpan(line,COL_PAGE,page.m_pageSpan,1);
+void GroupViewTable::insertPage(int& line, SubjectInfo& subject, CopyInfo& copy, PageInfo& page){
+    int lineRefPage(line);
 
-    if (!page.m_inJSON){ //This will occur if a selected page was not mentionned in any JSON file
-        QTableWidgetItem *copyItem = new QTableWidgetItem(copy.m_copyName);
+    if (!page.getPageInJSON()){ //This will occur if a selected page was not mentionned in any JSON file
+        insertRow(line);
+        QTableWidgetItem *copyItem = new QTableWidgetItem(copy.getCopyName());
         copyItem->setData(Qt::UserRole,QVariant::fromValue(&copy));
         setItem(line,COL_COPY, copyItem);
-        setItem(line,COL_PAGE, new QTableWidgetItem(QString(page.m_pageName + " not in JSON data!")));
-        line += (page.m_pageSpan) ? page.m_pageSpan : 1;
+        setItem(line,COL_PAGE, new QTableWidgetItem(QString(page.getPageName() + " not in JSON data!")));
+        line ++;
 
         //Error message
-        qDebug() << "The file " << page.m_filePath.section("/",-1) << " is not associated with any JSON file.";
+        qDebug() << "The file " << copy.getCopyName() + "-" + page.getPageName() << " is not associated with any JSON file.";
     }
-    else if (page.m_filePath == ""){ //This will occur if a page was mentionned in a JSON file but was never selected
-        QTableWidgetItem *copyItem = new QTableWidgetItem(copy.m_copyName);
+    else if (!page.getPageInFiles()){ //This will occur if a page was mentionned in a JSON file but was never selected
+        insertRow(line);
+        QTableWidgetItem *copyItem = new QTableWidgetItem(copy.getCopyName());
         copyItem->setData(Qt::UserRole,QVariant::fromValue(&copy));
         setItem(line,COL_COPY, copyItem);
-        setItem(line,COL_PAGE, new QTableWidgetItem(QString(page.m_pageName + " not found!")));
-        line += (page.m_pageSpan) ? page.m_pageSpan : 1;
+        setItem(line,COL_PAGE, new QTableWidgetItem(QString(page.getPageName() + " not found!")));
+        line ++;
 
         //Error message
-        qDebug() << "The file " << copy.m_copyName + "-" + page.m_pageName << " was specified in a JSON file but was not selected.";
+        qDebug() << "The file " << copy.getCopyName() + "-" + page.getPageName() << " was specified in a JSON file but was not selected.";
     }
     else{
-        auto& pageFieldMap = page.m_pageFieldMap;
-        for (auto it = pageFieldMap.begin(); it != pageFieldMap.end(); it++){
+        for (auto it = page.begin(); it != page.end(); it++){
             FieldInfo& field = it->second;
-            insertField(line,field,page,copy);
-            line++;
+            insertField(line,subject,copy,page,field);
         }
     }
+    if (line - lineRefPage >= 2)
+        setSpan(lineRefPage,COL_PAGE,line-lineRefPage,1);
 }
 
 
-void GroupViewTable::insertCopy(int line, CopyInfo& copy){
-    //qDebug() << "Line : " << line << "Copy index : " << copyIndex << "Copy span : " << copy.m_copySpan;
-    //qDebug() << "Copy : " << copy.m_copyName << "Copy span : " << copy.m_copySpan;
-    if (copy.m_copySpan >= 2)
-        setSpan(line,COL_COPY,copy.m_copySpan,1);
+void GroupViewTable::insertCopy(int& line, SubjectInfo& subject, CopyInfo& copy){
+    int lineRefCopy(line);
 
-    auto& copyPageMap = copy.m_copyPageMap;
+    if (!copy.getCopyInJSON()){ //This will occur if a selected page was not mentionned in any JSON file
+        insertRow(line);
+        QTableWidgetItem *subjectItem = new QTableWidgetItem(subject.getSubjectName());
+        subjectItem->setData(Qt::UserRole,QVariant::fromValue(&subject));
+        setItem(line,COL_SUBJECT, subjectItem);
 
-    for (auto it = copyPageMap.begin(); it != copyPageMap.end(); it++) {
-        PageInfo& page = it->second;
-        insertPage(line, page, copy);
+        setItem(line,COL_COPY, new QTableWidgetItem(QString(copy.getCopyName() + " not in JSON data!")));
+        line ++;
+        //Error message
+        qDebug() << "The file " << subject.getSubjectName() + "-" + copy.getCopyName() << " is not associated with any JSON file.";
+    }
+    else if (!copy.getCopyInFiles()){ //This will occur if a page was mentionned in a JSON file but was never selected
+        insertRow(line);
+        QTableWidgetItem *subjectItem = new QTableWidgetItem(subject.getSubjectName());
+        subjectItem->setData(Qt::UserRole,QVariant::fromValue(&subject));
+        setItem(line,COL_SUBJECT, subjectItem);
+
+        setItem(line,COL_COPY, new QTableWidgetItem(QString(copy.getCopyName() + " not found!")));
+        line ++;
+
+        //Error message
+        qDebug() << "The file " << subject.getSubjectName() + "-" + copy.getCopyName() << " was specified in a JSON file but was not selected.";
+    }
+    else{
+        for (auto it = copy.begin(); it != copy.end(); it++){
+            PageInfo& page = it->second;
+            insertPage(line,subject, copy, page);
+        }
+    }
+    if (line - lineRefCopy >= 2)
+        setSpan(lineRefCopy,COL_COPY,line-lineRefCopy,1);
+
+}
+
+void GroupViewTable::insertSubject(int& line, SubjectInfo& subject){
+    int lineRefSubject(line);
+
+    for (auto subjectIt = subject.begin(); subjectIt != subject.end(); subjectIt++) {
+        CopyInfo& copy = subjectIt->second;
+        insertCopy(line, subject, copy);
     }
 
-
+    if (line - lineRefSubject >= 2)
+        setSpan(lineRefSubject,COL_SUBJECT,line-lineRefSubject,1);
 }
-
 
 void GroupViewTable::initSortTable(){
     std::srand(std::time(nullptr));
     int line(0);
-    int totalCells(0);
-    for (auto it = copyMap.begin(); it != copyMap.end(); it++) {
-        CopyInfo& copy = it->second;
-        totalCells += copy.m_copySpan;
-        setRowCount(totalCells);
-        insertCopy(line,copy);
-        line = totalCells;
+    for (auto it = subjectMap.begin(); it != subjectMap.end(); it++) {
+        SubjectInfo& subject = it->second;
+        insertSubject(line,subject);
     }
     resizeColumnsToContents();
 }

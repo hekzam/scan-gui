@@ -1,68 +1,114 @@
 #include "FieldViewTable.h"
 
-FieldViewTable::FieldViewTable(std::map<QString, CopyInfo>& copies, QWidget *parent) : SortTable(copies, parent){}
+FieldViewTable::FieldViewTable(std::map<QString, SubjectInfo>& copies, QWidget *parent) : SortTable(copies, parent){
+    setSortingEnabled(true);
+}
 
-void FieldViewTable::insertField(int& line, FieldInfo const& field, PageInfo const& page, CopyInfo& copy){
+void FieldViewTable::insertField(int& line, SubjectInfo& subject, CopyInfo& copy, PageInfo& page, FieldInfo& field){
     int progress = std::rand() % 101;
     int semantique = std::rand() % 2;
-    QTableWidgetItem *copyItem = new QTableWidgetItem(copy.m_copyName);
+    field.setSyntax(progress);
+    field.setValue("value");
+
+    QTableWidgetItem *subjectItem = new QTableWidgetItem(subject.getSubjectName());
+    subjectItem->setData(Qt::UserRole,QVariant::fromValue(&subject));
+    QTableWidgetItem *copyItem = new QTableWidgetItem(copy.getCopyName());
     copyItem->setData(Qt::UserRole,QVariant::fromValue(&copy));
-    QTableWidgetItem *pageItem = new QTableWidgetItem(page.m_pageName);
-    QTableWidgetItem *fieldItem = new QTableWidgetItem(field.m_fieldName);
+    QTableWidgetItem *pageItem = new QTableWidgetItem(page.getPageName());
+    pageItem->setData(Qt::UserRole,QVariant::fromValue(&page));
+    QTableWidgetItem *fieldItem = new QTableWidgetItem(field.getFieldName());
+    fieldItem->setData(Qt::UserRole,QVariant::fromValue(&field));
     ProgressCell *progression = new ProgressCell(progress,this);
 
     insertRow(line);
+    setItem(line,COL_SUBJECT, subjectItem);
     setItem(line,COL_COPY, copyItem);
     setItem(line,COL_PAGE, pageItem);
     setItem(line,COL_FIELD, fieldItem);
     setCellWidget(line,COL_SYNTAX, progression);
     setItem(line,COL_SYNTAX, progression);
     setItem(line,COL_SEMANTIC,new QTableWidgetItem(QString::number(semantique)));
+    line++;
 }
 
 
-void FieldViewTable::insertPage(int& line, PageInfo const& page, CopyInfo& copy){
-    if (!page.m_inJSON){ //This will occur if a selected page was not mentionned in any JSON file
+void FieldViewTable::insertPage(int& line, SubjectInfo& subject, CopyInfo& copy, PageInfo& page){
+    if (!page.getPageInJSON()){ //This will occur if a selected page was not mentionned in any JSON file
         insertRow(line);
-        QTableWidgetItem *copyItem = new QTableWidgetItem(copy.m_copyName);
+        QTableWidgetItem *copyItem = new QTableWidgetItem(copy.getCopyName());
         copyItem->setData(Qt::UserRole,QVariant::fromValue(&copy));
         setItem(line,COL_COPY, copyItem);
-        setItem(line,COL_PAGE, new QTableWidgetItem(QString(page.m_pageName + " not in JSON data!")));
+        setItem(line,COL_PAGE, new QTableWidgetItem(QString(page.getPageName() + " not in JSON data!")));
         line ++;
+
+        //Error message
+        qDebug() << "The file " << copy.getCopyName() + "-" + page.getPageName() << " is not associated with any JSON file.";
     }
-    else if (page.m_filePath == ""){ //This will occur if a page was mentionned in a JSON file but was never selected
+    else if (!page.getPageInFiles()){ //This will occur if a page was mentionned in a JSON file but was never selected
         insertRow(line);
-        QTableWidgetItem *copyItem = new QTableWidgetItem(copy.m_copyName);
+        QTableWidgetItem *copyItem = new QTableWidgetItem(copy.getCopyName());
         copyItem->setData(Qt::UserRole,QVariant::fromValue(&copy));
         setItem(line,COL_COPY, copyItem);
-        setItem(line,COL_PAGE, new QTableWidgetItem(QString(page.m_pageName + " not found!")));
+        setItem(line,COL_PAGE, new QTableWidgetItem(QString(page.getPageName() + " not found!")));
         line ++;
+
+        //Error message
+        qDebug() << "The file " << copy.getCopyName() + "-" + page.getPageName() << " was specified in a JSON file but was not selected.";
     }
     else{
-        for (auto it = page.m_pageFieldMap.cbegin(); it != page.m_pageFieldMap.cend(); it++){
-            FieldInfo const& field = it->second;
-            insertField(line,field,page,copy);
-            line++;
+        for (auto it = page.begin(); it != page.end(); it++){
+            FieldInfo& field = it->second;
+            insertField(line,subject,copy,page,field);
         }
     }
 }
 
 
-void FieldViewTable::insertCopy(int& line, CopyInfo& copy){
-    for(auto it = copy.m_copyPageMap.cbegin(); it != copy.m_copyPageMap.cend(); it++){
-        PageInfo const& page = it->second;
-        insertPage(line,page,copy);
-    }
+void FieldViewTable::insertCopy(int& line, SubjectInfo& subject, CopyInfo& copy){
+    if (!copy.getCopyInJSON()){ //This will occur if a selected page was not mentionned in any JSON file
+        insertRow(line);
+        QTableWidgetItem *subjectItem = new QTableWidgetItem(subject.getSubjectName());
+        subjectItem->setData(Qt::UserRole,QVariant::fromValue(&subject));
+        setItem(line,COL_SUBJECT, subjectItem);
 
+        setItem(line,COL_COPY, new QTableWidgetItem(QString(copy.getCopyName() + " not in JSON data!")));
+        line ++;
+        //Error message
+        qDebug() << "The file " << subject.getSubjectName() + "-" + copy.getCopyName() << " is not associated with any JSON file.";
+    }
+    else if (!copy.getCopyInFiles()){ //This will occur if a page was mentionned in a JSON file but was never selected
+        insertRow(line);
+        QTableWidgetItem *subjectItem = new QTableWidgetItem(subject.getSubjectName());
+        subjectItem->setData(Qt::UserRole,QVariant::fromValue(&subject));
+        setItem(line,COL_SUBJECT, subjectItem);
+
+        setItem(line,COL_COPY, new QTableWidgetItem(QString(copy.getCopyName() + " not found!")));
+        line ++;
+
+        //Error message
+        qDebug() << "The file " << subject.getSubjectName() + "-" + copy.getCopyName() << " was specified in a JSON file but was not selected.";
+    }
+    else{
+        for (auto it = copy.begin(); it != copy.end(); it++){
+            PageInfo& page = it->second;
+            insertPage(line,subject, copy, page);
+        }
+    }
 }
 
+void FieldViewTable::insertSubject(int& line, SubjectInfo& subject){
+    for (auto subjectIt = subject.begin(); subjectIt != subject.end(); subjectIt++) {
+        CopyInfo& copy = subjectIt->second;
+        insertCopy(line, subject, copy);
+    }
+}
 
 void FieldViewTable::initSortTable(){
     std::srand(std::time(nullptr));
     int line(0);
-    for (auto it = copyMap.begin(); it != copyMap.end(); it++) {
-        CopyInfo& copy = it->second;
-        insertCopy(line,copy);
+    for (auto it = subjectMap.begin(); it != subjectMap.end(); it++) {
+        SubjectInfo& subject = it->second;
+        insertSubject(line,subject);
     }
     resizeColumnsToContents();
 }

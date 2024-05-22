@@ -190,7 +190,7 @@ void MainWindow::createEvaluationView()
 
     // Deuxième split / partie haute.
 
-    std::map<QString,CopyInfo>& copies = jsonLinker.collectFields(scanFilePaths, jsonFilePaths);
+    std::map<QString,SubjectInfo>& copies = jsonLinker.collectFields(scanFilePaths, jsonFilePaths);
     TableBox *tableBox = new TableBox(copies, this, evaluationView);
 
     verticalSplitter -> addWidget(tableBox);

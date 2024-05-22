@@ -26,7 +26,7 @@ class TableBox : public QGroupBox
 {
     Q_OBJECT
 public:
-    TableBox(std::map<QString, CopyInfo>& copies, QWidget *dockParent, QWidget *parent = nullptr);
+    TableBox(std::map<QString, SubjectInfo>& copies, QWidget *dockParent, QWidget *parent = nullptr);
 
 private:
     QStackedWidget *tableWidget;
@@ -62,9 +62,8 @@ private:
     void initTableView();
     void initRegEx();
 
-    void collectDataGroup(int row, int col);
-    void collectDataField(int row, int col);
 
+    void transferData(QVariant& dataVariant, int col);
 
   signals:
     void sendDataToPreview(QString const&);
@@ -99,7 +98,8 @@ private:
     QStringList fuzzySearch(QStringList meantSearchesList, QString cellText, QRegularExpression regex, int threshold);
     void printFuzzySearchRes(QStringList meantSearchesList);
 
-
+    void collectDataGroup(int row, int col);
+    void collectDataField(int row, int col);
 };
 
 #endif // TABLEBOX_H

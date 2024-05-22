@@ -1,16 +1,15 @@
 #include "sorttable.h"
 
-SortTable::SortTable(std::map<QString, CopyInfo>& copies, QWidget *parent) : copyMap(copies), QTableWidget(parent){
+SortTable::SortTable(std::map<QString, SubjectInfo>& copies, QWidget *parent) : subjectMap(copies), QTableWidget(parent){
     setColumnCount(NB_COL);
     hideColumn(COL_MET1);
     hideColumn(COL_MET2);
-    headerList << "Copy" << "Page" << "Field" << "Syntax" << "Semantic" << "Metric 1" << "Metric 2";
+    headerList << "Subject" <<"Copy" << "Page" << "Field" << "Syntax" << "Semantic" << "Metric 1" << "Metric 2";
     setHorizontalHeaderLabels(headerList);
     setEditTriggers(QAbstractItemView::NoEditTriggers);
     setSelectionMode(QAbstractItemView::SingleSelection);
     setShowGrid(true);
     setGridStyle(Qt::SolidLine);
-    setSortingEnabled(true);
 }
 
 

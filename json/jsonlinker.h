@@ -13,9 +13,9 @@ class JsonLinker
     public:
 
         JsonLinker();
-        std::map<QString, CopyInfo>& collectFields(QStringList const& filePaths, QStringList const& jsonFilePaths);
+        std::map<QString, SubjectInfo>& collectFields(QStringList const& filePaths, QStringList const& jsonFilePaths);
     private:
-        std::map<QString,CopyInfo> fileCopyMap;
+        std::map<QString,SubjectInfo> fileSubjectMap;
         jsonreader jsonReader;
 
 

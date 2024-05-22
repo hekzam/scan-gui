@@ -30,6 +30,7 @@ public:
 
 private:
     QStackedWidget *tableWidget;
+    QCheckBox *fieldViewToggle;
     SortTable *groupTable;
     SortTable *fieldTable;
     QDockWidget *sortDock;
@@ -62,7 +63,7 @@ private:
     void initTableView();
     void initRegEx();
 
-
+    void connectFieldViewToggle();
     void transferData(QVariant& dataVariant, int col);
 
   signals:

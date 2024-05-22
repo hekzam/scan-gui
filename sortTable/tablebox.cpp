@@ -17,8 +17,14 @@ TableBox::TableBox(std::map<QString, SubjectInfo>& copies, QWidget *dockParent, 
 
     searchInfo = new QLabel(this);
 
+    fieldViewToggle = new QCheckBox("Enable field view",sortBox);
     groupTable = new GroupViewTable(copies, this);
     fieldTable = new FieldViewTable(copies, this);
+    //Stack widget to store both tables
+    tableWidget = new QStackedWidget;
+    tableWidget->addWidget(groupTable);
+    tableWidget->addWidget(fieldTable);
+    tableWidget->setCurrentWidget(groupTable);
 
     sortDock = new QDockWidget(dockParent);
     sortDock->hide();
@@ -124,24 +130,8 @@ void TableBox::displayTableFilter(){
     }
 }
 
-void TableBox::initTableView(){
-
-    QHBoxLayout *sortButtonLayout = new QHBoxLayout;
-    sortButtonLayout->addWidget(textZone);
-
-    sortButtonLayout->addWidget(sortButton);
-
-    QVBoxLayout *evalLayout = new QVBoxLayout;
-
-    //Stack widget to store both tables
-    QStackedWidget *tableWidget = new QStackedWidget;
-    tableWidget->addWidget(groupTable);
-    tableWidget->addWidget(fieldTable);
-    tableWidget->setCurrentWidget(groupTable);
-
-    //Checkbox to display one of the tables
-    QCheckBox *fieldView = new QCheckBox("Enable field view",sortBox);
-    connect(fieldView, &QCheckBox::stateChanged, this, [this, tableWidget](int state) {
+void TableBox::connectFieldViewToggle(){
+    connect(fieldViewToggle, &QCheckBox::stateChanged, this, [this](int state) {
         QScrollBar *fieldScrollX = fieldTable->horizontalScrollBar();
         QScrollBar *fieldScrollY = fieldTable->verticalScrollBar();
         QScrollBar *groupScrollX = groupTable->horizontalScrollBar();
@@ -164,10 +154,23 @@ void TableBox::initTableView(){
             tableWidget->setCurrentWidget(groupTable);
         }
     });
+}
 
+void TableBox::initTableView(){
+
+    QHBoxLayout *sortButtonLayout = new QHBoxLayout;
+    sortButtonLayout->addWidget(textZone);
+
+    sortButtonLayout->addWidget(sortButton);
+
+    QVBoxLayout *evalLayout = new QVBoxLayout;
+
+    connectFieldViewToggle();
+
+    //Checkbox to display one of the tables
     evalLayout->addLayout(sortButtonLayout);
     evalLayout->addWidget(searchInfo);
-    evalLayout->addWidget(fieldView);
+    evalLayout->addWidget(fieldViewToggle);
     evalLayout->addWidget(tableWidget);
 
     groupTable->initSortTable();

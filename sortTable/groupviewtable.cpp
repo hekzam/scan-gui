@@ -35,23 +35,29 @@ void GroupViewTable::insertField(int& line, SubjectInfo& subject, CopyInfo& copy
 void GroupViewTable::insertPage(int& line, SubjectInfo& subject, CopyInfo& copy, PageInfo& page){
     int lineRefPage(line);
 
-    if (!page.getPageInJSON()){ //This will occur if a selected page was not mentionned in any JSON file
-        insertRow(line);
+    if (!page.getPageInJSON()){ //This will occur if a selected page was not mentionned in any JSON file        
         QTableWidgetItem *copyItem = new QTableWidgetItem(copy.getCopyName());
         copyItem->setData(Qt::UserRole,QVariant::fromValue(&copy));
+        QTableWidgetItem *pageItem = new QTableWidgetItem(page.getPageName() + " not in JSON data!");
+        pageItem->setData(Qt::UserRole,QVariant::fromValue(&page));
+
+        insertRow(line);
         setItem(line,COL_COPY, copyItem);
-        setItem(line,COL_PAGE, new QTableWidgetItem(QString(page.getPageName() + " not in JSON data!")));
+        setItem(line,COL_PAGE, pageItem);
         line ++;
 
         //Error message
         qDebug() << "The file " << copy.getCopyName() + "-" + page.getPageName() << " is not associated with any JSON file.";
     }
     else if (!page.getPageInFiles()){ //This will occur if a page was mentionned in a JSON file but was never selected
-        insertRow(line);
         QTableWidgetItem *copyItem = new QTableWidgetItem(copy.getCopyName());
         copyItem->setData(Qt::UserRole,QVariant::fromValue(&copy));
+        QTableWidgetItem *pageItem = new QTableWidgetItem(page.getPageName() + " not found!");
+        pageItem->setData(Qt::UserRole,QVariant::fromValue(&page));
+
+        insertRow(line);
         setItem(line,COL_COPY, copyItem);
-        setItem(line,COL_PAGE, new QTableWidgetItem(QString(page.getPageName() + " not found!")));
+        setItem(line,COL_PAGE, pageItem);
         line ++;
 
         //Error message
@@ -72,23 +78,28 @@ void GroupViewTable::insertCopy(int& line, SubjectInfo& subject, CopyInfo& copy)
     int lineRefCopy(line);
 
     if (!copy.getCopyInJSON()){ //This will occur if a selected page was not mentionned in any JSON file
-        insertRow(line);
         QTableWidgetItem *subjectItem = new QTableWidgetItem(subject.getSubjectName());
         subjectItem->setData(Qt::UserRole,QVariant::fromValue(&subject));
-        setItem(line,COL_SUBJECT, subjectItem);
+        QTableWidgetItem *copyItem = new QTableWidgetItem(copy.getCopyName() + " not in JSON data!");
+        copyItem->setData(Qt::UserRole,QVariant::fromValue(&copy));
 
-        setItem(line,COL_COPY, new QTableWidgetItem(QString(copy.getCopyName() + " not in JSON data!")));
+        insertRow(line);
+        setItem(line,COL_SUBJECT, subjectItem);
+        setItem(line,COL_COPY, copyItem);
         line ++;
+
         //Error message
         qDebug() << "The file " << subject.getSubjectName() + "-" + copy.getCopyName() << " is not associated with any JSON file.";
     }
     else if (!copy.getCopyInFiles()){ //This will occur if a page was mentionned in a JSON file but was never selected
-        insertRow(line);
         QTableWidgetItem *subjectItem = new QTableWidgetItem(subject.getSubjectName());
         subjectItem->setData(Qt::UserRole,QVariant::fromValue(&subject));
-        setItem(line,COL_SUBJECT, subjectItem);
+        QTableWidgetItem *copyItem = new QTableWidgetItem(copy.getCopyName() + " not found!");
+        copyItem->setData(Qt::UserRole,QVariant::fromValue(&copy));
 
-        setItem(line,COL_COPY, new QTableWidgetItem(QString(copy.getCopyName() + " not found!")));
+        insertRow(line);
+        setItem(line,COL_SUBJECT, subjectItem);
+        setItem(line,COL_COPY, copyItem);
         line ++;
 
         //Error message

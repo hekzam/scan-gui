@@ -20,6 +20,13 @@ TableBox::TableBox(std::map<QString, SubjectInfo>& copies, QWidget *dockParent, 
     fieldViewToggle = new QCheckBox("Enable field view",sortBox);
     groupTable = new GroupViewTable(copies, this);
     fieldTable = new FieldViewTable(copies, this);
+
+    //ajout à la liste de vue
+    sortTableList = new QList<SortTable*>;
+    sortTableList->push_back(fieldTable);
+    sortTableList->push_back(groupTable);
+
+
     //Stack widget to store both tables
     tableWidget = new QStackedWidget;
     tableWidget->addWidget(groupTable);
@@ -33,6 +40,7 @@ TableBox::TableBox(std::map<QString, SubjectInfo>& copies, QWidget *dockParent, 
     initRegEx();
     initTableFilter();
     initTableView();
+    actualTable = (sortTableList->at(actualView));
     connect(groupTable, &QTableWidget::cellClicked, this, &TableBox::collectDataGroup);
     connect(fieldTable, &QTableWidget::cellClicked, this, &TableBox::collectDataField);
 
@@ -144,6 +152,7 @@ void TableBox::connectFieldViewToggle(){
             else
                 fieldScrollY->setValue(groupScrollY->value());
             tableWidget->setCurrentWidget(fieldTable);
+            actualView = 0;
         }
         else{
             groupScrollX->setValue(fieldScrollX->value());
@@ -152,7 +161,9 @@ void TableBox::connectFieldViewToggle(){
             else
                 groupScrollY->setValue(fieldScrollY->value());
             tableWidget->setCurrentWidget(groupTable);
+            actualView = 1;
         }
+        actualTable = (sortTableList->at(actualView));
     });
 }
 
@@ -248,6 +259,9 @@ void TableBox::searchProcessing(){
 
     QString text = input.remove(" ");
 
+    if (text.isEmpty())
+        return;
+
     if (regexTestPattern.match(text).hasMatch()){
         //qDebug()<<"Le pattern est bon";
         if (text.contains(":")){
@@ -315,9 +329,9 @@ void TableBox::tagsProcessing(QString& querylocale)
 
     // column selection for tagged search
     initSelectedColumns(true);
-    for (int var = 0; var < groupTable->getHeaderList().size(); var++) {
+    for (int var = 0; var < actualTable->getHeaderList().size(); var++) {
 
-        QString *word = new QString((groupTable->getHeaderList()).at(var));
+        QString *word = new QString((actualTable->getHeaderList()).at(var));
 
         if (searchedTags->contains(*word, Qt::CaseInsensitive)){
             selectedColumns.append(var);
@@ -330,6 +344,7 @@ void TableBox::tagsProcessing(QString& querylocale)
         return;
     }
     delete searchedTags;
+
     filterTaggedTextRows(regexList);
 }
 
@@ -337,30 +352,28 @@ void TableBox::initSelectedColumns(bool isTagSearch)
 {
     selectedColumns.clear();
 
+
     if(!(isTagSearch)){
-        for (int var = 0; var < groupTable->columnCount(); var++) {
-            if(!(groupTable->isColumnHidden(var))){
+        for (int var = 0; var < actualTable->columnCount(); var++) {
+            if(!(actualTable->isColumnHidden(var))){
                 selectedColumns.append(var);
             }
         }
     }
-
-    qDebug()<< selectedColumns;
 }
 
 
 void TableBox::filterTextRows(QRegularExpression regex)
 {
-    // first we clean our list of meant words
+    // first we clean our list of meant words for the fuzzy search
     meantSearchesList.clear();
 
-
-    for (int i = 0; i < groupTable->rowCount(); ++i) {
+    for (int i = 0; i < actualTable->rowCount(); ++i) {
         bool match = false;
         for (int j = 0; j < selectedColumns.size(); j++) {
 
             int selectedJIndex = selectedColumns[j];
-            QTableWidgetItem *item = groupTable->item(i, selectedJIndex);
+            QTableWidgetItem *item = actualTable->item(i, selectedJIndex);
 
             if (item){
                 QString cellText = (selectedJIndex == SortTable::COL_SYNTAX) ? item->data(Qt::UserRole).toString() : item->text();
@@ -377,8 +390,9 @@ void TableBox::filterTextRows(QRegularExpression regex)
             }
 
         }
-        groupTable->setRowHidden(i, !match);
-        fieldTable->setRowHidden(i, !match);
+        actualTable->setRowHidden(i, !match);
+        //groupTable->setRowHidden(i, !match);
+        //fieldTable->setRowHidden(i, !match);
     }
 
     //print the resultat of the fuzzy search
@@ -391,13 +405,13 @@ void TableBox::filterTextRows(QRegularExpression regex)
 void TableBox::filterTaggedTextRows(QList <QRegularExpression> regexList)
 {
 
-    for (int i = 0; i < groupTable->rowCount(); i++) {
+    for (int i = 0; i < actualTable->rowCount(); i++) {
         bool match = false;
 
         for (int j = 0; j < selectedColumns.size(); j++) {
 
             int selectedIndex = selectedColumns[j];
-            QTableWidgetItem *item = groupTable->item(i, selectedIndex);
+            QTableWidgetItem *item = actualTable->item(i, selectedIndex);
 
             if(item){
                 QString cellText = (selectedIndex == SortTable::COL_SYNTAX) ? item->data(Qt::UserRole).toString() : item->text();
@@ -412,13 +426,15 @@ void TableBox::filterTaggedTextRows(QList <QRegularExpression> regexList)
             }
         }
         emptySearchRes = false;
-        groupTable->setRowHidden(i, !match);
-        fieldTable->setRowHidden(i, !match);
+        actualTable->setRowHidden(i, !match);
+        //groupTable->setRowHidden(i, !match);
+        //fieldTable->setRowHidden(i, !match);
     }
 }
 
 
-
+// a try to refactor the two methods above
+// isn't actualise with table system
 void TableBox::filterRows(QList<QRegularExpression> regexList){
     meantSearchesList.clear();
     int regexListSize = regexList.size();

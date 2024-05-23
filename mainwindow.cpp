@@ -24,7 +24,6 @@ void MainWindow::createMenuBar()
     QMenuBar *menuBar = this -> menuBar();
 
     // Menu Déroulant Fichier.
-
     fileMenu = menuBar -> addMenu(tr("&File"));
 
     QAction *newFileAction = new QAction(tr("&New File"), this);
@@ -196,11 +195,15 @@ void MainWindow::createEvaluationView()
     verticalSplitter -> addWidget(tableBox);
 
     // Partie basse.
-    QGroupBox *informationBox = new QGroupBox("General information", evaluationView);
+    UserInformations *informationBox = new UserInformations("General information", evaluationView);
     QVBoxLayout *informationLayout = new QVBoxLayout(informationBox);
 
+    //récupérer le tableau d'erreurs comme dans l'exemple ci-dessous (ici il se trouve dans jsonLinker)
+    //QStringList errors = jsonLinker.getErrors();
+    //informationBox->setTextZone(errors);
+    informationLayout->addWidget(informationBox->textZone);
     verticalSplitter -> addWidget(informationBox);
-    informationLayout -> addWidget(new QLabel("WIP Information",this));
+
 
     connect(tableBox, &TableBox::sendDataToPreview, previewBox, &ExamPreview::onAction_CurrentTableElementChanged);
 

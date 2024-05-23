@@ -33,6 +33,8 @@ private:
     QCheckBox *fieldViewToggle;
     SortTable *groupTable;
     SortTable *fieldTable;
+    QList<SortTable *> *sortTableList;
+    SortTable *actualTable;
     QDockWidget *sortDock;
     QGroupBox *sortBox;
     QPushButton *sortButton;
@@ -58,6 +60,8 @@ private:
     // to delete ??
     bool emptySearchRes;
     QStringList meantSearchesList;
+
+    int actualView = 1;
 
     void initTableFilter();
     void initTableView();

@@ -10,6 +10,7 @@
 #include <QMenuBar>
 #include <QMenu>
 #include <QLineEdit>
+#include "userinformations.h"
 #include "sortTable/tablebox.h"
 #include "json/jsonlinker.h"
 

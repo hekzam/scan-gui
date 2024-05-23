@@ -1,4 +1,4 @@
-#include "FieldViewTable.h"
+#include "fieldviewtable.h"
 
 FieldViewTable::FieldViewTable(std::map<QString, SubjectInfo>& copies, QWidget *parent) : SortTable(copies, parent){
     setSortingEnabled(true);

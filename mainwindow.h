@@ -27,10 +27,12 @@ private slots:
     void showWelcomeView();
     void showCreateProjectView();
     void showEvaluationView();
-    void openFileExplorer();
-    void openFileExplorerAlt(QLineEdit *lineEdit, const QString &labelText);
-    void checkInputs(QLineEdit *lineEdit1, QLineEdit *lineEdit2, QPushButton *pushButton);
+    void openProject();
+    void openFileExplorer(QLineEdit *lineEdit, const QString &labelText);
+    void checkInputs(QLineEdit *lineEdit1, QLineEdit *lineEdit2, QLineEdit *lineEdit3, QPushButton *pushButton);
     QHBoxLayout *createFileEntry(const QString &labelText, QLineEdit *lineEdit);
+    void saveData();
+    void loadData(const QString& filePath);
     void handleUndo();
     void handleRedo();
     void toggleDarkMode();
@@ -51,6 +53,7 @@ private:
     QStackedWidget *mainStack;
     // ExamPreview *previewBox;
 
+    QString saveFilePath;
     QStringList scanFilePaths;
     QStringList jsonFilePaths;
 

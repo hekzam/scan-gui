@@ -33,19 +33,19 @@ void MainWindow::createMenuBar()
     fileMenu = menuBar -> addMenu(tr("&File"));
 
     QAction *newFileAction = new QAction(tr("&New File"), this);
-    connect(newFileAction, &QAction::triggered, this, &MainWindow::openFileExplorer);
+    connect(newFileAction, &QAction::triggered, this, &MainWindow::showCreateProjectView);
     fileMenu -> addAction(newFileAction);
 
     QAction *openFileAction = new QAction(tr("&Open File"), this);
-    connect(openFileAction, &QAction::triggered, this, &MainWindow::openFileExplorer);
+    connect(openFileAction, &QAction::triggered, this, &MainWindow::openProject);
     fileMenu -> addAction(openFileAction);
 
     QAction *saveFileAction = new QAction(tr("&Save File"), this);
-    connect(saveFileAction, &QAction::triggered, this, &MainWindow::openFileExplorer);
+    connect(saveFileAction, &QAction::triggered, this, &MainWindow::saveData);
     fileMenu -> addAction(saveFileAction);
 
     QAction *exportAction = new QAction(tr("&Export"), this);
-    connect(exportAction, &QAction::triggered, this, &MainWindow::openFileExplorer);
+    connect(exportAction, &QAction::triggered, this, &MainWindow::openProject);
     fileMenu -> addAction(exportAction);
 
     // Menu Déroulant Edition.
@@ -105,7 +105,7 @@ void MainWindow::createWelcomeView()
     QPushButton *openButton = new QPushButton("Open an existing project", welcomeView);
     openButton -> setStyleSheet("font-size: 16px; background-color: blue; color: white;");
     openButton -> setFixedSize(250, 50);
-    connect(openButton, &QPushButton::clicked, this, &MainWindow::openFileExplorer);
+    connect(openButton, &QPushButton::clicked, this, &MainWindow::openProject);
 
     welcomeViewLayout -> addWidget(titleLabel);
     welcomeViewLayout -> addWidget(descriptionLabel);
@@ -155,12 +155,16 @@ void MainWindow::createCreateProjectView()
     //backButton -> setFixedSize(250, 50);
     connect(backButton, &QPushButton::clicked, this, &MainWindow::showWelcomeView);
 
-    connect(examImport, &QLineEdit::textChanged, this, [this, examImport, scanImport, nextButton]() {
-        checkInputs(examImport, scanImport, nextButton);
+    connect(repositoryImport, &QLineEdit::textChanged, this, [this, repositoryImport, examImport, scanImport, nextButton]() {
+        checkInputs(repositoryImport, examImport, scanImport, nextButton);
     });
 
-    connect(scanImport, &QLineEdit::textChanged, this, [this, examImport, scanImport, nextButton]() {
-        checkInputs(examImport, scanImport, nextButton);
+    connect(examImport, &QLineEdit::textChanged, this, [this, repositoryImport, examImport, scanImport, nextButton]() {
+        checkInputs(repositoryImport, examImport, scanImport, nextButton);
+    });
+
+    connect(scanImport, &QLineEdit::textChanged, this, [this, repositoryImport, examImport, scanImport, nextButton]() {
+        checkInputs(repositoryImport, examImport, scanImport, nextButton);
     });
 
     buttonLayout -> addWidget(backButton);
@@ -229,43 +233,42 @@ void MainWindow::showEvaluationView()
     mainStack -> setCurrentWidget(evaluationView);
 }
 
-void MainWindow::openFileExplorer()
+void MainWindow::openProject()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::homePath());
     if (!fileName.isEmpty()) {
+        loadData(fileName);
         showEvaluationView();
     }
 }
 
-void MainWindow::openFileExplorerAlt(QLineEdit *file, const QString &labelText)
+void MainWindow::openFileExplorer(QLineEdit *file, const QString &labelText)
 {
     if (labelText == "Exam data") {
-      jsonFilePaths = QFileDialog::getOpenFileNames(
-          this, ("Open files"), QDir::currentPath(), "*.json");
-      if (!jsonFilePaths.isEmpty())
-      {
-        file->setText(jsonFilePaths.at(0));
-      }
+        jsonFilePaths = QFileDialog::getOpenFileNames(this, ("Open files"), "../../../../scan-gui/resources/test_case/Json", "*.json");
+        if (!jsonFilePaths.isEmpty()) {
+            file -> setText(jsonFilePaths.at(0));
+        }
     } else if (labelText == "Scan file(s)") {
-      scanFilePaths = QFileDialog::getOpenFileNames(this, ("Open files"), "",
-                                                    "*.png *.jpeg *.pdf");
-      if (!scanFilePaths.isEmpty())
-      {
-        file->setText(scanFilePaths.at(0));
-      }
+        scanFilePaths = QFileDialog::getOpenFileNames(this, ("Open files"), "../../../../scan-gui/resources/test_case/Fichiers", "*.png *.jpeg *.pdf");
+        if (!scanFilePaths.isEmpty()) {
+            file -> setText(scanFilePaths.at(0));
+        }
+    } else if (labelText == "Project Repository") {
+        QString directoryPath = QFileDialog::getExistingDirectory(this, ("Choose Directory"), QDir::homePath());
+        saveFilePath = directoryPath + "/data.json";
+        file -> setText(saveFilePath);
     } else {
-      QString fileName =
-          QFileDialog::getOpenFileName(this, tr("Open File"), QDir::homePath());
-      if (!fileName.isEmpty())
-      {
-        file->setText(fileName);
-      }
+        QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::homePath());
+        if (!fileName.isEmpty()) {
+            file -> setText(fileName);
+        }
     }
 }
 
-void MainWindow::checkInputs(QLineEdit *lineEdit1, QLineEdit *lineEdit2, QPushButton *pushButton) {
+void MainWindow::checkInputs(QLineEdit *lineEdit1, QLineEdit *lineEdit2, QLineEdit *lineEdit3, QPushButton *pushButton) {
     // Vérifier si les deux champs sont remplis
-    if (!lineEdit1 -> text().isEmpty() && !lineEdit2 -> text().isEmpty()) {
+    if (!lineEdit1 -> text().isEmpty() && !lineEdit2 -> text().isEmpty() && !lineEdit3 -> text().isEmpty()) {
         // Activer le bouton
         pushButton->setEnabled(true);
     } else {
@@ -290,10 +293,49 @@ QHBoxLayout *MainWindow::createFileEntry(const QString &labelText, QLineEdit *li
     layout -> setStretch(2, 1);
 
     connect(browseButton, &QPushButton::clicked, this, [this, lineEdit, labelText]() {
-        openFileExplorerAlt(lineEdit, labelText);
+        openFileExplorer(lineEdit, labelText);
     });
 
     return layout;
+}
+
+void MainWindow::saveData() {
+    QJsonObject jsonObject;
+    jsonObject["scanFilePaths"] = QJsonArray::fromStringList(scanFilePaths);
+    jsonObject["jsonFilePaths"] = QJsonArray::fromStringList(jsonFilePaths);
+
+    QJsonDocument jsonDocument(jsonObject);
+
+    QFile file(saveFilePath);
+    if (file.open(QIODevice::WriteOnly)) {
+        file.write(jsonDocument.toJson());
+        file.close();
+    }
+}
+
+void MainWindow::loadData(const QString& filePath) {
+    QFile file(filePath);
+    scanFilePaths.clear();
+    jsonFilePaths.clear();
+    if (file.open(QIODevice::ReadOnly)) {
+        QByteArray jsonData = file.readAll();
+        QJsonDocument jsonDocument = QJsonDocument::fromJson(jsonData);
+        QJsonObject jsonObject = jsonDocument.object();
+
+        QJsonArray scanFilePathsArray = jsonObject["scanFilePaths"].toArray();
+        QJsonArray jsonFilePathsArray = jsonObject["jsonFilePaths"].toArray();
+
+        // Convertir les variantes en chaînes de caractères
+        for (const auto& variant : scanFilePathsArray) {
+            scanFilePaths.append(variant.toString());
+        }
+
+        for (const auto& variant : jsonFilePathsArray) {
+            jsonFilePaths.append(variant.toString());
+        }
+
+        file.close();
+    }
 }
 
 void MainWindow::handleUndo()

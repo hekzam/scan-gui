@@ -17,6 +17,11 @@ private:
     void insertPage(int& line, SubjectInfo& subject, CopyInfo& copy, PageInfo& page) override;
     void insertField(int& line, SubjectInfo& subject, CopyInfo& copy, PageInfo& page, FieldInfo& field) override;
 
+
+    // SortTable interface
+  protected:
+    void addErrors(QString &newErrors) override;
+    QStringList getErrors() override;
 };
 
 #endif // FieldViewTable_H

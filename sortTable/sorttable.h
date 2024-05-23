@@ -28,6 +28,10 @@ public:
   SortTable(std::map<QString, SubjectInfo> &copies, QWidget *parent = nullptr);
   virtual void initSortTable() = 0;
 
+  //méthode d'accès et d'ajout à la liste d'erreurs de linkage
+  virtual QStringList getErrors();
+
+
 private:
     QStringList headerList;
 
@@ -38,6 +42,10 @@ private:
 
 protected:
     std::map<QString, SubjectInfo>& subjectMap;
+    virtual void addErrors(QString &newErrors);
+
+           //liste des erreurs de linkage
+    QStringList errors;
 
 public slots:
     void editColumn(int checkState, int column);

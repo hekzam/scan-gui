@@ -25,3 +25,13 @@ QStringList SortTable::getHeaderList()
 {
     return headerList;
 }
+
+QStringList SortTable::getErrors()
+{
+  return errors;
+}
+
+void SortTable::addErrors(QString &newErrors)
+{
+  getErrors().push_back(newErrors);
+}

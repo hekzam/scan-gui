@@ -45,6 +45,18 @@ TableBox::TableBox(std::map<QString, SubjectInfo>& copies, QWidget *dockParent, 
 
 }
 
+TableBox::~TableBox()
+{
+  delete sortTableList;
+}
+
+SortTable *TableBox::getFieldTable()
+{
+  return fieldTable;
+}
+
+
+
 void TableBox::initTableFilter(){
 
     sortButton->setFixedSize(50,50);

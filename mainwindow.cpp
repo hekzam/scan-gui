@@ -219,14 +219,17 @@ void MainWindow::createEvaluationView()
 
   verticalSplitter->addWidget(tableBox);
 
+
   // Partie basse.
   UserInformations *informationBox =
       new UserInformations("General information", evaluationView);
   QVBoxLayout *informationLayout = new QVBoxLayout(informationBox);
 
   // récupérer le tableau d'erreurs comme dans l'exemple ci-dessous (ici il se
-  // trouve dans jsonLinker) QStringList errors = jsonLinker.getErrors();
-  // informationBox->setTextZone(errors);
+  // trouve dans jsonLinker)
+  QStringList errors = tableBox->getFieldTable()->getErrors();
+  qDebug()<<errors;
+  informationBox->setTextZone(errors);
   informationLayout->addWidget(informationBox->textZone);
   verticalSplitter->addWidget(informationBox);
 

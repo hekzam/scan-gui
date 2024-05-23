@@ -12,6 +12,7 @@
 #include <QLineEdit>
 #include "userinformations.h"
 #include "sortTable/tablebox.h"
+#include "sortTable/fieldviewtable.h"
 #include "json/jsonlinker.h"
 #include "data/settings.h"
 

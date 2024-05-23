@@ -67,12 +67,12 @@ void ExamPreview::createPreviewButtonBox()
   auto validatePageButton =
       new QPushButton(tr("Mark as verified/validated"), previewButtonBox);
   // auto transformButton = new QPushButton(tr("transform"), previewButtonBox);
-  auto highlightFieldsCheckBox =
+  auto highlightFieldsCheckbox =
       new QCheckBox(tr("HighlightFields"), previewButtonBox);
   auto calibrationModeSelectorCheckBox =
       new QCheckBox(tr("Calibration Mode"), previewButtonBox);
 
-  highlightFieldsCheckBox->setChecked(true);
+  highlightFieldsCheckbox->setChecked(true);
   calibrationModeSelectorCheckBox->setChecked(false);
 
   connect(opacitySlider, &QSlider::valueChanged, baseScene,
@@ -95,10 +95,19 @@ void ExamPreview::createPreviewButtonBox()
           &ExamPreview::markExamSheetAsValidated);
 
   // connect(transformButton....)
-  connect(highlightFieldsCheckBox, &QCheckBox::clicked, baseScene,
+  connect(highlightFieldsCheckbox, &QCheckBox::clicked, baseScene,
           &ExamScene::toggleFieldsVisibility);
   connect(calibrationModeSelectorCheckBox, &QCheckBox::clicked, baseScene,
           &ExamScene::toggleCalibrationMode);
+  connect(calibrationModeSelectorCheckBox, &QCheckBox::clicked,
+          highlightFieldsCheckbox,
+          [highlightFieldsCheckbox](bool state)
+          {
+            if (highlightFieldsCheckbox->isChecked() && state)
+            {
+              highlightFieldsCheckbox->click();
+            }
+          });
 
   previewButtonLayout->addWidget(opacitySlider, 0, 0, 1, 2);
   previewButtonLayout->addWidget(resetOpacity, 0, 2);
@@ -108,7 +117,7 @@ void ExamPreview::createPreviewButtonBox()
   previewButtonLayout->addWidget(assignPageButton, 1, 2);
   previewButtonLayout->addWidget(validatePageButton, 1, 3);
   // previewButtonLayout->addWidget(transformButton);
-  previewButtonLayout->addWidget(highlightFieldsCheckBox, 1, 4);
+  previewButtonLayout->addWidget(highlightFieldsCheckbox, 1, 4);
   previewButtonLayout->addWidget(calibrationModeSelectorCheckBox, 1, 5);
 }
 

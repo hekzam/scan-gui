@@ -5,6 +5,8 @@ PageMask::PageMask()
   setZValue(2.0); // in front of everything
   m_brush.setColor(QColor(255, 255, 255, 200));
   setBrush(m_brush);
+  m_pen.setColor(QColor(0, 0, 0, 0)); // don't show the default pen at all,
+  setPen(m_pen);                      // we have atomic boxes for that
 }
 
 PageMask::~PageMask() {}

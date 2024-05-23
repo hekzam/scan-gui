@@ -29,6 +29,7 @@ public slots:
   void onAction_DialogClosedTriggered();
   void onAction_CurrentTableElementChanged(const QStringList &imagePaths,
                                            mJSON::dataCopieJSON *data,
+                                           const int pageNumbertoDisplay,
                                            const QString &fieldName);
 
 protected:

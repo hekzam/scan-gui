@@ -14,13 +14,13 @@ public:
   ~ExamScene();
 
   // is the data really const ???
-  void loadImage(const QStringList &imgfilenames, mJSON::dataCopieJSON *data);
   void loadImage(const QStringList &imgfilenames, mJSON::dataCopieJSON *data,
-                 const QString &fieldName);
+                 const int pageNumbertoDisplay, const QString &fieldName);
   void loadImage(const QStringList &imgfilename); // ???? one or multiple paths
 
 signals:
   void newPageLoaded(QSize newImageSize);
+  void setROI(QRectF ROI);
 
 public slots:
   void toggleCalibrationMode(bool state);
@@ -36,6 +36,7 @@ private:
   // this can't be const, I WANT to be able to modify this
   const mJSON::dataCopieJSON *m_jsonData = nullptr;
   QVariant m_dataVariant;
+  int m_numberOfPages;
   int m_currentPageNum; // holds the num of the page being viewed (initialized
                         // to 1 in the constructor)
   ExamSinglePage *m_singleImage;

@@ -16,6 +16,16 @@ void FieldItem::setClef(QString clef)
   m_clef = clef;
 }
 
+void FieldItem::setRect(QRectF rect)
+{
+  m_rect = rect;
+}
+
+QString FieldItem::getClef()
+{
+  return m_clef;
+}
+
 qreal FieldItem::getPenWidth()
 {
   return pen.widthF();
@@ -56,7 +66,7 @@ QMap<QString, QList<QVariant>> FieldItem::sendNewDataToLib(fieldType type,
   return map;
 }
 
-QPointF FieldItem::getFieldImgPosition()
+QRectF FieldItem::getRect()
 {
-  return pos();
+  return m_rect;
 }

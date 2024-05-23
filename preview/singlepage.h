@@ -26,6 +26,8 @@ public:
   QList<MarkerItem *> currentMarkerItems() const;
   QList<atomicBoxItem *> currentAtomicBoxItems() const;
 
+  QRectF getFieldPos(QString fieldName);
+
 protected:
   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
 

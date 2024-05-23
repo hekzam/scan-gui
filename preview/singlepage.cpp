@@ -103,6 +103,16 @@ QList<atomicBoxItem *> ExamSinglePage::currentAtomicBoxItems() const
   return m_currentAtomicBoxItems;
 }
 
+QRectF ExamSinglePage::getFieldPos(QString fieldName)
+{
+  for (auto &m : m_currentAtomicBoxItems) // AtomicBoxItem *
+  {
+    if (m->getClef() == fieldName)
+      return m->getRect();
+  }
+  return QRectF(0, 0, 2, 2); // should never happen
+}
+
 QList<MarkerItem *> ExamSinglePage::currentMarkerItems() const
 {
   return m_currentMarkerItems;
@@ -167,8 +177,9 @@ void ExamSinglePage::setFieldItemAttributes(FieldItem *fieldItem,
   QPointF img_xy = mapJSONCoordtoImageCoord(QPoint(m.x, m.y));
   //            :^)
   QPointF wid_hei = mapJSONCoordtoImageCoord(QPoint(m.w, m.h));
+  QRectF rect = QRectF(img_xy.x(), img_xy.y(), wid_hei.x(), wid_hei.y());
   fieldItem->setClef(m.clef);
-
+  fieldItem->setRect(rect);
   QList<QPointF> p;
   p << img_xy << QPointF(img_xy.x() + wid_hei.x(), (img_xy.y()))
     << QPointF(img_xy.x() + wid_hei.x(), img_xy.y() + wid_hei.y())

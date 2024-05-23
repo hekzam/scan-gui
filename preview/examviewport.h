@@ -27,18 +27,10 @@ public:
 
   void scaleToOneOnOne();
 
-  // // is the data really const ???
-  // void loadImage(const QString &imgfilename, const mJSON::dataCopieJSON
-  // &data,
-  //                const int col);
-  // void loadImage(const QString &imgfilename);
-
 public slots:
-  // void toggleCalibrationMode(bool state);
   void rotateImage(int value);
   void scaleToWidgetSize(QSize newImageSize);
-  // void setMaskOpacityLevel(int value);
-  // void toggleFieldsVisibility(bool state);
+  void fitROIInView(QRectF rect);
 
 protected:
 #if QT_CONFIG(wheelevent)
@@ -58,7 +50,6 @@ signals:
   void imageRotationChanged(int angle);
 
 private:
-  void fitROIInView(QRect &);
 
   scaleToFit dimensionToConsider;
 

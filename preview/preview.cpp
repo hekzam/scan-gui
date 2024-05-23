@@ -134,6 +134,8 @@ void ExamPreview::createBasePreview()
 
   connect(baseScene, &ExamScene::newPageLoaded, baseViewport,
           &ExamViewPort::scaleToWidgetSize);
+  connect(baseScene, &ExamScene::setROI, baseViewport,
+          &ExamViewPort::fitROIInView);
 
   basePreviewLayout->addWidget(baseViewport);
   previewStack->addWidget(basePreview);
@@ -187,17 +189,11 @@ void ExamPreview::onAction_DialogClosedTriggered()
 // }
 void ExamPreview::onAction_CurrentTableElementChanged(
     const QStringList &imagePath, mJSON::dataCopieJSON *data,
-    const QString &fieldName)
+    const int pageNumbertoDisplay, const QString &fieldName)
 {
-  if (fieldName.isEmpty())
-  {
-    baseScene->loadImage(imagePath, data);
-  }
-  else
-  {
-    baseScene->loadImage(imagePath, data, fieldName);
-  }
+  baseScene->loadImage(imagePath, data, pageNumbertoDisplay, fieldName);
 }
+
 void ExamPreview::nextImage() {}
 
 void ExamPreview::previousImage() {}

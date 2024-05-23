@@ -99,6 +99,12 @@ void ExamViewPort::scaleToWidgetSize(QSize newImageSize)
   changeScale(scaleBy);
 }
 
+void ExamViewPort::fitROIInView(QRectF rect)
+{ // TODO
+  qDebug() << rect;
+  centerOn(rect.x(), rect.y());
+}
+
 void ExamViewPort::scaleToOneOnOne()
 {
   changeScale(1 / m_scale);
@@ -139,8 +145,4 @@ void ExamViewPort::mouseReleaseEvent(QMouseEvent *e)
   // {
   QGraphicsView::mouseReleaseEvent(e);
   // }
-}
-
-void ExamViewPort::fitROIInView(QRect &)
-{ // TODO
 }

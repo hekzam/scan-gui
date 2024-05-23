@@ -73,6 +73,7 @@ private:
   signals:
     void sendDataToPreview(const QStringList &imagePaths,
                            mJSON::dataCopieJSON *data,
+                           const int pageNumberToDisplay,
                            const QString &fieldName);
 
   private slots:

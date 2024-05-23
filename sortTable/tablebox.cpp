@@ -213,6 +213,9 @@ void TableBox::collectData(int row, int col)
   if(!data)
     return;
 
+  // preview needs the page number, 1 by default
+  int pageNumberToDisplay = 1;
+
   QStringList paths;
   switch(col){
     case(SortTable::COL_COPY):{
@@ -230,6 +233,7 @@ void TableBox::collectData(int row, int col)
         return;
       PageInfo *page = pageVariant.value<PageInfo *>();
       paths.append(page->getFilePath());
+      pageNumberToDisplay = page->getPageInJSON(); // this is the pagenumber
       break;
     }
     default:{
@@ -240,8 +244,7 @@ void TableBox::collectData(int row, int col)
   QString fieldName = (col == SortTable::COL_FIELD) ? item->text() : "";
   paths.removeAll("");
   qDebug() << paths;
-  emit sendDataToPreview(paths,data,fieldName);
-
+  emit sendDataToPreview(paths, data, pageNumberToDisplay, fieldName);
 }
 
 

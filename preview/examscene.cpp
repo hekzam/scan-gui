@@ -2,7 +2,8 @@
 using namespace mJSON;
 
 ExamScene::ExamScene(QObject *parent)
-    : QGraphicsScene{parent}, m_currentPageNum(1) //
+    : QGraphicsScene{parent},
+      m_currentPageNum(1) // initialized here to avoid errors, one-indexed
 {
   setBackgroundBrush(Qt::gray);
   m_singleImage = new ExamSinglePage();
@@ -13,21 +14,23 @@ ExamScene::ExamScene(QObject *parent)
 
 ExamScene::~ExamScene() {}
 
-void ExamScene::loadImage(const QStringList &imgfilename, dataCopieJSON *data)
-{
-  m_currentCopyImageFilename = imgfilename;
-  m_jsonData = data;
-  // m_currentPageNum = ??? // set the correct page number here if it exists
-  loadAnswerSheet();
-}
-
 void ExamScene::loadImage(const QStringList &imgfilename, dataCopieJSON *data,
+                          const int pageNumbertoDisplay,
                           const QString &fieldName)
 {
+  // reset
+  m_currentCopyImageFilename = {""};
+  m_numberOfPages = 0;
+  m_currentPageNum = 1;
+  m_jsonData = nullptr;
+  m_focusedFieldName = "";
+
   m_currentCopyImageFilename = imgfilename;
+  m_numberOfPages = imgfilename.size();
+  m_currentPageNum = pageNumbertoDisplay;
   m_jsonData = data;
-  // TODO look for [field name] and zoom on it
   m_focusedFieldName = fieldName;
+
   loadAnswerSheet();
 }
 
@@ -61,7 +64,7 @@ void ExamScene::toggleFieldsVisibility(bool state)
 void ExamScene::loadAnswerSheet() // TODO load first elem of the QStringList
 {
   QPixmap p;
-  if (!p.load(m_currentCopyImageFilename[0]))
+  if (!p.load(m_currentCopyImageFilename[m_currentPageNum - 1]))
   {
     qWarning() << "error loading the image";
   }
@@ -87,8 +90,8 @@ void ExamScene::loadAnswerSheet() // TODO load first elem of the QStringList
     }
     if (!m_focusedFieldName.isEmpty())
     {
-      // TODO FOCUS ON THE FIELD HERE
+      emit setROI(m_singleImage->getFieldPos(m_focusedFieldName));
     }
   }
-  emit newPageLoaded(p.size()); // DO SOMETHING HERE
+  emit newPageLoaded(p.size()); // DO SOMETHING HERE ?
 }

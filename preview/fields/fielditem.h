@@ -22,8 +22,11 @@ public:
   ~FieldItem();
 
   void setClef(QString clef);
+  void setRect(QRectF rect);
+  QString getClef();
   qreal getPenWidth();
   fieldType getType();
+  QRectF getRect();
 
 protected:
   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
@@ -41,7 +44,6 @@ protected:
   sendNewDataToLib(fieldType type, QString identifier, QList<QVariant> data);
 
   // relative to the image ?
-  QPointF getFieldImgPosition();
 
   bool visible = true; // true by default ?
   // maybe not useful
@@ -49,6 +51,7 @@ protected:
   QPoint fieldPositionImageRelative;
   QSize fieldSizeDocRel;
   QSize fieldSizeImageRel;
+  QRectF m_rect;
   QString m_clef;
   fieldType m_Type;
 

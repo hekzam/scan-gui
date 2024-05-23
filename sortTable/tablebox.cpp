@@ -222,23 +222,27 @@ void TableBox::collectDataField(int row, int col)
 }
 
 void TableBox::transferData(QVariant& dataVariant, int col){
+    QStringList paths;
     switch(col){
         case(SortTable::COL_SUBJECT):{
             SubjectInfo *subject = dataVariant.value<SubjectInfo *>();
-            QStringList pagePaths = subject->getCopiesPathList();
-            qDebug() << pagePaths;
+            QStringList subjectPaths = subject->getCopiesPathList();
+            qDebug() << subjectPaths;
+            paths.append(subjectPaths);
             break;
         }
         case(SortTable::COL_COPY):{
             CopyInfo *copy = dataVariant.value<CopyInfo *>();
             QStringList copiesPaths = copy->getPagesPathList();
             qDebug() << copiesPaths;
+            paths.append(copiesPaths);
             break;
         }
         case(SortTable::COL_PAGE):{
             PageInfo *page = dataVariant.value<PageInfo *>();
             QString pagePath = page->getFilePath();
             qDebug() << pagePath;
+            paths.append(pagePath);
             break;
         }
         case(SortTable::COL_FIELD):{

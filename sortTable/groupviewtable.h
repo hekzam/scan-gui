@@ -12,10 +12,10 @@ public:
 
 private:
 
-    void insertSubject(int& ligne, SubjectInfo& subject);
-    void insertCopy(int& line, SubjectInfo& subject, CopyInfo& copy);
-    void insertPage(int& line, SubjectInfo& subject, CopyInfo& copy, PageInfo& page);
-    void insertField(int& line, SubjectInfo& subject, CopyInfo& copy, PageInfo& page, FieldInfo& field);
+    void insertSubject(int& ligne, SubjectInfo& subject) override;
+    void insertCopy(int& line, SubjectInfo& subject, CopyInfo& copy) override;
+    void insertPage(int& line, SubjectInfo& subject, CopyInfo& copy, PageInfo& page) override;
+    void insertField(int& line, SubjectInfo& subject, CopyInfo& copy, PageInfo& page, FieldInfo& field) override;
 
 };
 

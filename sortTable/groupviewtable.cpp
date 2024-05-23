@@ -24,7 +24,7 @@ void GroupViewTable::insertField(int &line, SubjectInfo &subject,
   QTableWidgetItem *pageItem = new QTableWidgetItem(page.getPageName());
   pageItem->setData(Qt::UserRole, QVariant::fromValue(&page));
   QTableWidgetItem *fieldItem = new QTableWidgetItem(field.getFieldName());
-  fieldItem->setData(Qt::UserRole, QVariant::fromValue(&field));
+  fieldItem->setData(Qt::UserRole, QVariant::fromValue(&page));
   ProgressCell *progression = new ProgressCell(progress, this);
 
   insertRow(line);

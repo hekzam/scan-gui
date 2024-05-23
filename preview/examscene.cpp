@@ -13,19 +13,19 @@ ExamScene::ExamScene(QObject *parent)
 
 ExamScene::~ExamScene() {}
 
-void ExamScene::loadImage(const QStringList &imgfilename, dataCopieJSON &data)
+void ExamScene::loadImage(const QStringList &imgfilename, dataCopieJSON *data)
 {
   m_currentCopyImageFilename = imgfilename;
-  m_jsonData = &data;
+  m_jsonData = data;
   // m_currentPageNum = ??? // set the correct page number here if it exists
   loadAnswerSheet();
 }
 
-void ExamScene::loadImage(const QStringList &imgfilename, dataCopieJSON &data,
+void ExamScene::loadImage(const QStringList &imgfilename, dataCopieJSON *data,
                           const QString &fieldName)
 {
   m_currentCopyImageFilename = imgfilename;
-  m_jsonData = &data;
+  m_jsonData = data;
   // TODO look for [field name] and zoom on it
   m_focusedFieldName = fieldName;
   loadAnswerSheet();

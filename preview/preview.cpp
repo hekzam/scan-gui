@@ -186,7 +186,7 @@ void ExamPreview::onAction_DialogClosedTriggered()
 //   baseScene->loadImage(imagePath, data, col);
 // }
 void ExamPreview::onAction_CurrentTableElementChanged(
-    const QStringList &imagePath, mJSON::dataCopieJSON &data,
+    const QStringList &imagePath, mJSON::dataCopieJSON *data,
     const QString &fieldName)
 {
   if (fieldName.isEmpty())

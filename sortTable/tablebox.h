@@ -33,7 +33,7 @@ private:
     QCheckBox *fieldViewToggle;
     SortTable *groupTable;
     SortTable *fieldTable;
-    QList<SortTable *> *sortTableList;
+    QList<SortTable *> sortTableList;
     SortTable *actualTable;
     QDockWidget *sortDock;
     QGroupBox *sortBox;
@@ -69,11 +69,10 @@ private:
     void initRegEx();
 
     void connectFieldViewToggle();
-    void transferData(QVariant& dataVariant, int col);
 
   signals:
     void sendDataToPreview(const QStringList &imagePaths,
-                           mJSON::dataCopieJSON &data,
+                           mJSON::dataCopieJSON *data,
                            const QString &fieldName);
 
   private slots:
@@ -106,8 +105,7 @@ private:
     QStringList fuzzySearch(QStringList meantSearchesList, QString cellText, QRegularExpression regex, int threshold);
     void printFuzzySearchRes(QStringList meantSearchesList);
 
-    void collectDataGroup(int row, int col);
-    void collectDataField(int row, int col);
+    void collectData(int row, int col);
 };
 
 #endif // TABLEBOX_H

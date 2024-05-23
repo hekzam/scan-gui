@@ -14,8 +14,8 @@ public:
   ~ExamScene();
 
   // is the data really const ???
-  void loadImage(const QStringList &imgfilenames, mJSON::dataCopieJSON &data);
-  void loadImage(const QStringList &imgfilenames, mJSON::dataCopieJSON &data,
+  void loadImage(const QStringList &imgfilenames, mJSON::dataCopieJSON *data);
+  void loadImage(const QStringList &imgfilenames, mJSON::dataCopieJSON *data,
                  const QString &fieldName);
   void loadImage(const QStringList &imgfilename); // ???? one or multiple paths
 

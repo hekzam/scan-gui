@@ -22,9 +22,8 @@ TableBox::TableBox(std::map<QString, SubjectInfo>& copies, QWidget *dockParent, 
     fieldTable = new FieldViewTable(copies, this);
 
     //ajout à la liste de vue
-    sortTableList = new QList<SortTable*>;
-    sortTableList->push_back(fieldTable);
-    sortTableList->push_back(groupTable);
+    sortTableList.push_back(fieldTable);
+    sortTableList.push_back(groupTable);
 
 
     //Stack widget to store both tables
@@ -40,9 +39,9 @@ TableBox::TableBox(std::map<QString, SubjectInfo>& copies, QWidget *dockParent, 
     initRegEx();
     initTableFilter();
     initTableView();
-    actualTable = (sortTableList->at(actualView));
-    connect(groupTable, &QTableWidget::cellClicked, this, &TableBox::collectDataGroup);
-    connect(fieldTable, &QTableWidget::cellClicked, this, &TableBox::collectDataField);
+    actualTable = (sortTableList.at(actualView));
+    connect(groupTable, &QTableWidget::cellClicked, this, &TableBox::collectData);
+    connect(fieldTable, &QTableWidget::cellClicked, this, &TableBox::collectData);
 
 }
 
@@ -163,7 +162,7 @@ void TableBox::connectFieldViewToggle(){
             tableWidget->setCurrentWidget(groupTable);
             actualView = 1;
         }
-        actualTable = (sortTableList->at(actualView));
+        actualTable = (sortTableList.at(actualView));
     });
 }
 
@@ -197,61 +196,54 @@ void TableBox::initRegEx()
     regexTestPattern.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
 }
 
-void TableBox::collectDataGroup(int row, int col)
-{
-    QTableWidgetItem *item = groupTable->item(row,col);
-    if(!item)
-        return;
-    QVariant dataVariant = item->data(Qt::UserRole);
-    if (!dataVariant.isValid())
-        qDebug() << "No data for this cell";
-    // transferData(dataVariant,col);
-    // emit sendDataToPreview(dataVariant, col);
-}
 
-void TableBox::collectDataField(int row, int col)
+void TableBox::collectData(int row, int col)
 {
-    QTableWidgetItem *item = fieldTable->item(row,col);
-    if(!item)
-        return;
-    QVariant dataVariant = item->data(Qt::UserRole);
-    if (!dataVariant.isValid())
-        qDebug() << "No data for this cell";
-    // transferData(dataVariant,col);
-    // emit sendDataToPreview(dataVariant, col);
-}
+  QTableWidgetItem *item = sortTableList.at(actualView)->item(row,col);
+  if(!item)
+    return;
 
-void TableBox::transferData(QVariant& dataVariant, int col){
-    QStringList paths;
-    switch(col){
-        case(SortTable::COL_SUBJECT):{
-            SubjectInfo *subject = dataVariant.value<SubjectInfo *>();
-            QStringList subjectPaths = subject->getCopiesPathList();
-            paths.append(subjectPaths);
-            break;
-        }
-        case(SortTable::COL_COPY):{
-            CopyInfo *copy = dataVariant.value<CopyInfo *>();
-            QStringList copiesPaths = copy->getPagesPathList();
-            paths.append(copiesPaths);
-            break;
-        }
-        case(SortTable::COL_PAGE):{
-            PageInfo *page = dataVariant.value<PageInfo *>();
-            QString pagePath = page->getFilePath();
-            paths.append(pagePath);
-            break;
-        }
-        case(SortTable::COL_FIELD):{
-            FieldInfo *field = dataVariant.value<FieldInfo *>();
-            QString fieldName = field->getFieldName();
-            break;
-        }
+  QTableWidgetItem *subjectItem = sortTableList.at(actualView)->item(row,SortTable::COL_SUBJECT);
+  QVariant subjectVariant = subjectItem->data(Qt::UserRole);
+  if(!subjectVariant.isValid())
+    return;
+
+  SubjectInfo *subject = subjectVariant.value<SubjectInfo *>();
+  dataCopieJSON *data = subject->getData();
+  if(!data)
+    return;
+
+  QStringList paths;
+  switch(col){
+    case(SortTable::COL_COPY):{
+      QVariant copyVariant = item->data(Qt::UserRole);
+      if(!copyVariant.isValid())
+        return;
+      CopyInfo *copy = copyVariant.value<CopyInfo *>();
+      paths.append(copy->getPagesPathList());
+      break;
     }
-    paths.removeAll("");
-    qDebug() << paths;
-    // emit sendDataToPreview(dataVariant, col);
+    case(SortTable::COL_PAGE):
+    case(SortTable::COL_FIELD):{
+      QVariant pageVariant = item->data(Qt::UserRole);
+      if(!pageVariant.isValid())
+        return;
+      PageInfo *page = pageVariant.value<PageInfo *>();
+      paths.append(page->getFilePath());
+      break;
+    }
+    default:{
+      return;
+    }
+  };
+
+  QString fieldName = (col == SortTable::COL_FIELD) ? item->text() : "";
+  paths.removeAll("");
+  qDebug() << paths;
+  emit sendDataToPreview(paths,data,fieldName);
+
 }
+
 
 void TableBox::searchProcessing(){
     searchInfo->setText("");

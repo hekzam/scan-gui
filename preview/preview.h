@@ -28,7 +28,7 @@ public slots:
   void setGroupBoxTitle();
   void onAction_DialogClosedTriggered();
   void onAction_CurrentTableElementChanged(const QStringList &imagePaths,
-                                           mJSON::dataCopieJSON &data,
+                                           mJSON::dataCopieJSON *data,
                                            const QString &fieldName);
 
 protected:

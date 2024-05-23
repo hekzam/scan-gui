@@ -14,9 +14,10 @@ public:
   ~ExamScene();
 
   // is the data really const ???
-  void loadImage(const QString &imgfilename, const mJSON::dataCopieJSON &data,
-                 const int col);
-  void loadImage(const QString &imgfilename);
+  void loadImage(const QStringList &imgfilenames, mJSON::dataCopieJSON &data);
+  void loadImage(const QStringList &imgfilenames, mJSON::dataCopieJSON &data,
+                 const QString &fieldName);
+  void loadImage(const QStringList &imgfilename); // ???? one or multiple paths
 
 signals:
   void newPageLoaded(QSize newImageSize);
@@ -30,8 +31,11 @@ private:
   void loadAnswerSheet();
 
   QString m_currentImageFilename = "";
+  QStringList m_currentCopyImageFilename;
+  QString m_focusedFieldName = "";
   // this can't be const, I WANT to be able to modify this
   const mJSON::dataCopieJSON *m_jsonData = nullptr;
+  QVariant m_dataVariant;
   int m_currentPageNum;
   ExamSinglePage *m_singleImage;
   PageMask *m_maskItem;

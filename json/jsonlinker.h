@@ -10,19 +10,17 @@ using namespace mJSON;
 
 class JsonLinker
 {
-    public:
+public:
+  JsonLinker();
+  std::map<QString, SubjectInfo> &
+  collectFields(QStringList const &filePaths, QStringList const &jsonFilePaths);
 
-        JsonLinker();
-        std::map<QString, SubjectInfo>& collectFields(QStringList const& filePaths, QStringList const& jsonFilePaths);
-    private:
-        std::map<QString,SubjectInfo> fileSubjectMap;
-        jsonreader jsonReader;
+private:
+  std::map<QString, SubjectInfo> fileSubjectMap;
+  jsonreader jsonReader;
 
-
-        void initialiseMaps(QStringList const& jsonPath);
-        dataCopieJSON *loadAndGetJsonCoords(QString const& jsonPath);
-
-
+  void initialiseMaps(QStringList const &jsonPath);
+  dataCopieJSON *loadAndGetJsonCoords(QString const &jsonPath);
 };
 
 #endif // JSONLINKER_H

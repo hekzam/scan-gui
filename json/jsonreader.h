@@ -23,6 +23,8 @@ struct coordinates
 {
   qreal x, y, h, w;
   QString clef;
+  QVariant valeur; // to be used to store the "value" of the field, might be
+                   // string or bool
   int pagenum;
 
   coordinates()

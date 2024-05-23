@@ -205,8 +205,8 @@ void TableBox::collectDataGroup(int row, int col)
     QVariant dataVariant = item->data(Qt::UserRole);
     if (!dataVariant.isValid())
         qDebug() << "No data for this cell";
-    else
-        transferData(dataVariant,col);
+    // transferData(dataVariant,col);
+    // emit sendDataToPreview(dataVariant, col);
 }
 
 void TableBox::collectDataField(int row, int col)
@@ -217,8 +217,8 @@ void TableBox::collectDataField(int row, int col)
     QVariant dataVariant = item->data(Qt::UserRole);
     if (!dataVariant.isValid())
         qDebug() << "No data for this cell";
-    else
-        transferData(dataVariant,col);
+    // transferData(dataVariant,col);
+    // emit sendDataToPreview(dataVariant, col);
 }
 
 void TableBox::transferData(QVariant& dataVariant, int col){
@@ -250,7 +250,7 @@ void TableBox::transferData(QVariant& dataVariant, int col){
     }
     paths.removeAll("");
     qDebug() << paths;
-    //emit sendDataToPreview(filePath);
+    // emit sendDataToPreview(dataVariant, col);
 }
 
 void TableBox::searchProcessing(){

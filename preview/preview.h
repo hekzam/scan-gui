@@ -11,6 +11,7 @@
 #include <QVBoxLayout>
 #include <QGraphicsPixmapItem>
 #include "../json/jsonreader.h"
+#include "../sortTable/sorttable.h"
 #include "examviewport.h"
 #include "externalpreviewdialog.h"
 
@@ -26,9 +27,10 @@ public:
 public slots:
   void setGroupBoxTitle();
   void onAction_DialogClosedTriggered();
-  void onAction_CurrentTableElementChanged(const QString &,
-                                           const mJSON::dataCopieJSON &,
-                                           const int col);
+  void onAction_CurrentTableElementChanged(const QStringList &imagePaths,
+                                           mJSON::dataCopieJSON &data,
+                                           const QString &fieldName);
+
 protected:
   // ?
   // void closeEvent(QCloseEvent *) override;

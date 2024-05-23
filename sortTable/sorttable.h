@@ -12,20 +12,21 @@ class SortTable : public QTableWidget
 {
     Q_OBJECT
 public:
-    enum Columns {
-        COL_SUBJECT = 0,
-        COL_COPY,
-        COL_PAGE,
-        COL_FIELD,
-        COL_SYNTAX,
-        COL_SEMANTIC,
-        COL_MET1,
-        COL_MET2,
-        NB_COL
-    };
+  enum Columns
+  {
+    COL_SUBJECT = 0,
+    COL_COPY,
+    COL_PAGE,
+    COL_FIELD,
+    COL_SYNTAX,
+    COL_SEMANTIC,
+    COL_MET1,
+    COL_MET2,
+    NB_COL
+  };
 
-    SortTable(std::map<QString, SubjectInfo>& copies, QWidget *parent=nullptr);
-    virtual void initSortTable() = 0;
+  SortTable(std::map<QString, SubjectInfo> &copies, QWidget *parent = nullptr);
+  virtual void initSortTable() = 0;
 
 private:
     QStringList headerList;

@@ -72,7 +72,9 @@ private:
     void transferData(QVariant& dataVariant, int col);
 
   signals:
-    void sendDataToPreview(QString const&);
+    void sendDataToPreview(const QStringList &imagePaths,
+                           mJSON::dataCopieJSON &data,
+                           const QString &fieldName);
 
   private slots:
     void displayTableFilter();

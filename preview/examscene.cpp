@@ -13,17 +13,26 @@ ExamScene::ExamScene(QObject *parent)
 
 ExamScene::~ExamScene() {}
 
-void ExamScene::loadImage(const QString &imgfilename, const dataCopieJSON &data,
-                          const int col)
+void ExamScene::loadImage(const QStringList &imgfilename, dataCopieJSON &data)
 {
-  m_currentImageFilename = imgfilename;
+  m_currentCopyImageFilename = imgfilename;
   m_jsonData = &data;
   loadAnswerSheet();
 }
 
-void ExamScene::loadImage(const QString &imgfilename)
+void ExamScene::loadImage(const QStringList &imgfilename, dataCopieJSON &data,
+                          const QString &fieldName)
 {
-  m_currentImageFilename = imgfilename;
+  m_currentCopyImageFilename = imgfilename;
+  m_jsonData = &data;
+  // TODO look for [field name] and zoom on it
+  m_focusedFieldName = fieldName;
+  loadAnswerSheet();
+}
+
+void ExamScene::loadImage(const QStringList &imgfilename)
+{
+  m_currentCopyImageFilename = imgfilename;
   loadAnswerSheet();
 }
 
@@ -52,18 +61,22 @@ void ExamScene::toggleFieldsVisibility(bool state)
 }
 
 // throw some error here to let the preview window know?
-void ExamScene::loadAnswerSheet()
+void ExamScene::loadAnswerSheet() // TODO load first elem of the QStringList
 {
   QPixmap p;
-  if (!p.load(m_currentImageFilename))
+  if (!p.load(m_currentCopyImageFilename[0]))
   {
     qWarning() << "error loading the image";
   }
   else
   {
+    // TODO : prendre num de page
     m_singleImage->setPixmap(p);
     m_singleImage->setImageSize(p.size());
     m_maskItem->setMaskSize(p.size());
+  }
+  if (m_dataVariant.toBool())
+  {
   }
   if (m_jsonData)
   {
@@ -75,6 +88,10 @@ void ExamScene::loadAnswerSheet()
     {
       m_maskItem->addFieldToHighlight(a->polygon());
     }
+    if (!m_focusedFieldName.isEmpty())
+    {
+      // TODO FOCUS ON THE FIELD HERE
+    }
   }
-  emit newPageLoaded(p.size());
+  emit newPageLoaded(p.size()); // DO SOMETHING HERE
 }

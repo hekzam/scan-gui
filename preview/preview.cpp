@@ -142,10 +142,10 @@ void ExamPreview::createGridPreview()
   gridScene = new ExamScene(gridPreview);
   gridViewport = new ExamViewPort(gridScene, gridPreview);
 
-  // *** TEST ***
-  QString ut3_testfn = ":/preview/resources/logo-UT3 modif.png";
-  /*gridViewport*/ gridScene->loadImage(ut3_testfn);
-  // *** END TEST ***
+  // // *** TEST ***
+  // QString ut3_testfn = ":/preview/resources/logo-UT3 modif.png";
+  // /*gridViewport*/ gridScene->loadImage(ut3_testfn);
+  // // *** END TEST ***
 
   // connect(gridScene, &ExamScene::rescale, gridViewport,
   //         &ExamViewPort::scaleToWidgetSize);
@@ -170,12 +170,25 @@ void ExamPreview::onAction_DialogClosedTriggered()
 
 // TODO : ask for the page number too ?
 // TODO : change groupbox, external view title based on file name ?
+// void ExamPreview::onAction_CurrentTableElementChanged(
+//     const QString &imagePath, const mJSON::dataCopieJSON &data, const int
+//     col)
+// {
+//   baseScene->loadImage(imagePath, data, col);
+// }
 void ExamPreview::onAction_CurrentTableElementChanged(
-    const QString &imagePath, const mJSON::dataCopieJSON &data, const int col)
+    const QStringList &imagePath, mJSON::dataCopieJSON &data,
+    const QString &fieldName)
 {
-  baseScene->loadImage(imagePath, data, col);
+  if (fieldName.isEmpty())
+  {
+    baseScene->loadImage(imagePath, data);
+  }
+  else
+  {
+    baseScene->loadImage(imagePath, data, fieldName);
+  }
 }
-
 void ExamPreview::nextImage() {}
 
 void ExamPreview::previousImage() {}

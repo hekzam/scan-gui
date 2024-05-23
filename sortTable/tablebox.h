@@ -11,8 +11,12 @@
 #include <QLabel>
 #include <QRegularExpression>
 #include <QDebug>
+#include <QStackedWidget>
+#include <QScrollBar>
 #include "sorttable.h"
 #include "../json/jsonlinker.h"
+#include "fieldviewtable.h"
+#include "groupviewtable.h"
 #include <vector>
 #include <algorithm>
 #include <iostream>
@@ -22,63 +26,86 @@ class TableBox : public QGroupBox
 {
     Q_OBJECT
 public:
-    TableBox(QList<JsonLinker::fieldInfo> const& fields, QWidget *dockParent, QMap<QString,dataCopieJSON*> const& fileDataMap, QWidget *parent = nullptr);
+    TableBox(std::map<QString, SubjectInfo>& copies, QWidget *dockParent, QWidget *parent = nullptr);
 
 private:
-    SortTable *sortTable;
+    QStackedWidget *tableWidget;
+    QCheckBox *fieldViewToggle;
+    SortTable *groupTable;
+    SortTable *fieldTable;
+    QList<SortTable *> *sortTableList;
+    SortTable *actualTable;
     QDockWidget *sortDock;
     QGroupBox *sortBox;
     QPushButton *sortButton;
 
+    //search zone
     QLineEdit *textZone;
-
     QLabel *searchInfo;
 
+    //patterns and regex
     QString simpleOrMultipleTextPattern = "^\\s*(?:[\\w.-]+(?:\\s*,\\s*[\\w.-]+)*)\\s*$";
     QString tagPattern = "^\\s*(?:[\\w.-]+\\s*:\\s*[\\w.-]+(?:\\s*,\\s*[\\w.-]+)*)\\s*(?:;\\s*[\\w.-]+\\s*:\\s*[\\w.-]+(?:\\s*,\\s*[\\w.-]+)*)*\\s*$";
 
     QString combinedPattern = simpleOrMultipleTextPattern + "|" + tagPattern;
-
     QRegularExpression regexTestPattern;
 
+    //user input
     QString input;
-    QString text;
 
-
-    QStringList queriesList;
-
+    // selected columns for search
     QList<int> selectedColumns;
-
-    QMap<QString,dataCopieJSON *> const& m_fileDataMap;
 
     bool firstAppearence;
 
+    // to delete ??
     bool emptySearchRes;
-    QList<QString> meantSearchesList;
+    QStringList meantSearchesList;
+
+    int actualView = 1;
 
     void initTableFilter();
-    void initTableView(QList<JsonLinker::fieldInfo> const& fields);
+    void initTableView();
     void initRegEx();
 
-    void sendNewFilePaths(int row, int col);
+    void connectFieldViewToggle();
+    void transferData(QVariant& dataVariant, int col);
 
   signals:
-    void sendDataToPreview(QString const&, dataCopieJSON const&, const int);
+    void sendDataToPreview(QString const&);
 
   private slots:
     void displayTableFilter();
+
+    // process the user search
     void searchProcessing();
 
-    void tagsProcessing(QString query);
-    void multipleTextProcessing(QString query);
-    void simpleTextProcessing(QString query);
-
-    void filterTextRows(QRegularExpression regex, QList<int> selectedColumns);
-    void filterTaggedTextRows(QList <QRegularExpression> regexList, QList<int> selectedColumns);
+    //clean the sort table by printing all the rows and delete the warning message if necessary
     void cleanSortTable();
 
+    // process the different type of search
+    //the simple search
+    void simpleTextProcessing(QString& querylocale);
+    //the multiple text search
+    void multipleTextProcessing(QString& querylocale);
+    //the tag search
+    void tagsProcessing(QString& querylocale);
+
+    //filter the rows
+    void filterRows(QList<QRegularExpression> regexList);
+    void filterTextRows(QRegularExpression regex);
+    void filterTaggedTextRows(QList <QRegularExpression> regexList);
+
+    //initialize the needed columns for the search
     void initSelectedColumns(bool isTagSearch);
+
+    //Fuzzy search
     int levenshteinDistance(QString str1, QString str2);
+    QStringList fuzzySearch(QStringList meantSearchesList, QString cellText, QRegularExpression regex, int threshold);
+    void printFuzzySearchRes(QStringList meantSearchesList);
+
+    void collectDataGroup(int row, int col);
+    void collectDataField(int row, int col);
 };
 
 #endif // TABLEBOX_H

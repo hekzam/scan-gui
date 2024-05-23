@@ -29,7 +29,6 @@ public slots:
   void onAction_CurrentTableElementChanged(const QString &,
                                            const mJSON::dataCopieJSON &,
                                            const int col);
-
 protected:
   // ?
   // void closeEvent(QCloseEvent *) override;

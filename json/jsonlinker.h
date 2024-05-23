@@ -4,34 +4,18 @@
 #include <QStringList>
 #include <QDebug>
 #include "jsonreader.h"
+#include "../scaninfo.h"
 
 using namespace mJSON;
 
 class JsonLinker
 {
     public:
-        struct fieldInfo{
-            QString m_filePath;
-            QString m_copyName;
-            QString m_pageName;
-            QString m_fieldName;
-            QString m_checked;
-            QString m_syntex;
-
-
-            fieldInfo(){}
-
-            fieldInfo(QString const fieldName, QString const copyName) : m_fieldName(fieldName), m_copyName(copyName){}
-
-        };
 
         JsonLinker();
-        QList<JsonLinker::fieldInfo> const& collectFields(QStringList const& filePaths, QStringList const& jsonFilePaths);
-        QMap<QString, dataCopieJSON*> const& getFileDataMap();
+        std::map<QString, SubjectInfo>& collectFields(QStringList const& filePaths, QStringList const& jsonFilePaths);
     private:
-        QList<fieldInfo> fieldList;
-        QMap<QString,QList<fieldInfo>> fileNameCoordMap;
-        QMap<QString,dataCopieJSON*> fileDataMap;
+        std::map<QString,SubjectInfo> fileSubjectMap;
         jsonreader jsonReader;
 
 

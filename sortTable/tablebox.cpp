@@ -2,9 +2,8 @@
 
 using namespace std;
 
-using namespace std;
 
-TableBox::TableBox(QList<JsonLinker::fieldInfo> const& fields, QWidget *dockParent, QMap<QString, dataCopieJSON*> const& fileDataMap, QWidget *parent) : QGroupBox(parent), firstAppearence(true), m_fileDataMap(fileDataMap) {
+TableBox::TableBox(std::map<QString, SubjectInfo>& copies, QWidget *dockParent, QWidget *parent) : QGroupBox(parent), firstAppearence(true) {
     setTitle("Evaluation table");
     sortBox = new QGroupBox(this);
 
@@ -18,15 +17,33 @@ TableBox::TableBox(QList<JsonLinker::fieldInfo> const& fields, QWidget *dockPare
 
     searchInfo = new QLabel(this);
 
-    sortTable = new SortTable(this);
+    fieldViewToggle = new QCheckBox("Enable field view",sortBox);
+    groupTable = new GroupViewTable(copies, this);
+    fieldTable = new FieldViewTable(copies, this);
+
+    //ajout à la liste de vue
+    sortTableList = new QList<SortTable*>;
+    sortTableList->push_back(fieldTable);
+    sortTableList->push_back(groupTable);
+
+
+    //Stack widget to store both tables
+    tableWidget = new QStackedWidget;
+    tableWidget->addWidget(groupTable);
+    tableWidget->addWidget(fieldTable);
+    tableWidget->setCurrentWidget(groupTable);
+
     sortDock = new QDockWidget(dockParent);
     sortDock->hide();
 
 
     initRegEx();
     initTableFilter();
-    initTableView(fields);
-    connect(sortTable, &QTableWidget::cellClicked, this, &TableBox::sendNewFilePaths);
+    initTableView();
+    actualTable = (sortTableList->at(actualView));
+    connect(groupTable, &QTableWidget::cellClicked, this, &TableBox::collectDataGroup);
+    connect(fieldTable, &QTableWidget::cellClicked, this, &TableBox::collectDataField);
+
 }
 
 void TableBox::initTableFilter(){
@@ -35,48 +52,63 @@ void TableBox::initTableFilter(){
     sortButton->setStyleSheet("background-color :#E1912F");
     connect(sortButton,&QPushButton::clicked,this,&TableBox::displayTableFilter);
 
-    QCheckBox *copy = new QCheckBox("Page",sortBox);
+    QCheckBox *subject = new QCheckBox("Subject",sortBox);
+    subject->setCheckState(Qt::Checked);
+    connect(subject,&QCheckBox::stateChanged,this,[this](int state){
+        groupTable -> editColumn(state, groupTable -> COL_SUBJECT);
+        fieldTable -> editColumn(state, fieldTable -> COL_SUBJECT);
+    });
+
+    QCheckBox *copy = new QCheckBox("Copy",sortBox);
     copy->setCheckState(Qt::Checked);
     connect(copy,&QCheckBox::stateChanged,this,[this](int state){
-        sortTable -> editColumn(state, sortTable -> COL_COPY);
+        groupTable -> editColumn(state, groupTable -> COL_COPY);
+        fieldTable -> editColumn(state, fieldTable -> COL_COPY);
     });
 
     QCheckBox *page = new QCheckBox("Page",sortBox);
     page->setCheckState(Qt::Checked);
     connect(page,&QCheckBox::stateChanged,this,[this](int state){
-        sortTable -> editColumn(state, sortTable -> COL_PAGE);
+        groupTable -> editColumn(state, groupTable -> COL_PAGE);
+        fieldTable -> editColumn(state, fieldTable -> COL_PAGE);
     });
 
     QCheckBox *field = new QCheckBox("Field",sortBox);
     field->setCheckState(Qt::Checked);
     connect(field,&QCheckBox::stateChanged,this,[this](int state){
-        sortTable -> editColumn(state, sortTable -> COL_FIELD);
+        groupTable -> editColumn(state, groupTable -> COL_FIELD);
+        fieldTable -> editColumn(state, fieldTable -> COL_FIELD);
     });
 
     QCheckBox *syntax = new QCheckBox("Syntax",sortBox);
     syntax->setCheckState(Qt::Checked);
     connect(syntax,&QCheckBox::stateChanged,this,[this](int state){
-        sortTable -> editColumn(state, sortTable -> COL_SYNTAX);
+        groupTable -> editColumn(state, groupTable -> COL_SYNTAX);
+        fieldTable -> editColumn(state, fieldTable -> COL_SYNTAX);
     });
 
     QCheckBox *semantic = new QCheckBox("Semantic",sortBox);
     semantic->setCheckState(Qt::Checked);
     connect(semantic,&QCheckBox::stateChanged,this,[this](int state){
-        sortTable -> editColumn(state, sortTable -> COL_SEMANTIC);
+        groupTable -> editColumn(state, groupTable -> COL_SEMANTIC);
+        fieldTable -> editColumn(state, fieldTable -> COL_SEMANTIC);
     });
 
     QCheckBox *metric1 = new QCheckBox("Metric 1",sortBox);
     connect(metric1,&QCheckBox::stateChanged,this,[this](int state){
-        sortTable -> editColumn(state, sortTable -> COL_MET1);
+        groupTable -> editColumn(state, groupTable -> COL_MET1);
+        fieldTable -> editColumn(state, fieldTable -> COL_MET1);
     });
 
     QCheckBox *metric2 = new QCheckBox("Metric 2",sortBox);
-    connect(metric2,&QCheckBox::stateChanged,sortTable,[this](int state){
-        sortTable -> editColumn(state, sortTable -> COL_MET2);
+    connect(metric2,&QCheckBox::stateChanged,this,[this](int state){
+        groupTable -> editColumn(state, groupTable -> COL_MET2);
+        fieldTable -> editColumn(state, fieldTable -> COL_MET2);
     });
 
     QVBoxLayout *sortBoxLayout = new QVBoxLayout;
     sortBoxLayout->setSpacing(10);
+    sortBoxLayout->addWidget(subject);
     sortBoxLayout->addWidget(copy);
     sortBoxLayout->addWidget(page);
     sortBoxLayout->addWidget(field);
@@ -97,7 +129,7 @@ void TableBox::displayTableFilter(){
     }
     else{
         if (firstAppearence){
-            QPoint pos = sortTable->mapToGlobal(sortTable->rect().topRight());
+            QPoint pos = groupTable->mapToGlobal(groupTable->rect().topRight());
             pos.setX(pos.x() - sortDock->width());
             sortDock->move(pos);
             firstAppearence = false;
@@ -106,23 +138,54 @@ void TableBox::displayTableFilter(){
     }
 }
 
-void TableBox::initTableView(QList<JsonLinker::fieldInfo> const& fields){
+void TableBox::connectFieldViewToggle(){
+    connect(fieldViewToggle, &QCheckBox::stateChanged, this, [this](int state) {
+        QScrollBar *fieldScrollX = fieldTable->horizontalScrollBar();
+        QScrollBar *fieldScrollY = fieldTable->verticalScrollBar();
+        QScrollBar *groupScrollX = groupTable->horizontalScrollBar();
+        QScrollBar *groupScrollY = groupTable->verticalScrollBar();
+
+        if (state){
+            fieldScrollX->setValue(groupScrollX->value());
+            if(groupScrollY->value() == groupScrollY->maximum())
+                fieldScrollY->setValue(fieldScrollY->maximum());
+            else
+                fieldScrollY->setValue(groupScrollY->value());
+            tableWidget->setCurrentWidget(fieldTable);
+            actualView = 0;
+        }
+        else{
+            groupScrollX->setValue(fieldScrollX->value());
+            if(fieldScrollY->value() == fieldScrollY->maximum())
+                groupScrollY->setValue(groupScrollY->maximum());
+            else
+                groupScrollY->setValue(fieldScrollY->value());
+            tableWidget->setCurrentWidget(groupTable);
+            actualView = 1;
+        }
+        actualTable = (sortTableList->at(actualView));
+    });
+}
+
+void TableBox::initTableView(){
 
     QHBoxLayout *sortButtonLayout = new QHBoxLayout;
     sortButtonLayout->addWidget(textZone);
 
-    sortButtonLayout->addWidget(searchInfo);
-
     sortButtonLayout->addWidget(sortButton);
 
     QVBoxLayout *evalLayout = new QVBoxLayout;
+
+    connectFieldViewToggle();
+
+    //Checkbox to display one of the tables
     evalLayout->addLayout(sortButtonLayout);
-
     evalLayout->addWidget(searchInfo);
+    evalLayout->addWidget(fieldViewToggle);
+    evalLayout->addWidget(tableWidget);
 
-    evalLayout->addWidget(sortTable);
-
-    sortTable->initSortTable(fields);
+    groupTable->initSortTable();
+    fieldTable->initSortTable();
 
     setLayout(evalLayout);
 }
@@ -134,137 +197,229 @@ void TableBox::initRegEx()
     regexTestPattern.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
 }
 
-void TableBox::sendNewFilePaths(int row, int col)
+void TableBox::collectDataGroup(int row, int col)
 {
-    QString filePath(sortTable->item(row,SortTable::COL_PATH)->text());
-    QString syntaxVal(sortTable->item(row,SortTable::COL_SYNTAX)->data(Qt::UserRole).toString());
-    QString fileIdentifier(sortTable->item(row,SortTable::COL_COPY)->text());
-    dataCopieJSON const& data = *m_fileDataMap[fileIdentifier];
-    qDebug() << "filePath" << filePath;
-    qDebug() << syntaxVal;
-    for (coordinates const& coordinate : *data.documentFields){
-        qDebug() << coordinate.clef << coordinate.x << coordinate.y << coordinate.h << coordinate.w;
+    QTableWidgetItem *item = groupTable->item(row,col);
+    if(!item)
+        return;
+    QVariant dataVariant = item->data(Qt::UserRole);
+    if (!dataVariant.isValid())
+        qDebug() << "No data for this cell";
+    else
+        transferData(dataVariant,col);
+}
+
+void TableBox::collectDataField(int row, int col)
+{
+    QTableWidgetItem *item = fieldTable->item(row,col);
+    if(!item)
+        return;
+    QVariant dataVariant = item->data(Qt::UserRole);
+    if (!dataVariant.isValid())
+        qDebug() << "No data for this cell";
+    else
+        transferData(dataVariant,col);
+}
+
+void TableBox::transferData(QVariant& dataVariant, int col){
+    QStringList paths;
+    switch(col){
+        case(SortTable::COL_SUBJECT):{
+            SubjectInfo *subject = dataVariant.value<SubjectInfo *>();
+            QStringList subjectPaths = subject->getCopiesPathList();
+            paths.append(subjectPaths);
+            break;
+        }
+        case(SortTable::COL_COPY):{
+            CopyInfo *copy = dataVariant.value<CopyInfo *>();
+            QStringList copiesPaths = copy->getPagesPathList();
+            paths.append(copiesPaths);
+            break;
+        }
+        case(SortTable::COL_PAGE):{
+            PageInfo *page = dataVariant.value<PageInfo *>();
+            QString pagePath = page->getFilePath();
+            paths.append(pagePath);
+            break;
+        }
+        case(SortTable::COL_FIELD):{
+            FieldInfo *field = dataVariant.value<FieldInfo *>();
+            QString fieldName = field->getFieldName();
+            break;
+        }
     }
-    emit sendDataToPreview(filePath, data, col);
+    paths.removeAll("");
+    qDebug() << paths;
+    //emit sendDataToPreview(filePath);
 }
 
 void TableBox::searchProcessing(){
-    emptySearchRes = true;
-    text = input.remove(" ");
+    searchInfo->setText("");
 
-    if (text.isEmpty()){
-        for (int i = 0; i < sortTable->rowCount(); ++i)
-            sortTable->setRowHidden(i, false);
+    input = textZone->text();
+    emptySearchRes = true;
+
+    QString text = input.remove(" ");
+
+    if (text.isEmpty())
         return;
-    }
+
     if (regexTestPattern.match(text).hasMatch()){
-        qDebug()<<"Le pattern est bon";
+        //qDebug()<<"Le pattern est bon";
         if (text.contains(":")){
-            qDebug()<<"tag";
             tagsProcessing(text);
         }
-
         else if (text.contains(",")){
             initSelectedColumns(false);
-            qDebug()<<"multiple";
             multipleTextProcessing(text);
         }
         else{
             initSelectedColumns(false);
-            qDebug()<<"simple";
             simpleTextProcessing(text);
         }
     }
     else{
-        qDebug()<<"Le pattern est PAS BON";
+        //qDebug()<<"Le pattern n'est pas bon";
         searchInfo->setText("Incorrect search. For further informations, head to the help.");
         return;
     }
 }
 
-
-void TableBox::filterTextRows(QRegularExpression regex, QList<int> selectedColumns)
+void TableBox::cleanSortTable()
 {
-    meantSearchesList.clear();
-
-    for (int i = 0; i < sortTable->rowCount(); ++i) {
-
-        bool match = false;
-
-        for (int j = 0; j < selectedColumns.size(); j++) {
-
-            int selectedIndex = selectedColumns[j];
-            QTableWidgetItem *item = sortTable->item(i, selectedIndex);
-
-
-        if (item){
-            QString cellText = (selectedIndex == SortTable::COL_SYNTAX) ? item->data(Qt::UserRole).toString() : item->text();
-            if (item && regex.match(item->text()).hasMatch()) {
-                match = true;
-                break;
-            }
+    if (((textZone->text()).remove(" ")).isEmpty()) {
+        for (int i = 0; i < groupTable->rowCount(); ++i)
+        {
+            groupTable->setRowHidden(i, false);
+            fieldTable->setRowHidden(i, false);
         }
-
-
-            if(meantSearchesList.size()<3){
-                qDebug()<<"size ça passe";
-
-
-                //TO-DO : à changer quand on utilisera data
-                QString textItem = "";
-
-                if (item->text()!=nullptr) {
-                    text = item->text();
-                }
-
-
-                if(!(meantSearchesList.contains(textItem)))
-                {
-
-                    qDebug()<<"contains ça passe ";
-                    if(levenshteinDistance(item->text(), regex.pattern())<=3)
-                    {
-                        qDebug()<<"distance ça passe";
-                        meantSearchesList.push_back(item->text());
-                        qDebug()<<"push back ça passe";
-                    }
-                }
-            }
-
-
-        sortTable->setRowHidden(i, !match);
-
-        }
-    }
-
-    if ((emptySearchRes)&&(meantSearchesList.size())) {
-        QString sentence = "Do you mean : ";
-
-        for (int var = 0; var < meantSearchesList.size(); var++) {
-            sentence += (meantSearchesList[var] + " ? ");
-        }
-        searchInfo->setText(sentence);
+        searchInfo->setText("");
     }
 }
 
 
-
-
-void TableBox::filterTaggedTextRows(QList <QRegularExpression> regexList, QList<int> selectedColumns)
+void TableBox::simpleTextProcessing(QString& querylocale)
 {
-    for (int i = 0; i < sortTable->rowCount(); i++) {
+    QRegularExpression regex(querylocale, QRegularExpression::CaseInsensitiveOption);
+    filterTextRows(regex);
+}
+
+
+void TableBox::multipleTextProcessing(QString& querylocale)
+{
+    QStringList queriesList= querylocale.split(",", Qt::SkipEmptyParts);
+    QString pattern = queriesList.join("|");
+    QRegularExpression regex(pattern, QRegularExpression::CaseInsensitiveOption);
+    filterTextRows(regex);
+}
+
+void TableBox::tagsProcessing(QString& querylocale)
+{
+    QStringList queriesList = querylocale.split(";", Qt::SkipEmptyParts);
+    QStringList *searchedTags = new QStringList();
+    QList<QRegularExpression> regexList;
+
+    for (QString &elem : queriesList){
+        QStringList *elemList = new QStringList(elem.split(":"));
+        searchedTags->append((*elemList)[0].trimmed());
+        QString pattern = (*elemList)[1].split(",", Qt::SkipEmptyParts).join("|");
+        QRegularExpression regex(pattern, QRegularExpression::CaseInsensitiveOption);
+        regexList.append(regex);
+
+        delete elemList;
+    }
+
+    // column selection for tagged search
+    initSelectedColumns(true);
+    for (int var = 0; var < actualTable->getHeaderList().size(); var++) {
+
+        QString *word = new QString((actualTable->getHeaderList()).at(var));
+
+        if (searchedTags->contains(*word, Qt::CaseInsensitive)){
+            selectedColumns.append(var);
+        }
+        delete word;
+    }
+    if(selectedColumns.size()!= searchedTags->size()){
+        searchInfo->setText("Incorrect search. For further informations, head to the help.");
+        delete searchedTags;
+        return;
+    }
+    delete searchedTags;
+
+    filterTaggedTextRows(regexList);
+}
+
+void TableBox::initSelectedColumns(bool isTagSearch)
+{
+    selectedColumns.clear();
+
+
+    if(!(isTagSearch)){
+        for (int var = 0; var < actualTable->columnCount(); var++) {
+            if(!(actualTable->isColumnHidden(var))){
+                selectedColumns.append(var);
+            }
+        }
+    }
+}
+
+
+void TableBox::filterTextRows(QRegularExpression regex)
+{
+    // first we clean our list of meant words for the fuzzy search
+    meantSearchesList.clear();
+
+    for (int i = 0; i < actualTable->rowCount(); ++i) {
+        bool match = false;
+        for (int j = 0; j < selectedColumns.size(); j++) {
+
+            int selectedJIndex = selectedColumns[j];
+            QTableWidgetItem *item = actualTable->item(i, selectedJIndex);
+
+            if (item){
+                QString cellText = (selectedJIndex == SortTable::COL_SYNTAX) ? item->data(Qt::UserRole).toString() : item->text();
+                if (regex.match(cellText).hasMatch()) {
+                    match = true;
+                    emptySearchRes = false;
+                    break;
+                }
+                //we want to limit to the three nearest words of our input
+                if(meantSearchesList.size()<3){
+                    //qDebug()<<"size ça passe";
+                    meantSearchesList = fuzzySearch(meantSearchesList, cellText, regex, 3);
+                }
+            }
+
+        }
+        actualTable->setRowHidden(i, !match);
+        //groupTable->setRowHidden(i, !match);
+        //fieldTable->setRowHidden(i, !match);
+    }
+
+    //print the resultat of the fuzzy search
+    printFuzzySearchRes(meantSearchesList);
+}
+
+
+
+// to-do : try to factorize with the function above
+void TableBox::filterTaggedTextRows(QList <QRegularExpression> regexList)
+{
+
+    for (int i = 0; i < actualTable->rowCount(); i++) {
         bool match = false;
 
         for (int j = 0; j < selectedColumns.size(); j++) {
 
             int selectedIndex = selectedColumns[j];
-
-            QTableWidgetItem *item = sortTable->item(i, selectedIndex);
+            QTableWidgetItem *item = actualTable->item(i, selectedIndex);
 
             if(item){
                 QString cellText = (selectedIndex == SortTable::COL_SYNTAX) ? item->data(Qt::UserRole).toString() : item->text();
-                if (item && regexList[j].match(cellText).hasMatch()){
+                if (regexList[j].match(cellText).hasMatch()){
                     match = true;
+
                 }
                 else{
                     match = false;
@@ -272,117 +427,68 @@ void TableBox::filterTaggedTextRows(QList <QRegularExpression> regexList, QList<
                 }
             }
         }
-        sortTable->setRowHidden(i, !match);
+        emptySearchRes = false;
+        actualTable->setRowHidden(i, !match);
+        //groupTable->setRowHidden(i, !match);
+        //fieldTable->setRowHidden(i, !match);
     }
 }
 
 
-void TableBox::simpleTextProcessing(QString query)
-{
+// a try to refactor the two methods above
+// isn't actualise with table system
+void TableBox::filterRows(QList<QRegularExpression> regexList){
+    meantSearchesList.clear();
+    int regexListSize = regexList.size();
+    for (int i = 0; i < groupTable->rowCount(); i++)
+    {
+        bool match = false;
 
-    QRegularExpression regex(query, QRegularExpression::CaseInsensitiveOption);
-    filterTextRows(regex, selectedColumns);
-}
+        for (int j = 0; j < selectedColumns.size(); j++)
+        {
+            int selectedJIndex = selectedColumns[j];
+            QTableWidgetItem *item = groupTable->item(i, selectedJIndex);
 
+            if(item)
+            {
+                QString *cellText = new QString((selectedJIndex == SortTable::COL_SYNTAX) ? item->data(Qt::UserRole).toString() : item->text());
 
-void TableBox::multipleTextProcessing(QString query)
-{
+                // cas de la recherche simple ou multiple
+                if ( (regexListSize==0) && (regexList[0].match(*cellText).hasMatch()) ) {
+                    match = true;
+                    emptySearchRes = false;
+                    delete cellText;
+                    break;
+                }
 
-    queriesList= query.split(",", Qt::SkipEmptyParts);
+                // cas du tagged search -> liste de regex
+                else if((regexListSize>0)&&(regexList[j].match(*cellText).hasMatch()))
+                {
+                    match = true;
+                }
+                else{
+                    match = false;
+                    delete cellText;
+                    break;
+                }
 
-    //cleaning elements
-    for (QString &elem : queriesList) {
-        elem = elem.trimmed();
-        qDebug()<<elem;
-    }
+                //we want to limit to the *three* nearest words of our input
+                if(meantSearchesList.size()<3){
+                    meantSearchesList = fuzzySearch(meantSearchesList, *cellText, ((regexListSize==0)?regexList[0]:regexList[j]), 3);
+                }
 
-    QString pattern = queriesList.join("|");
-    qDebug()<<pattern;
-    QRegularExpression regex(pattern, QRegularExpression::CaseInsensitiveOption);
-
-    filterTextRows(regex, selectedColumns);
-}
-
-void TableBox::tagsProcessing(QString query)
-{
-    //on vérifie que les tags sont bon
-    //ensuite on prend seulement les colonnes qui nous intéressent
-    //
-
-
-
-    queriesList = query.split(";", Qt::SkipEmptyParts);
-    qDebug()<<queriesList;
-
-
-    QStringList searchedTags;
-    QList<QRegularExpression> regexList;
-
-    for (QString &elem : queriesList){
-        QStringList elemList = elem.split(":");
-        searchedTags.append(elemList[0].trimmed());
-        QString pattern = elemList[1].split(",", Qt::SkipEmptyParts).join("|");
-        QRegularExpression regex(pattern, QRegularExpression::CaseInsensitiveOption);
-        regexList.append(regex);
-        qDebug()<<pattern;
-    }
-
-    qDebug()<<searchedTags;
-
-    qDebug()<<sortTable->getHeaderList();
-
-
-    initSelectedColumns(true);
-
-    for (int var = 0; var < sortTable->getHeaderList().size(); var++) {
-        QString *word = new QString(sortTable->getHeaderList()[var]);
-
-        if (searchedTags.contains(*word,Qt::CaseInsensitive)){
-            selectedColumns.append(var);
-        }
-        delete word;
-    }
-    if(selectedColumns.size()!= searchedTags.size()){
-        qDebug()<<"tag pas bon";
-        searchInfo->setText("Le format des tags n'est pas bon !");
-        return;
-    }
-
-    qDebug()<<selectedColumns;
-    qDebug()<<regexList;
-
-    filterTaggedTextRows(regexList, selectedColumns);
-
-}
-
-
-void TableBox::cleanSortTable()
-{
-    input = textZone->text();
-    if (input.trimmed() == "") {
-        searchProcessing();
-    }
-    //TO-Do : changer le clean
-    searchInfo->setText("");
-}
-
-void TableBox::initSelectedColumns(bool isTagSearch)
-{
-
-    selectedColumns.clear();
-
-    if(isTagSearch){
-        return;
-    }
-    else{
-        for (int var = 0; var < sortTable->rowCount(); var++) {
-            if(!(sortTable->isColumnHidden(var))){
-                selectedColumns.append(var);
+                delete cellText;
             }
         }
+        groupTable->setRowHidden(i, !match);
+        fieldTable->setRowHidden(i, !match);
     }
-
+    //print the resultat of the fuzzy search
+    printFuzzySearchRes(meantSearchesList);
 }
+
+
+
 
 int TableBox::levenshteinDistance(QString str1, QString str2){
 
@@ -419,6 +525,38 @@ int TableBox::levenshteinDistance(QString str1, QString str2){
         }
     }
     return dist[len1][len2];
+}
+
+QStringList TableBox::fuzzySearch(QStringList meantSearchesList, QString cellText, QRegularExpression regex, int threshold)
+{
+    if(!(meantSearchesList.contains(cellText)))
+    {
+        if(levenshteinDistance(cellText, regex.pattern())<=threshold)
+        {
+            meantSearchesList.push_back(cellText);
+        }
+    }
+    return meantSearchesList;
+}
+
+void TableBox::printFuzzySearchRes(QStringList meantSearchesList)
+{
+    if ((emptySearchRes)&&(meantSearchesList.size()))
+    {
+        QString sentence = "Did you mean : ";
+        int sizeList = meantSearchesList.size();
+        for (int var = 0; var < sizeList; var++)
+        {
+            sentence += meantSearchesList[var];
+            if(var < sizeList - 1)
+            {
+                sentence += " or ";
+            }
+
+        }
+        sentence += " ?";
+        searchInfo->setText(sentence);
+    }
 }
 
 

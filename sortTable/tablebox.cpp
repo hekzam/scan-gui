@@ -232,6 +232,8 @@ void TableBox::collectData(int row, int col)
       if(!copyVariant.isValid())
         return;
       CopyInfo *copy = copyVariant.value<CopyInfo *>();
+      if(!copy->getCopyInFiles())
+        return;
       paths.append(copy->getPagesPathList());
       break;
     }
@@ -241,6 +243,8 @@ void TableBox::collectData(int row, int col)
       if(!pageVariant.isValid())
         return;
       PageInfo *page = pageVariant.value<PageInfo *>();
+      if(!page->getPageInFiles())
+        return;
       paths.append(page->getFilePath());
       pageNumberToDisplay = page->getPageInJSON(); // this is the pagenumber
       break;

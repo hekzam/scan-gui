@@ -60,7 +60,7 @@ void TableBox::initTableFilter(){
     sortButton->setStyleSheet("background-color :#E1912F");
     connect(sortButton,&QPushButton::clicked,this,&TableBox::displayTableFilter);
 
-    QCheckBox *subject = new QCheckBox("Subject",sortBox);
+    QCheckBox *subject = new QCheckBox("Exam",sortBox);
     subject->setCheckState(Qt::Checked);
     connect(subject,&QCheckBox::stateChanged,this,[this](int state){
         groupTable -> editColumn(state, groupTable -> COL_SUBJECT);

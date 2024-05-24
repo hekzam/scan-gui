@@ -4,7 +4,7 @@ SortTable::SortTable(std::map<QString, SubjectInfo>& copies, QWidget *parent) : 
     setColumnCount(NB_COL);
     hideColumn(COL_MET1);
     hideColumn(COL_MET2);
-    headerList << "Subject" <<"Copy" << "Page" << "Field" << "Syntax" << "Semantic" << "Metric 1" << "Metric 2";
+    headerList << "Exam" <<"Copy" << "Page" << "Field" << "Syntax" << "Semantic" << "Metric 1" << "Metric 2";
     setHorizontalHeaderLabels(headerList);
     setEditTriggers(QAbstractItemView::NoEditTriggers);
     setSelectionMode(QAbstractItemView::SingleSelection);

@@ -27,7 +27,6 @@ class TableBox : public QGroupBox
     Q_OBJECT
 public:
     TableBox(std::map<QString, SubjectInfo>& copies, QWidget *dockParent, QWidget *parent = nullptr);
-    ~TableBox();
 
     QList<SortTable *> *getSortTableList() const;
 

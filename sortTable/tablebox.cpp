@@ -45,10 +45,7 @@ TableBox::TableBox(std::map<QString, SubjectInfo>& copies, QWidget *dockParent, 
 
 }
 
-TableBox::~TableBox()
-{
-  delete sortTableList;
-}
+
 
 SortTable *TableBox::getFieldTable()
 {

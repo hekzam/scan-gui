@@ -5,7 +5,6 @@
 #include "../json/jsonreader.h"
 #include "fields/atomicboxitem.h"
 #include "fields/markeritem.h"
-#include "pagemask.h"
 
 class ExamSinglePage : public QGraphicsPixmapItem
 {
@@ -42,7 +41,6 @@ private:
   qreal m_widthScaling;
   qreal m_heightScaling;
   QTransform m_fieldTransformMatrix;
-  QPainterPath m_mask;
   bool MatrixIsInvertible;
 
   void addKnownMarkers();

@@ -5,8 +5,6 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QPen>
 
-// #include "../../json/jsonreader.h"
-
 enum fieldType
 {
   ItemTypeUndef,
@@ -42,8 +40,6 @@ protected:
    */
   QMap<QString, QList<QVariant>>
   sendNewDataToLib(fieldType type, QString identifier, QList<QVariant> data);
-
-  // relative to the image ?
 
   bool visible = true; // true by default ?
   // maybe not useful

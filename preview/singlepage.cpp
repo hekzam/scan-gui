@@ -38,11 +38,6 @@ void ExamSinglePage::setJSONData(const mJSON::dataCopieJSON *data)
   m_JSONData = data;
   if (m_JSONData)
   {
-    // for (const mJSON::dataCopieJSON::pageSize &s :
-    // *m_JSONData->documentSizes)
-    // {
-    // if (s.numpage >= m_pageNumber)
-    // {
     m_docSize = m_JSONData->documentSizes->at(m_pageNumber - 1).pS;
     m_fieldTransformMatrix.setMatrix(
         (qreal) m_imageSize.width() / m_docSize.width(), 0, 0, 0,
@@ -52,8 +47,6 @@ void ExamSinglePage::setJSONData(const mJSON::dataCopieJSON *data)
 
     addKnownMarkers();
     addKnownAtomicBoxItems();
-    // }
-    // }
   }
   else
   {
@@ -118,8 +111,7 @@ QList<MarkerItem *> ExamSinglePage::currentMarkerItems() const
   return m_currentMarkerItems;
 }
 
-// We delete and create the list everytime because at this time we don't have a
-// way to store application data
+// I delete and create the list everytime, could be improved ?
 // we already checked that we have JSONdata
 void ExamSinglePage::addKnownMarkers()
 {
@@ -166,20 +158,18 @@ void ExamSinglePage::addKnownAtomicBoxItems()
 
 // For a better preview, it would be sensible to apply an offset of
 // pen.width / 2 using get field.getPenWidth
-
-// If there is a seemingly unexplicable descrepancy between the supposed
-// position of the Marker/fieldItem, it might be because I didn't have the raw
-// doc size of the page and had to calculate it using the position of the bottom
-// right and top left markers. (see jsonreader::calculateDocumentSize)
 void ExamSinglePage::setFieldItemAttributes(FieldItem *fieldItem,
                                             mJSON::coordinates m)
 {
   QPointF img_xy = mapJSONCoordtoImageCoord(QPoint(m.x, m.y));
-  //            :^)
+  // this is not real QPoint btw, it just hold the sizes :^)
   QPointF wid_hei = mapJSONCoordtoImageCoord(QPoint(m.w, m.h));
+
   QRectF rect = QRectF(img_xy.x(), img_xy.y(), wid_hei.x(), wid_hei.y());
+
   fieldItem->setClef(m.clef);
   fieldItem->setRect(rect);
+
   QList<QPointF> p;
   p << img_xy << QPointF(img_xy.x() + wid_hei.x(), (img_xy.y()))
     << QPointF(img_xy.x() + wid_hei.x(), img_xy.y() + wid_hei.y())

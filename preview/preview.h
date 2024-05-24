@@ -11,7 +11,6 @@
 #include <QVBoxLayout>
 #include <QGraphicsPixmapItem>
 #include "../json/jsonreader.h"
-#include "../sortTable/sorttable.h"
 #include "examviewport.h"
 #include "externalpreviewdialog.h"
 
@@ -25,7 +24,7 @@ public:
   ~ExamPreview();
 
 public slots:
-  void setGroupBoxTitle();
+  void setGroupBoxTitle(QString title);
   void onAction_DialogClosedTriggered();
   void onAction_CurrentTableElementChanged(const QStringList &imagePaths,
                                            mJSON::dataCopieJSON *data,
@@ -33,9 +32,6 @@ public slots:
                                            const QString &fieldName);
 
 protected:
-  // ?
-  // void closeEvent(QCloseEvent *) override;
-  // bool eventFilter(QObject *, QEvent *) override; // ?
 private slots:
   // TODO, public ?
   void nextImage();
@@ -45,7 +41,6 @@ private slots:
   void deletePage();
   void assignPage();
   void markExamSheetAsValidated();
-  // void displayImage(QString filename);
 
 private:
   void createPreviewStack();
@@ -61,15 +56,9 @@ private:
   ExamScene *baseScene;
   ExamScene *gridScene;
 
-  // QGroupBox *previewBox;
-
   QGroupBox *previewButtonBox;
   QStackedWidget *previewStack;
   QFrame *basePreview;
   externalPreviewDialog *externalPreview;
-
-  // show Grid
-  // QGraphicsView *gridView;
-  // QGraphicsScene *gridScene;
 };
 #endif // PREVIEWLAYOUT_H

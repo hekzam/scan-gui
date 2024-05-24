@@ -7,7 +7,7 @@ class atomicBoxItem : public FieldItem
 {
 public:
   atomicBoxItem(QGraphicsItem *parent, bool checked);
-  atomicBoxItem(QGraphicsItem *parent);
+  atomicBoxItem(QGraphicsItem *parent); // false by default
   ~atomicBoxItem();
 
 protected:

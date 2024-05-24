@@ -27,7 +27,6 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         json/jsonreader.h json/jsonreader.cpp
-        test_case.qrc
         preview/preview.h preview/preview.cpp
         preview/examscene.h preview/examscene.cpp
         preview/examviewport.h preview/examviewport.cpp

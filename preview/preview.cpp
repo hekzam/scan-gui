@@ -3,7 +3,7 @@
 using namespace mViewPort;
 
 ExamPreview::ExamPreview(QWidget *parent)
-    : /*previewBox = new*/ QGroupBox(tr("Preview"), parent),
+    : QGroupBox(tr("Preview"), parent),
       previewSizePolicy(QSizePolicy::MinimumExpanding,
                         QSizePolicy::MinimumExpanding)
 {
@@ -23,7 +23,7 @@ QSize ExamPreview::sizeHint() const
   return minPreviewSize;
 }
 
-ExamPreview::~ExamPreview(){}
+ExamPreview::~ExamPreview() {}
 
 void ExamPreview::createPreviewStack()
 {
@@ -46,6 +46,7 @@ void ExamPreview::createPreviewButtonBox()
   opacitySlider->setSingleStep(5);
   opacitySlider->setValue(0);
   opacitySlider->setToolTip(tr("This slider controls the opacity of the mask"));
+
   auto resetOpacity = new QPushButton(tr("reset Opacity"), previewButtonBox);
 
   auto thresholdSlider = new QSlider(Qt::Horizontal, previewButtonBox);
@@ -80,10 +81,9 @@ void ExamPreview::createPreviewButtonBox()
 
   connect(resetOpacity, &QPushButton::clicked, opacitySlider,
           [opacitySlider] { opacitySlider->setValue(0); });
-  // connect(baseViewport, &ExamViewPort::imageRotationChanged, opacitySlider,
-  //         &QSlider::setValue);
 
-  // TODO : Threshold connect
+  // TODO : Threshold Slider connect (not done because we didn't have any data
+  // on this)
 
   connect(viewWholePageButton, &QPushButton::clicked, this,
           &ExamPreview::showExternalPreview);
@@ -136,6 +136,8 @@ void ExamPreview::createBasePreview()
           &ExamViewPort::scaleToWidgetSize);
   connect(baseScene, &ExamScene::setROI, baseViewport,
           &ExamViewPort::fitROIInView);
+  connect(baseScene, &ExamScene::titleChanged, this,
+          &ExamPreview::setGroupBoxTitle);
 
   basePreviewLayout->addWidget(baseViewport);
   previewStack->addWidget(basePreview);
@@ -155,11 +157,8 @@ void ExamPreview::createGridPreview()
 
   // // *** TEST ***
   // QString ut3_testfn = ":/preview/resources/logo-UT3 modif.png";
-  // /*gridViewport*/ gridScene->loadImage(ut3_testfn);
+  // /*gridViewport*/ gridScene->loadImage({ut3_testfn});
   // // *** END TEST ***
-
-  // connect(gridScene, &ExamScene::rescale, gridViewport,
-  //         &ExamViewPort::scaleToWidgetSize);
 
   gridPreviewLayout->addWidget(gridViewport);
   previewStack->addWidget(gridPreview);
@@ -172,21 +171,16 @@ void ExamPreview::createDialogPreview()
           &ExamPreview::onAction_DialogClosedTriggered);
 }
 
-void ExamPreview::setGroupBoxTitle() {}
+void ExamPreview::setGroupBoxTitle(QString title)
+{
+  setTitle(title);
+}
 
 void ExamPreview::onAction_DialogClosedTriggered()
 {
   showExternalPreview();
 }
 
-// TODO : ask for the page number too ?
-// TODO : change groupbox, external view title based on file name ?
-// void ExamPreview::onAction_CurrentTableElementChanged(
-//     const QString &imagePath, const mJSON::dataCopieJSON &data, const int
-//     col)
-// {
-//   baseScene->loadImage(imagePath, data, col);
-// }
 void ExamPreview::onAction_CurrentTableElementChanged(
     const QStringList &imagePath, mJSON::dataCopieJSON *data,
     const int pageNumbertoDisplay, const QString &fieldName)
@@ -194,6 +188,7 @@ void ExamPreview::onAction_CurrentTableElementChanged(
   baseScene->loadImage(imagePath, data, pageNumbertoDisplay, fieldName);
 }
 
+// TODO
 void ExamPreview::nextImage() {}
 
 void ExamPreview::previousImage() {}
@@ -215,14 +210,8 @@ void ExamPreview::showExternalPreview()
   previewStack->setCurrentIndex((previewStack->currentIndex() + 1) % 2);
 }
 
-void ExamPreview::deletePage()
-{
-}
+void ExamPreview::deletePage() {}
 
-void ExamPreview::assignPage()
-{
-}
+void ExamPreview::assignPage() {}
 
-void ExamPreview::markExamSheetAsValidated()
-{
-}
+void ExamPreview::markExamSheetAsValidated() {}

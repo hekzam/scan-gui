@@ -41,6 +41,7 @@ void FieldItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e)
   // QGraphicsItem::mouseDoubleClickEvent(e);
 }
 
+// see .h file for more info
 QMap<QString, QList<QVariant>> FieldItem::sendNewDataToLib(fieldType type,
                                                            QString identifier,
                                                            QList<QVariant> data)

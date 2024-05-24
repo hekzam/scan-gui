@@ -9,7 +9,7 @@ ExamViewPort::ExamViewPort(ExamScene *gScene, QWidget *parent)
   setDragMode(QGraphicsView::ScrollHandDrag);
   setRenderHints(QPainter::Antialiasing);
 
-  // TODO : optimization flags
+  // optimization flags
   setOptimizationFlags(QGraphicsView::DontSavePainterState);
   // FullViewPortUpdate is used to avoid small errors when rendering the
   // fielditems

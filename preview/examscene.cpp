@@ -61,37 +61,48 @@ void ExamScene::toggleFieldsVisibility(bool state)
 }
 
 // throw some error here to let the preview window know?
-void ExamScene::loadAnswerSheet() // TODO load first elem of the QStringList
+void ExamScene::loadAnswerSheet()
 {
   QPixmap p;
   if (!p.load(m_currentCopyImageFilename[m_currentPageNum - 1]))
   {
     qWarning() << "error loading the image";
   }
-  else
+  else // si on a une image
   {
-    // TODO : prendre num de page
     m_singleImage->setPixmap(p);
     m_singleImage->setImageSize(p.size());
     m_maskItem->setMaskSize(p.size());
-  }
-  if (m_dataVariant.toBool())
-  {
-  }
-  if (m_jsonData)
-  {
-    m_singleImage->setPageNum(m_currentPageNum);
-    m_singleImage->setJSONData(m_jsonData);
-    toggleCalibrationMode(calibrationMode);
-    toggleFieldsVisibility(fieldsAreVisible);
-    for (auto &a : m_singleImage->currentAtomicBoxItems())
+
+    if (m_jsonData) // si on a un JSON lié...
     {
-      m_maskItem->addFieldToHighlight(a->polygon());
-    }
-    if (!m_focusedFieldName.isEmpty())
-    {
-      emit setROI(m_singleImage->getFieldPos(m_focusedFieldName));
+      m_singleImage->setPageNum(m_currentPageNum);
+      m_singleImage->setJSONData(m_jsonData);
+
+      toggleCalibrationMode(calibrationMode);
+      toggleFieldsVisibility(fieldsAreVisible);
+
+      if (!m_focusedFieldName.isEmpty()) // si on a cliqué sur un champ...
+      {
+        emit setROI(m_singleImage->getFieldPos(m_focusedFieldName));
+        for (auto &a : m_singleImage->currentAtomicBoxItems())
+        {
+          if (a->getClef() == m_focusedFieldName) // on ne montre que ce champ
+          {
+            m_maskItem->addFieldToHighlight(a->polygon());
+          }
+          emit titleChanged(m_focusedFieldName); // change groupbox title here
+        }
+      }
+      else // sinon on montre tout
+      {
+        for (auto &a : m_singleImage->currentAtomicBoxItems())
+        {
+          m_maskItem->addFieldToHighlight(a->polygon());
+        }
+        emit titleChanged(tr("currently viewing a page"));
+      }
+      emit newPageLoaded(p.size()); // DO SOMETHING HERE ?
     }
   }
-  emit newPageLoaded(p.size()); // DO SOMETHING HERE ?
 }

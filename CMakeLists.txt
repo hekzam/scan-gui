@@ -37,6 +37,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         preview/fields/markeritem.h preview/fields/markeritem.cpp
         preview/fields/atomicboxitem.h preview/fields/atomicboxitem.cpp
         preview/fields/ocritem.h preview/fields/ocritem.cpp
+        preview/fields/markerhandles.h preview/fields/markerhandles.cpp
+        preview/fields/markercontroller.h preview/fields/markercontroller.cpp
         sortTable/tablebox.h sortTable/tablebox.cpp
         sortTable/tablebox.h sortTable/tablebox.cpp
         sortTable/sorttable.h sortTable/sorttable.cpp

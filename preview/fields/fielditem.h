@@ -27,6 +27,7 @@ public:
   QRectF getRect();
 
 protected:
+  void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
 
   /*

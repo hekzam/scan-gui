@@ -125,10 +125,11 @@ void ExamSinglePage::addKnownMarkers()
   {
     if (m.pagenum == m_pageNumber)
     {
-      MarkerItem *marker = new MarkerItem(this);
+      auto *marker = new MarkerItem(this);
       m_currentMarkerItems.append(marker);
       setFieldItemAttributes(marker, m);
       marker->setVisible(false); // markers are invisible by default
+      marker->initCorners();
     }
   }
 }
@@ -145,7 +146,7 @@ void ExamSinglePage::addKnownAtomicBoxItems()
   {
     if (m.pagenum == m_pageNumber)
     {
-      atomicBoxItem *aBox = new atomicBoxItem(this);
+      auto *aBox = new atomicBoxItem(this);
       m_currentAtomicBoxItems.append(aBox);
       setFieldItemAttributes(aBox, m);
     }
@@ -165,7 +166,7 @@ void ExamSinglePage::setFieldItemAttributes(FieldItem *fieldItem,
   // this is not real QPoint btw, it just hold the sizes :^)
   QPointF wid_hei = mapJSONCoordtoImageCoord(QPoint(m.w, m.h));
 
-  QRectF rect = QRectF(img_xy.x(), img_xy.y(), wid_hei.x(), wid_hei.y());
+  auto rect = QRectF(img_xy.x(), img_xy.y(), wid_hei.x(), wid_hei.y());
 
   fieldItem->setClef(m.clef);
   fieldItem->setRect(rect);

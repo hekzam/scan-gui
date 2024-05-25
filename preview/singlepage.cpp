@@ -153,7 +153,7 @@ void ExamSinglePage::addKnownAtomicBoxItems()
 // For a better preview, it would be sensible to apply an offset of
 // pen.width / 2 using get field.getPenWidth
 void ExamSinglePage::setFieldItemAttributes(FieldItem *fieldItem,
-                                            mJSON::coordinates m)
+                                            mJSON::dataFieldJSON m)
 {
   QPointF img_xy = mapJSONCoordtoImageCoord(QPoint(m.x, m.y));
   // this is not real QPoint btw, it just hold the sizes :^)

@@ -133,7 +133,7 @@ void ExamPreview::createBasePreview()
   baseViewport = new ExamViewPort(baseScene, basePreview);
 
   connect(baseScene, &ExamScene::newPageLoaded, baseViewport,
-          &ExamViewPort::scaleToWidgetSize);
+          &ExamViewPort::onAction_PageLoadedRescaleToWidgetSize);
   connect(baseScene, &ExamScene::setROI, baseViewport,
           &ExamViewPort::fitROIInView);
   connect(baseScene, &ExamScene::titleChanged, this,

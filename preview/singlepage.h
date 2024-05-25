@@ -45,7 +45,7 @@ private:
 
   void addKnownMarkers();
   void addKnownAtomicBoxItems();
-  void setFieldItemAttributes(FieldItem *fieldItem, mJSON::coordinates m);
+  void setFieldItemAttributes(FieldItem *fieldItem, mJSON::dataFieldJSON m);
 };
 
 #endif // SINGLEPAGE_H

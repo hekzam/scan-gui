@@ -1,3 +1,8 @@
+/*
+ * this class reads the json and stores the informations in dataCopieJSON and
+ * the data for individual cells is dataFieldJSON To be modified if (when) the
+ * data model changes.
+ */
 #ifndef JSONREADER_H
 #define JSONREADER_H
 
@@ -19,7 +24,7 @@ enum JSONERROR
 
 // coordonnées des éléments présents dans une copie
 // une copie peut comprendre plusieures pages.
-struct coordinates
+struct dataFieldJSON
 {
   qreal x, y, h, w;
   QString clef;
@@ -27,20 +32,20 @@ struct coordinates
                    // string or bool
   int pagenum;
 
-  coordinates()
+  dataFieldJSON()
   {
     x = y = h = w = 0;
     pagenum = 1;
   };
 
-  ~coordinates(){};
+  ~dataFieldJSON(){};
 
-  coordinates(qreal xx, qreal yy, qreal hh, qreal ww)
+  dataFieldJSON(qreal xx, qreal yy, qreal hh, qreal ww)
   {
-    x = /*round*/ (xx);
-    y = /*round*/ (yy);
-    h = /*round*/ (hh);
-    w = /*round*/ (ww);
+    x = (xx);
+    y = (yy);
+    h = (hh);
+    w = (ww);
   }
 };
 
@@ -49,8 +54,8 @@ struct dataCopieJSON
   // QMap<int,QList<coordinates> ?
   // enlever les pointeurs ?
   QSize pageSizeInMM;
-  QList<coordinates> *documentFields;
-  QList<coordinates> *documentMarkers;
+  QList<dataFieldJSON> *documentFields;
+  QList<dataFieldJSON> *documentMarkers;
   int pagecount = 0;
 
   ~dataCopieJSON()
@@ -59,12 +64,12 @@ struct dataCopieJSON
     delete documentMarkers;
   }
 
-  void addCoordinates(const coordinates &c)
+  void addCoordinates(const dataFieldJSON &c)
   {
     documentFields->append(c);
   }
 
-  void addMarker(const coordinates &m)
+  void addMarker(const dataFieldJSON &m)
   {
     documentMarkers->append(m);
     if (m.pagenum > pagecount)
@@ -75,8 +80,8 @@ struct dataCopieJSON
 
   dataCopieJSON()
   {
-    documentFields = new QList<coordinates>;
-    documentMarkers = new QList<coordinates>;
+    documentFields = new QList<dataFieldJSON>;
+    documentMarkers = new QList<dataFieldJSON>;
   }
 };
 
@@ -95,9 +100,9 @@ public:
   dataCopieJSON *nouvelleCopie;
 
 private:
-  void parseValues(QJsonObject &, coordinates &);
-  void identifyFields(QJsonObject &, coordinates &);
-  void identifyMarkers(QJsonObject &, coordinates &);
+  void parseValues(QJsonObject &, dataFieldJSON &);
+  void identifyFields(QJsonObject &, dataFieldJSON &);
+  void identifyMarkers(QJsonObject &, dataFieldJSON &);
 
   QJsonObject *jsonObj;
   QJsonDocument *jsonDoc;

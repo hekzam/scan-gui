@@ -78,7 +78,7 @@ int jsonreader::getCoordinates()
 {
   nouvelleCopie = new dataCopieJSON;
   QJsonObject o;
-  coordinates coo = coordinates();
+  dataFieldJSON coo = dataFieldJSON();
   // pour récupérer le nom de l'objet duquel on extrait les données
   QStringList jsonKeys = jsonObj->keys();
   // TODO : give user the possibility to change the name of the marker id
@@ -121,7 +121,7 @@ int jsonreader::getCoordinates()
   return listeCopies->indexOf(nouvelleCopie); // -1 on error (defined by Qt)
 }
 
-void jsonreader::parseValues(QJsonObject &o, coordinates &coo)
+void jsonreader::parseValues(QJsonObject &o, dataFieldJSON &coo)
 {
   QStringList cKeys = (QStringList() << "x"
                                      << "y"
@@ -150,13 +150,13 @@ void jsonreader::parseValues(QJsonObject &o, coordinates &coo)
   }
 }
 
-void jsonreader::identifyFields(QJsonObject &o, coordinates &coo)
+void jsonreader::identifyFields(QJsonObject &o, dataFieldJSON &coo)
 {
   parseValues(o, coo);
   nouvelleCopie->addCoordinates(coo);
 }
 
-void jsonreader::identifyMarkers(QJsonObject &o, coordinates &coo)
+void jsonreader::identifyMarkers(QJsonObject &o, dataFieldJSON &coo)
 {
   parseValues(o, coo);
   nouvelleCopie->addMarker(coo);

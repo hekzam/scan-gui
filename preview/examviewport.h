@@ -29,7 +29,7 @@ public:
 
 public slots:
   void rotateImage(int value);
-  void scaleToWidgetSize(QSize newImageSize);
+  void onAction_PageLoadedRescaleToWidgetSize(QSize newImageSize);
   void fitROIInView(QRectF rect);
 
 protected:

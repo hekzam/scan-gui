@@ -32,7 +32,7 @@ void JsonLinker::initialiseMaps(QStringList const &jsonPaths)
     {
       QString const copyName = "copie" + QString::number(i);
       subject.addCopy(copyName, 1);
-      for (coordinates const &coordinate : *data->documentFields)
+      for (dataFieldJSON const &coordinate : *data->documentFields)
       {
         QString const pageName =
             "page" + QString::number(coordinate.pagenum); // (ex : page1)

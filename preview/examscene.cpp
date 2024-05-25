@@ -102,7 +102,8 @@ void ExamScene::loadAnswerSheet()
         }
         emit titleChanged(tr("currently viewing a page"));
       }
-      emit newPageLoaded(p.size()); // DO SOMETHING HERE ?
+      emit newPageLoaded(p.size());
+    }
     }
   }
 }

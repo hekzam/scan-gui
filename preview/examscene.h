@@ -29,7 +29,7 @@ public slots:
 
 private:
   void loadAnswerSheet();
-
+  bool m_initialized = false;
   QString m_currentImageFilename = "";
   QStringList m_currentCopyImageFilename;
   QString m_focusedFieldName = "";

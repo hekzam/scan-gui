@@ -75,7 +75,7 @@ void ExamViewPort::rotateImage(int value)
   m_rotation = value;
 }
 
-void ExamViewPort::scaleToWidgetSize(QSize newImageSize)
+void ExamViewPort::onAction_PageLoadedRescaleToWidgetSize(QSize newImageSize)
 {
   int imageDim;
   int widgetDim;
@@ -102,7 +102,8 @@ void ExamViewPort::scaleToWidgetSize(QSize newImageSize)
 void ExamViewPort::fitROIInView(QRectF rect)
 { // TODO
   qDebug() << rect;
-  centerOn(rect.x(), rect.y());
+  // fitInView(rect, Qt::KeepAspectRatio); // breaks the m_scale variable
+  // centerOn(rect.x(), rect.y());
 }
 
 void ExamViewPort::scaleToOneOnOne()

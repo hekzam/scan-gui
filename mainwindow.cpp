@@ -160,6 +160,9 @@ void MainWindow::createCreateProjectView()
   connect(nextButton, &QPushButton::clicked, this,
           &MainWindow::showEvaluationView);
 
+  connect(nextButton, &QPushButton::clicked, this,
+          &MainWindow::saveData);
+
   QPushButton *backButton = new QPushButton("Back");
   // backButton -> setStyleSheet("font-size: 16px; background-color: orange;
   // color: white;"); backButton -> setFixedSize(250, 50);
@@ -292,7 +295,7 @@ void MainWindow::openFileExplorer(QLineEdit *file, const QString &labelText)
   else if (labelText == "Project Repository")
   {
     QString directoryPath = QFileDialog::getExistingDirectory(
-        this, ("Choose Directory"), QDir::homePath());
+        this, ("Choose Directory"));
     saveFilePath = directoryPath + "/data.json";
     file->setText(saveFilePath);
   }

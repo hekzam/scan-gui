@@ -7,18 +7,17 @@
 
 class UserInformations : public QGroupBox
 {
-    Q_OBJECT
+  Q_OBJECT
 public:
-    explicit UserInformations(const QString &title, QWidget *parent = nullptr);
+  explicit UserInformations(const QString &title, QWidget *parent = nullptr);
 
-    QTextEdit *textZone;
+  QTextEdit *textZone;
 
-    //void addErrors(QString &newErrors);
+  // void addErrors(QString &newErrors);
 
+  ~UserInformations();
 
-    ~UserInformations ();
-
-    void setTextZone(QStringList &newText);
+  void setTextZone(QStringList &newText);
 };
 
 #endif // USERINFORMATIONS_H

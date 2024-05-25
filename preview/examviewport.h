@@ -50,7 +50,6 @@ signals:
   void imageRotationChanged(int angle);
 
 private:
-
   scaleToFit dimensionToConsider;
 
   // Data

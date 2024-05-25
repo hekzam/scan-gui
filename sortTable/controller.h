@@ -7,7 +7,6 @@
 #include <QDir>
 #include <vector>
 
-
 class Boundary;
 
 #pragma once
@@ -16,15 +15,14 @@ class Boundary;
 class Controller
 {
 public:
-    Controller();
-    ~Controller();
-    void liaisonControlBoundary();
-    void afficherGestionnaire();
+  Controller();
+  ~Controller();
+  void liaisonControlBoundary();
+  void afficherGestionnaire();
 
 private:
-    Boundary *boundaryWindow;
-    void initListFichier(QStringList files);
+  Boundary *boundaryWindow;
+  void initListFichier(QStringList files);
 };
 
 #endif // CONTROLLER_H
-

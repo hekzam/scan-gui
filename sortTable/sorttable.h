@@ -10,7 +10,7 @@
 
 class SortTable : public QTableWidget
 {
-    Q_OBJECT
+  Q_OBJECT
 public:
   enum Columns
   {
@@ -28,28 +28,29 @@ public:
   SortTable(std::map<QString, SubjectInfo> &copies, QWidget *parent = nullptr);
   virtual void initSortTable() = 0;
 
-  //méthode d'accès et d'ajout à la liste d'erreurs de linkage
+  // méthode d'accès et d'ajout à la liste d'erreurs de linkage
   virtual QStringList getErrors();
 
-
 private:
-    QStringList headerList;
+  QStringList headerList;
 
-    virtual void insertSubject(int& ligne, SubjectInfo& subject) = 0;
-    virtual void insertCopy(int& ligne, SubjectInfo& subject, CopyInfo& copy) = 0;
-    virtual void insertPage(int& line, SubjectInfo& subject, CopyInfo& copy, PageInfo& page) = 0;
-    virtual void insertField(int& line, SubjectInfo& subject, CopyInfo& copy, PageInfo& page, FieldInfo& field) = 0;
+  virtual void insertSubject(int &ligne, SubjectInfo &subject) = 0;
+  virtual void insertCopy(int &ligne, SubjectInfo &subject, CopyInfo &copy) = 0;
+  virtual void insertPage(int &line, SubjectInfo &subject, CopyInfo &copy,
+                          PageInfo &page) = 0;
+  virtual void insertField(int &line, SubjectInfo &subject, CopyInfo &copy,
+                           PageInfo &page, FieldInfo &field) = 0;
 
 protected:
-    std::map<QString, SubjectInfo>& subjectMap;
-    virtual void addErrors(QString &newErrors);
+  std::map<QString, SubjectInfo> &subjectMap;
+  virtual void addErrors(QString &newErrors);
 
-           //liste des erreurs de linkage
-    QStringList errors;
+  // liste des erreurs de linkage
+  QStringList errors;
 
 public slots:
-    void editColumn(int checkState, int column);
-    QStringList getHeaderList();
+  void editColumn(int checkState, int column);
+  QStringList getHeaderList();
 };
 
 #endif // SORTTABLE_H

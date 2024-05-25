@@ -17,30 +17,29 @@ class Controller;
 
 class Boundary : public QMainWindow
 {
-    Q_OBJECT
+  Q_OBJECT
 public:
-    explicit Boundary(QWidget *parent = nullptr);
-    void init();
-    ~Boundary();
-    void setController(Controller *controller);
-    void initTableView(QStringList const& fileNames);
+  explicit Boundary(QWidget *parent = nullptr);
+  void init();
+  ~Boundary();
+  void setController(Controller *controller);
+  void initTableView(QStringList const &fileNames);
 
 private:
-    QWidget *menuWindow;
-    QWidget *tableWindow;
-    QGroupBox *checkBoxGroup;
-    bool groupBoxDisplayed = false;
-    QStackedLayout *tableLayout;
-    SortTable *sortTable;
-    Controller *controlWindow;
+  QWidget *menuWindow;
+  QWidget *tableWindow;
+  QGroupBox *checkBoxGroup;
+  bool groupBoxDisplayed = false;
+  QStackedLayout *tableLayout;
+  SortTable *sortTable;
+  Controller *controlWindow;
 
-    void initTableFilter();
+  void initTableFilter();
 private slots:
-    void ouvrirExplorateurFichier();
-    void displayTableFilter();
+  void ouvrirExplorateurFichier();
+  void displayTableFilter();
 
 signals:
-
 };
 
 #endif // BOUNDARY_H

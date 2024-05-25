@@ -76,7 +76,7 @@ int jsonreader::loadFromJSON(const QString filename)
 
 int jsonreader::getCoordinates()
 {
-  a = new dataCopieJSON;
+  nouvelleCopie = new dataCopieJSON;
   QJsonObject o;
   coordinates coo = coordinates();
   // pour récupérer le nom de l'objet duquel on extrait les données
@@ -97,8 +97,12 @@ int jsonreader::getCoordinates()
     }
   }
 
-  calculateDocumentSize();
-  listeCopies->append(a);
+  // here the page is assumed to always be standard A4
+  // every page is considered to be the same size
+  QSize A4 = QSize(210, 297);
+  nouvelleCopie->pageSizeInMM = A4;
+
+  listeCopies->append(nouvelleCopie);
 
   // UNCOMMENT FOR DEBUG INFO
   // for (auto &c : *a->documentFields)
@@ -114,7 +118,7 @@ int jsonreader::getCoordinates()
   // {
   //   qDebug() << s.numpage << s.pS;
   // }
-  return listeCopies->indexOf(a); // -1 on error (defined by Qt)
+  return listeCopies->indexOf(nouvelleCopie); // -1 on error (defined by Qt)
 }
 
 void jsonreader::parseValues(QJsonObject &o, coordinates &coo)
@@ -149,58 +153,11 @@ void jsonreader::parseValues(QJsonObject &o, coordinates &coo)
 void jsonreader::identifyFields(QJsonObject &o, coordinates &coo)
 {
   parseValues(o, coo);
-  a->addCoordinates(coo);
+  nouvelleCopie->addCoordinates(coo);
 }
 
 void jsonreader::identifyMarkers(QJsonObject &o, coordinates &coo)
 {
   parseValues(o, coo);
-  a->addMarker(coo);
-}
-
-void jsonreader::calculateDocumentSize()
-{
-  coordinates topleft;
-  coordinates bottomright;
-  dataCopieJSON::pageSize ps;
-  // could be optimised, we're just trying to make stuff work
-  if (!a->documentMarkers->empty())
-  {
-    for (int c = 1; c <= a->pagecount; c++)
-    {
-      for (auto i = a->documentMarkers->cbegin(),
-                rend = a->documentMarkers->cend();
-           i != rend; ++i)
-      {
-        if (i->clef.contains("tl") && i->pagenum == c)
-        {
-          topleft = *i;
-        }
-        if (i->clef.contains("br") && i->pagenum == c)
-        {
-          bottomright = *i;
-        }
-      }
-      // could check if we actually find them beforehand
-      if (topleft.pagenum == bottomright.pagenum)
-      {
-        // here the page is assumed to always be standard A4
-        QSize ds = QSize(210, 297);
-        // QSize ds = QSize(bottomright.x + bottomright.w + topleft.x,
-        //                  bottomright.y + bottomright.h + topleft.y);
-        ps.numpage = c;
-        ps.pS = ds;
-        a->documentSizes->append(ps);
-      }
-      else
-      {
-        qWarning() << "insufficient markers found for page" << c;
-      }
-    }
-  }
-  else
-  {
-    qWarning() << "no markers found for this sheet, marker id should contain "
-                  "\"marker barcode\"";
-  }
+  nouvelleCopie->addMarker(coo);
 }

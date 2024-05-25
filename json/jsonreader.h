@@ -32,6 +32,7 @@ struct coordinates
     x = y = h = w = 0;
     pagenum = 1;
   };
+
   ~coordinates(){};
 
   coordinates(qreal xx, qreal yy, qreal hh, qreal ww)
@@ -45,16 +46,9 @@ struct coordinates
 
 struct dataCopieJSON
 {
-  // refactor this to have one struct per page ?
-  struct pageSize
-  {
-    int numpage;
-    QSize pS;
-  };
-
-  // QMap<int,QList<coordinates>
+  // QMap<int,QList<coordinates> ?
   // enlever les pointeurs ?
-  QList<pageSize> *documentSizes;
+  QSize pageSizeInMM;
   QList<coordinates> *documentFields;
   QList<coordinates> *documentMarkers;
   int pagecount = 0;
@@ -63,7 +57,6 @@ struct dataCopieJSON
   {
     delete documentFields;
     delete documentMarkers;
-    delete documentSizes;
   }
 
   void addCoordinates(const coordinates &c)
@@ -84,7 +77,6 @@ struct dataCopieJSON
   {
     documentFields = new QList<coordinates>;
     documentMarkers = new QList<coordinates>;
-    documentSizes = new QList<pageSize>;
   }
 };
 
@@ -100,13 +92,13 @@ public:
   int loadFromJSON(const QString filename);
   int getCoordinates();
   QList<dataCopieJSON *> *listeCopies;
-  dataCopieJSON *a;
+  dataCopieJSON *nouvelleCopie;
 
 private:
   void parseValues(QJsonObject &, coordinates &);
   void identifyFields(QJsonObject &, coordinates &);
   void identifyMarkers(QJsonObject &, coordinates &);
-  void calculateDocumentSize();
+
   QJsonObject *jsonObj;
   QJsonDocument *jsonDoc;
 };

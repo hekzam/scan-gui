@@ -1,3 +1,28 @@
+/*
+ * Layout of the preview module
+ *
+ * - QStackedWidget pour switch entre les 2 Vues
+ *  - ExamViewPort * 2 : 2 sous-classes de QGraphicsView pour montrer les scènes
+ *   - ExamScene * 2 : 2 sous-classes de QGraphicsScene pour montrer les objets
+ *    - PageMask : Un masque plus ou moins transparent pour cacher les items
+ *      indésirables. Il est possible de montrer plusieurs items à la fois et
+ *      cacher le reste de la page
+ *    - SinglePage : one ne peut montre qu'une page à la fois
+ *      La page contient des champs.
+ *
+ *     - FieldItems : Les champs associés à chaque page, séparés en différentes
+ *       sous-classes pour différencier les marqueurs, les Atomic Boxes et
+ *       autres
+ *       - AtomicBoxItems : boites dont la "valeur" est un booléen
+ *       - MarkerItem : boite servant à calibrer la page, se place sur les QR
+ *         codes aux 4 coins de la page
+ *     - MarkerController/MarkerHandles : classes servant à repositionner les
+ *       marqueurs en mode calibration
+ *
+ * - QButtonBox pour controler la vue (transparence du max, visibilité des
+ *   champs ...)
+ */
+
 #ifndef PREVIEWLAYOUT_H
 #define PREVIEWLAYOUT_H
 

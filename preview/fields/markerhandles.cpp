@@ -1,6 +1,7 @@
 #include "markerhandles.h"
-#include "qgraphicssceneevent.h"
-#include "qpainter.h"
+#include <QGraphicsSceneEvent>
+#include <QPainter>
+#include <QCursor>
 
 MarkerHandles::MarkerHandles(QGraphicsItem *parent, QPointF p, int index)
     : QGraphicsItem(parent), m_indexInFather(index), m_parent(parent)

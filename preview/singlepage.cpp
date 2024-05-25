@@ -1,6 +1,5 @@
 #include "singlepage.h"
 
-// todo : add atomic boxes
 ExamSinglePage::ExamSinglePage()
     : QGraphicsPixmapItem(), m_imageSize(0, 0), m_docSize(0, 0)
 {
@@ -38,7 +37,7 @@ void ExamSinglePage::setJSONData(const mJSON::dataCopieJSON *data)
   m_JSONData = data;
   if (m_JSONData)
   {
-    m_docSize = m_JSONData->documentSizes->at(m_pageNumber - 1).pS;
+    m_docSize = m_JSONData->pageSizeInMM;
     m_fieldTransformMatrix.setMatrix(
         (qreal) m_imageSize.width() / m_docSize.width(), 0, 0, 0,
         (qreal) m_imageSize.height() / m_docSize.height(), 0, 0, 0, 1);
@@ -82,12 +81,6 @@ void ExamSinglePage::toggleAtomicBoxVisibility(bool state)
 
 void ExamSinglePage::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-  // needed ?
-  // event->accept();
-  QPoint eventPoint = event->pos().toPoint();
-  qDebug() << eventPoint;
-  // qDebug() << mapImageCoordToJSONCoord(eventPoint);
-
   QGraphicsItem::mouseDoubleClickEvent(event);
 }
 
@@ -155,7 +148,7 @@ void ExamSinglePage::addKnownAtomicBoxItems()
 
 // the test JSON files we had only had (x,y) and (width, height) attributes,
 // meaning every field is supposed to be a square. But it may not be a perfectly
-// aligned so we may need to rotate with transform.rotate
+// aligned IRL so good luck I guess :^)
 
 // For a better preview, it would be sensible to apply an offset of
 // pen.width / 2 using get field.getPenWidth

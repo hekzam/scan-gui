@@ -43,11 +43,6 @@ protected:
   sendNewDataToLib(fieldType type, QString identifier, QList<QVariant> data);
 
   bool visible = true; // true by default ?
-  // maybe not useful
-  QPoint fieldPositionDocRel;
-  QPoint fieldPositionImageRelative;
-  QSize fieldSizeDocRel;
-  QSize fieldSizeImageRel;
   QRectF m_rect;
   QString m_clef;
   fieldType m_Type;

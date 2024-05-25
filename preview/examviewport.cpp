@@ -12,7 +12,7 @@ ExamViewPort::ExamViewPort(ExamScene *gScene, QWidget *parent)
   // optimization flags
   setOptimizationFlags(QGraphicsView::DontSavePainterState);
   // FullViewPortUpdate is used to avoid small errors when rendering the
-  // fielditems
+  // fielditems when you have a brush active
   setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
   setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
   // do we need this

@@ -222,7 +222,6 @@ void MainWindow::createEvaluationView()
 
   verticalSplitter->addWidget(tableBox);
 
-
   // Partie basse.
   UserInformations *informationBox =
       new UserInformations("General information", evaluationView);
@@ -231,7 +230,7 @@ void MainWindow::createEvaluationView()
   // récupérer le tableau d'erreurs comme dans l'exemple ci-dessous (ici il se
   // trouve dans jsonLinker)
   QStringList errors = tableBox->getFieldTable()->getErrors();
-  qDebug()<<errors;
+  qDebug() << errors;
   informationBox->setTextZone(errors);
   informationLayout->addWidget(informationBox->textZone);
   verticalSplitter->addWidget(informationBox);
@@ -273,9 +272,8 @@ void MainWindow::openFileExplorer(QLineEdit *file, const QString &labelText)
 {
   if (labelText == "Exam data")
   {
-    jsonFilePaths = QFileDialog::getOpenFileNames(
-        this, ("Open files"), "../../../../scan-gui/resources/test_case/Json",
-        "*.json");
+    jsonFilePaths = QFileDialog::getOpenFileNames(this, ("Open files"),
+                                                  QDir::homePath(), "*.json");
     if (!jsonFilePaths.isEmpty())
     {
       file->setText(jsonFilePaths.at(0));
@@ -284,9 +282,7 @@ void MainWindow::openFileExplorer(QLineEdit *file, const QString &labelText)
   else if (labelText == "Scan file(s)")
   {
     scanFilePaths = QFileDialog::getOpenFileNames(
-        this, ("Open files"),
-        "../../../../scan-gui/resources/test_case/Fichiers",
-        "*.png *.jpeg *.pdf");
+        this, ("Open files"), QDir::homePath(), "*.png *.jpeg *.pdf");
     if (!scanFilePaths.isEmpty())
     {
       file->setText(scanFilePaths.at(0));

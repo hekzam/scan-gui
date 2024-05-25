@@ -43,7 +43,7 @@ void FieldItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void FieldItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e)
 {
-  // QGraphicsItem::mouseDoubleClickEvent(e);
+  QGraphicsItem::mouseDoubleClickEvent(e);
 }
 
 // see .h file for more info
@@ -68,7 +68,7 @@ QMap<QString, QList<QVariant>> FieldItem::sendNewDataToLib(fieldType type,
     qWarning() << "what is you doing";
   }
   map[identifier] = data;
-  qDebug() << map;
+  qDebug() << "in fieldItem.cpp line 71" << map;
   return map;
 }
 

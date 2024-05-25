@@ -17,55 +17,56 @@
 #include "data/settings.h"
 
 class ExamPreview;
+
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+  MainWindow(QWidget *parent = nullptr);
+  ~MainWindow();
 
 private slots:
-    void showWelcomeView();
-    void showCreateProjectView();
-    void showEvaluationView();
-    void openProject();
-    void openFileExplorer(QLineEdit *lineEdit, const QString &labelText);
-    void checkInputs(QLineEdit *lineEdit1, QLineEdit *lineEdit2, QLineEdit *lineEdit3, QPushButton *pushButton);
-    QHBoxLayout *createFileEntry(const QString &labelText, QLineEdit *lineEdit);
-    void saveData();
-    void loadData(const QString& filePath);
-    void handleUndo();
-    void handleRedo();
-    void toggleDarkMode();
-    void openUserManual();
+  void showWelcomeView();
+  void showCreateProjectView();
+  void showEvaluationView();
+  void openProject();
+  void openFileExplorer(QLineEdit *lineEdit, const QString &labelText);
+  void checkInputs(QLineEdit *lineEdit1, QLineEdit *lineEdit2,
+                   QLineEdit *lineEdit3, QPushButton *pushButton);
+  QHBoxLayout *createFileEntry(const QString &labelText, QLineEdit *lineEdit);
+  void saveData();
+  void loadData(const QString &filePath);
+  void handleUndo();
+  void handleRedo();
+  void toggleDarkMode();
+  void openUserManual();
 
 private:
-    void createMenuBar();
-    void createMainStack();
-    void createWelcomeView();
-    void createCreateProjectView();
-    void createEvaluationView();
+  void createMenuBar();
+  void createMainStack();
+  void createWelcomeView();
+  void createCreateProjectView();
+  void createEvaluationView();
 
-    QLabel *currentViewTitle;
-    QMenu *fileMenu;
-    QMenu *editMenu;
-    QMenu *viewMenu;
-    QMenu *helpMenu;
-    QStackedWidget *mainStack;
-    // ExamPreview *previewBox;
+  QLabel *currentViewTitle;
+  QMenu *fileMenu;
+  QMenu *editMenu;
+  QMenu *viewMenu;
+  QMenu *helpMenu;
+  QStackedWidget *mainStack;
 
-    QString saveFilePath;
-    QStringList scanFilePaths;
-    QStringList jsonFilePaths;
+  QString saveFilePath;
+  QStringList scanFilePaths;
+  QStringList jsonFilePaths;
 
-    QWidget *welcomeView;
-    QWidget *createProjectView;
-    QWidget *evaluationView;
+  QWidget *welcomeView;
+  QWidget *createProjectView;
+  QWidget *evaluationView;
 
-    JsonLinker jsonLinker;
+  JsonLinker jsonLinker;
 
-    Settings settings;
+  Settings settings;
 };
 
 #endif // MAINWINDOW_H

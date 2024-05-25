@@ -7,21 +7,23 @@
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    QStringList args = QApplication::arguments();
+  QApplication a(argc, argv);
+  QStringList args = QApplication::arguments();
 
-    QTranslator translator;
-    const QStringList uiLanguages = QLocale::system().uiLanguages();
-    for (const QString &locale : uiLanguages) {
-        const QString baseName = "scan-gui_" + QLocale(locale).name();
-        if (translator.load(":/i18n/" + baseName)) {
-            a.installTranslator(&translator);
-            break;
-        }
+  QTranslator translator;
+  const QStringList uiLanguages = QLocale::system().uiLanguages();
+  for (const QString &locale : uiLanguages)
+  {
+    const QString baseName = "scan-gui_" + QLocale(locale).name();
+    if (translator.load(":/i18n/" + baseName))
+    {
+      a.installTranslator(&translator);
+      break;
     }
-    qRegisterMetaType<CopyInfo*>("CopyInfo*");
-    MainWindow w;
-    w.show();
+  }
+  qRegisterMetaType<CopyInfo *>("CopyInfo*");
+  MainWindow w;
+  w.show();
 
-    return a.exec();
+  return a.exec();
 }

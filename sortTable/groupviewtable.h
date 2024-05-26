@@ -11,12 +11,12 @@ public:
   void initSortTable() override;
 
 private:
-  void insertSubject(int &ligne, SubjectInfo &subject) override;
-  void insertCopy(int &line, SubjectInfo &subject, CopyInfo &copy) override;
+  void insertSubject(int &ligne, SubjectInfo &subject);
+  void insertCopy(int &ligne, SubjectInfo &subject, CopyInfo &copy);
   void insertPage(int &line, SubjectInfo &subject, CopyInfo &copy,
-                  PageInfo &page) override;
+                  PageInfo &page, int& maxSyntax);
   void insertField(int &line, SubjectInfo &subject, CopyInfo &copy,
-                   PageInfo &page, FieldInfo &field) override;
+                   PageInfo &page, FieldInfo &field, int& maxSyntax);
 };
 
 #endif // GROUPVIEWTABLE_H

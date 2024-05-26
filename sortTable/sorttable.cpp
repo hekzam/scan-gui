@@ -41,5 +41,5 @@ QStringList SortTable::getErrors()
 
 void SortTable::addErrors(QString &newErrors)
 {
-  getErrors().push_back(newErrors);
+  errors.push_back(newErrors);
 }

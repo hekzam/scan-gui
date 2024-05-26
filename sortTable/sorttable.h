@@ -34,13 +34,6 @@ public:
 private:
   QStringList headerList;
 
-  virtual void insertSubject(int &ligne, SubjectInfo &subject) = 0;
-  virtual void insertCopy(int &ligne, SubjectInfo &subject, CopyInfo &copy) = 0;
-  virtual void insertPage(int &line, SubjectInfo &subject, CopyInfo &copy,
-                          PageInfo &page) = 0;
-  virtual void insertField(int &line, SubjectInfo &subject, CopyInfo &copy,
-                           PageInfo &page, FieldInfo &field) = 0;
-
 protected:
   std::map<QString, SubjectInfo> &subjectMap;
   virtual void addErrors(QString &newErrors);

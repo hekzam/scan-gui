@@ -173,6 +173,13 @@ void TableBox::connectFieldViewToggle()
             QScrollBar *groupScrollX = groupTable->horizontalScrollBar();
             QScrollBar *groupScrollY = groupTable->verticalScrollBar();
 
+            int otherView = !actualView;
+
+            for (int column = 0; column < sortTableList.at(actualView)->model()->columnCount(); ++column)
+            {
+              sortTableList.at(otherView)->setColumnWidth(column, sortTableList.at(actualView)->columnWidth(column));
+            }
+
             if (state)
             {
               fieldScrollX->setValue(groupScrollX->value());

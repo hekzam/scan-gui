@@ -9,12 +9,15 @@ GroupViewTable::GroupViewTable(std::map<QString, SubjectInfo> &copies,
 
 void GroupViewTable::insertField(int &line, SubjectInfo &subject,
                                  CopyInfo &copy, PageInfo &page,
-                                 FieldInfo &field)
+                                 FieldInfo &field, int& maxSyntax)
 {
-  int progress = std::rand() % 101;
+  int syntax = std::rand() % 101;
   int semantique = std::rand() % 2;
-  field.setSyntax(progress);
+  field.setSyntax(syntax);
   field.setValue("value");
+
+  if (syntax > maxSyntax)
+    maxSyntax = syntax;
 
   QTableWidgetItem *subjectItem =
       new QTableWidgetItem(subject.getSubjectName());
@@ -25,27 +28,27 @@ void GroupViewTable::insertField(int &line, SubjectInfo &subject,
   pageItem->setData(Qt::UserRole, QVariant::fromValue(&page));
   QTableWidgetItem *fieldItem = new QTableWidgetItem(field.getFieldName());
   fieldItem->setData(Qt::UserRole, QVariant::fromValue(&page));
-  ProgressCell *progression = new ProgressCell(progress, this);
 
   insertRow(line);
   setItem(line, COL_SUBJECT, subjectItem);
   setItem(line, COL_COPY, copyItem);
   setItem(line, COL_PAGE, pageItem);
   setItem(line, COL_FIELD, fieldItem);
-  setCellWidget(line, COL_SYNTAX, progression);
-  setItem(line, COL_SYNTAX, progression);
   setItem(line, COL_SEMANTIC,
           new QTableWidgetItem(QString::number(semantique)));
   line++;
 }
 
 void GroupViewTable::insertPage(int &line, SubjectInfo &subject, CopyInfo &copy,
-                                PageInfo &page)
+                                PageInfo &page, int& maxSyntax)
 {
   int lineRefPage(line);
 
   if (!page.getPageInJSON())
   { // This will occur if a selected page was not mentionned in any JSON file
+    QTableWidgetItem *subjectItem =
+        new QTableWidgetItem(subject.getSubjectName());
+    subjectItem->setData(Qt::UserRole, QVariant::fromValue(&subject));
     QTableWidgetItem *copyItem = new QTableWidgetItem(copy.getCopyName());
     copyItem->setData(Qt::UserRole, QVariant::fromValue(&copy));
     QTableWidgetItem *pageItem =
@@ -53,6 +56,7 @@ void GroupViewTable::insertPage(int &line, SubjectInfo &subject, CopyInfo &copy,
     pageItem->setData(Qt::UserRole, QVariant::fromValue(&page));
 
     insertRow(line);
+    setItem(line, COL_SUBJECT, subjectItem);
     setItem(line, COL_COPY, copyItem);
     setItem(line, COL_PAGE, pageItem);
     line++;
@@ -64,6 +68,9 @@ void GroupViewTable::insertPage(int &line, SubjectInfo &subject, CopyInfo &copy,
   else if (!page.getPageInFiles())
   { // This will occur if a page was mentionned in a JSON file but was never
     // selected
+    QTableWidgetItem *subjectItem =
+        new QTableWidgetItem(subject.getSubjectName());
+    subjectItem->setData(Qt::UserRole, QVariant::fromValue(&subject));
     QTableWidgetItem *copyItem = new QTableWidgetItem(copy.getCopyName());
     copyItem->setData(Qt::UserRole, QVariant::fromValue(&copy));
     QTableWidgetItem *pageItem =
@@ -71,6 +78,7 @@ void GroupViewTable::insertPage(int &line, SubjectInfo &subject, CopyInfo &copy,
     pageItem->setData(Qt::UserRole, QVariant::fromValue(&page));
 
     insertRow(line);
+    setItem(line, COL_SUBJECT, subjectItem);
     setItem(line, COL_COPY, copyItem);
     setItem(line, COL_PAGE, pageItem);
     line++;
@@ -84,7 +92,7 @@ void GroupViewTable::insertPage(int &line, SubjectInfo &subject, CopyInfo &copy,
     for (auto it = page.begin(); it != page.end(); it++)
     {
       FieldInfo &field = it->second;
-      insertField(line, subject, copy, page, field);
+      insertField(line, subject, copy, page, field, maxSyntax);
     }
   }
   if (line - lineRefPage >= 2)
@@ -93,7 +101,7 @@ void GroupViewTable::insertPage(int &line, SubjectInfo &subject, CopyInfo &copy,
 
 void GroupViewTable::insertCopy(int &line, SubjectInfo &subject, CopyInfo &copy)
 {
-  int lineRefCopy(line);
+  int lineRefCopySyntax(line);
 
   if (!copy.getCopyInJSON())
   { // This will occur if a selected page was not mentionned in any JSON file
@@ -136,14 +144,20 @@ void GroupViewTable::insertCopy(int &line, SubjectInfo &subject, CopyInfo &copy)
   }
   else
   {
+    int maxSyntax = 0;
     for (auto it = copy.begin(); it != copy.end(); it++)
     {
       PageInfo &page = it->second;
-      insertPage(line, subject, copy, page);
+      insertPage(line, subject, copy, page, maxSyntax);
     }
+    ProgressCell *progression = new ProgressCell(maxSyntax, this);
+    setCellWidget(lineRefCopySyntax, COL_SYNTAX, progression);
+    setItem(lineRefCopySyntax, COL_SYNTAX, progression);
   }
-  if (line - lineRefCopy >= 2)
-    setSpan(lineRefCopy, COL_COPY, line - lineRefCopy, 1);
+  if (line - lineRefCopySyntax >= 2){
+    setSpan(lineRefCopySyntax, COL_COPY, line - lineRefCopySyntax, 1);
+    setSpan(lineRefCopySyntax, COL_SYNTAX, line - lineRefCopySyntax, 1);
+  }
 }
 
 void GroupViewTable::insertSubject(int &line, SubjectInfo &subject)
@@ -171,4 +185,5 @@ void GroupViewTable::initSortTable()
     insertSubject(line, subject);
   }
   resizeColumnsToContents();
+  setColumnWidth(COL_SYNTAX,96);
 }

@@ -57,8 +57,6 @@ void FieldViewTable::insertPage(int &line, SubjectInfo &subject, CopyInfo &copy,
     line++;
 
     // Error message
-    qDebug() << "The file " << copy.getCopyName() + "-" + page.getPageName()
-             << " is not associated with any JSON file.";
     QString fileError = "The file : " + copy.getCopyName() + "-" +
                         page.getPageName() +
                         " is not associated with any JSON file.";
@@ -83,8 +81,6 @@ void FieldViewTable::insertPage(int &line, SubjectInfo &subject, CopyInfo &copy,
     line++;
 
     // Error message
-    qDebug() << "The file " << copy.getCopyName() + "-" + page.getPageName()
-             << " was specified in a JSON file but was not selected.";
     QString fileError = "The file : " + copy.getCopyName() + "-" +
                         page.getPageName() +
                         " was specified in a JSON file but was not selected.";
@@ -116,9 +112,6 @@ void FieldViewTable::insertCopy(int &line, SubjectInfo &subject, CopyInfo &copy)
     setItem(line, COL_COPY, copyItem);
     line++;
     // Error message
-    qDebug() << "The file "
-             << subject.getSubjectName() + "-" + copy.getCopyName()
-             << " is not associated with any JSON file.";
     QString fileError = "The file : " + subject.getSubjectName() + "-" +
                         copy.getCopyName() +
                         " is not associated with any JSON file.";
@@ -140,9 +133,6 @@ void FieldViewTable::insertCopy(int &line, SubjectInfo &subject, CopyInfo &copy)
     line++;
 
     // Error message
-    qDebug() << "The file "
-             << subject.getSubjectName() + "-" + copy.getCopyName()
-             << " was specified in a JSON file but was not selected.";
     QString fileError = "The file : " + subject.getSubjectName() + "-" +
                         copy.getCopyName() +
                         " was specified in a JSON file but was not selected.";

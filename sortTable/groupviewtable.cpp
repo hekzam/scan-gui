@@ -58,10 +58,6 @@ void GroupViewTable::insertPage(int &line, SubjectInfo &subject, CopyInfo &copy,
     setItem(line, COL_COPY, copyItem);
     setItem(line, COL_PAGE, pageItem);
     line++;
-
-    // Error message
-    qDebug() << "The file " << copy.getCopyName() + "-" + page.getPageName()
-             << " is not associated with any JSON file.";
   }
   else if (!page.pageIsInFiles())
   { // This will occur if a page was mentionned in a JSON file but was never
@@ -80,10 +76,6 @@ void GroupViewTable::insertPage(int &line, SubjectInfo &subject, CopyInfo &copy,
     setItem(line, COL_COPY, copyItem);
     setItem(line, COL_PAGE, pageItem);
     line++;
-
-    // Error message
-    qDebug() << "The file " << copy.getCopyName() + "-" + page.getPageName()
-             << " was specified in a JSON file but was not selected.";
   }
   else
   {
@@ -114,11 +106,6 @@ void GroupViewTable::insertCopy(int &line, SubjectInfo &subject, CopyInfo &copy)
     setItem(line, COL_SUBJECT, subjectItem);
     setItem(line, COL_COPY, copyItem);
     line++;
-
-    // Error message
-    qDebug() << "The file "
-             << subject.getSubjectName() + "-" + copy.getCopyName()
-             << " is not associated with any JSON file.";
   }
   else if (!copy.copyIsInFiles())
   { // This will occur if a page was mentionned in a JSON file but was never
@@ -134,11 +121,6 @@ void GroupViewTable::insertCopy(int &line, SubjectInfo &subject, CopyInfo &copy)
     setItem(line, COL_SUBJECT, subjectItem);
     setItem(line, COL_COPY, copyItem);
     line++;
-
-    // Error message
-    qDebug() << "The file "
-             << subject.getSubjectName() + "-" + copy.getCopyName()
-             << " was specified in a JSON file but was not selected.";
   }
   else
   {

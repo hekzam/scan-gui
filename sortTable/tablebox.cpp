@@ -257,7 +257,6 @@ void TableBox::collectData(int row, int col)
     if (!copy->copyIsInFiles())
       return;
     paths.append(copy->getPagesPathList());
-    qDebug() << copy->getCopyNum();
     break;
   }
   case (SortTable::COL_PAGE):
@@ -270,9 +269,7 @@ void TableBox::collectData(int row, int col)
     if (!page->pageIsInFiles())
       return;
     paths.append(page->getFilePath());
-    pageNumberToDisplay = page->getPageNum();
-    qDebug() << "page number sent to preview" << page->getPageNum();
-    ; // this is the pagenumber, it's VERY different from the index of the image
+    pageNumberToDisplay = page->getPageNum(); // this is the pagenumber, it's VERY different from the index of the image
       // in paths
     break;
   }
@@ -283,7 +280,6 @@ void TableBox::collectData(int row, int col)
   };
 
   QString fieldName = (col == SortTable::COL_FIELD) ? item->text() : "";
-  qDebug() << paths;
   emit sendDataToPreview(paths, data, pageNumberToDisplay, fieldName);
 }
 

@@ -1,4 +1,11 @@
-// settings.h
+/* Settings is used to load and save the settings of
+ * the software after closure.
+ *
+ * More options could be added later on, only the
+ * general geometry of the main window is currently
+ * implemented.
+*/
+
 #ifndef SETTINGS_H
 #define SETTINGS_H
 

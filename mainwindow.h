@@ -1,3 +1,32 @@
+/*
+ * Layout of the main window module
+ *
+ * - QStackedWidget : switch entre les 3 vues.
+ *  - QVBoxLayout : contenant la vue Menu Principal.
+ *    - QPushButton * 2 : permettent de créer ou d'ouvrir un
+ *      projet.
+ *  - QVBoxLayout : contenant la vue Menu Création.
+ *    - QFormLayout : créer un formulaire sur plusieurs niveaux.
+ *      - QLineEdit * 4 : contenant chaque champ à remplir du
+ *        formulaire.
+ *    - QHBoxLayout + QPushButton * 2 : permettent de revenir en
+ *      arrière ou de continuer.
+ *  - QHBoxLayout : contenant la vue Menu Evaluation.
+ *    - QSplitter : premier splitter pour diviser la page en
+ *      largeur (côté tableau / preview).
+ *      - QSplitter : second splitter pour diviser la partie
+ *        tableau en hauteur (côté tableau / informations).
+ *        - TableBox : tableau contenant les informations du
+ *          scan.
+ *        - QVBoxLayout : boîte d'informations et d'erreurs.
+ *      - ExamPreview : boîte de preview des pages.
+ *
+ * - QMenuBar : accéder aux différents menus déroulant.
+ *  - QMenu * 4 : accéder à la liste des options du menus.
+ *
+ * mainwindow also contains other general methods.
+ */
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 

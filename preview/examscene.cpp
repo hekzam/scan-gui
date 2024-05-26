@@ -64,12 +64,6 @@ void ExamScene::nextImage()
 {
   if (m_numberOfPages > 1)
   {
-    qDebug() << "In examscene, nextImage doesn't work";
-    qDebug() << "current page is" << m_currentPageNum << "out of"
-             << m_numberOfPages;
-    qDebug() << "next page is"
-             << (m_currentPageNum == m_numberOfPages ? 1
-                                                     : m_currentPageNum + 1);
     m_currentPageNum =
         m_currentPageNum == m_numberOfPages ? 1 : m_currentPageNum + 1;
     loadAnswerSheet();
@@ -84,12 +78,6 @@ void ExamScene::previousImage()
 {
   if (m_numberOfPages > 1)
   {
-    qDebug() << "In examscene, previousImage doesn't work";
-    qDebug() << "current page is" << m_currentPageNum << "out of"
-             << m_numberOfPages;
-    qDebug() << "next page is "
-             << (m_currentPageNum == 1 ? m_numberOfPages
-                                       : m_currentPageNum - 1);
     m_currentPageNum =
         m_currentPageNum == 1 ? m_numberOfPages : m_currentPageNum - 1;
     loadAnswerSheet();
@@ -100,13 +88,17 @@ void ExamScene::previousImage()
   }
 }
 
-// throw some error here to let the preview window know?
 void ExamScene::loadAnswerSheet()
 {
   QPixmap p;
-  if (!p.load(m_currentCopyImageFilename[m_currentPageNum - 1]))
+  // dans le cas ou un clique sur un champ, on ne reçoit que le chemin vers une
+  // seul image, dans ce cas on charge l'élement 0, sinon on charge l'élement
+  // situé à m_currentPageNum - 1.
+  int indexImgToLoad = m_numberOfPages > 1 ? m_currentPageNum - 1 : 0;
+  if (!p.load(m_currentCopyImageFilename[indexImgToLoad]))
   {
-    qWarning() << "error loading the image";
+    // throw some error here to let the preview window know?
+    qWarning() << "Examscene : error loading the image";
   }
   else // si on a une image
   {

@@ -99,9 +99,10 @@ void ExamViewPort::onAction_PageLoadedRescaleToWidgetSize(QSize newImageSize)
   changeScale(scaleBy);
 }
 
+// ROI = Region Of Interest
 void ExamViewPort::fitROIInView(QRectF rect)
 { // TODO
-  qDebug() << rect;
+  qDebug() << "in examviewport, fit region of interest in view" << rect;
   // fitInView(rect, Qt::KeepAspectRatio); // breaks the m_scale variable
   // centerOn(rect.x(), rect.y());
 }

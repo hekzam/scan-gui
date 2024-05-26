@@ -270,8 +270,10 @@ void TableBox::collectData(int row, int col)
     if (!page->pageIsInFiles())
       return;
     paths.append(page->getFilePath());
-    pageNumberToDisplay = page->pageIsInJSON();
-    qDebug() << page->getPageNum();;    // this is the pagenumber
+    pageNumberToDisplay = page->getPageNum();
+    qDebug() << "page number sent to preview" << page->getPageNum();
+    ; // this is the pagenumber, it's VERY different from the index of the image
+      // in paths
     break;
   }
   default:

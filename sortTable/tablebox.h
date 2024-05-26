@@ -21,6 +21,18 @@
 #include <algorithm>
 #include <iostream>
 
+/* Layout of the table module
+*
+* QVBoxLayout :   * QHBoxLayout contenant la barre de recherche (QSearchBar) et le bouton de tri (QButton)
+*                   - QSearchBar
+*                   - QButton fait apparaître un QDockWidget qui contient un QGroupBox avec des QCheckBox
+*                     alignées verticalement avec un QVBoxLayoutqui représentent les colonnes à faire
+*                     apparaître ou disparaître des tableaux
+*
+*                 * QStackedWidget contenant deux tableaux (QTableWidget) représentant deux vue différentes et une
+*                   checkbox pour switch entre les deux (QCheckBox)
+*
+*/
 class TableBox : public QGroupBox
 {
   Q_OBJECT
@@ -114,6 +126,8 @@ private slots:
   QStringList fuzzySearch(QStringList meantSearchesList, QString cellText,
                           QRegularExpression regex, int threshold);
   void printFuzzySearchRes(QStringList meantSearchesList);
+
+  void synchronizeColumnWidth(int colIndex, int oldSize, int newSize);
 
   void collectData(int row, int col);
 };

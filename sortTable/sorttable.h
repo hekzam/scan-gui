@@ -8,6 +8,21 @@
 #include "progresscell.h"
 #include "../json/jsonlinker.h"
 
+/* Layout of the sortTable module
+ *
+ *  * Classe abtraite héritant de QTableWidget et contenant plusieurs colonnes représentant différentes métriques
+ *    chaque ligne est remplie par les informations données par la map associant des noms
+ *    de sujet avec les sujets correspondant.
+ *
+ *    Deux sous classes associées :
+ *      - FieldViewTable : Chaque ligne possède sujet, copie, page, champ et syntaxe.
+ *      - GroupViewTable : Les champs sont groupés par pages, les pages sont groupées par copies
+ *                         et les copies sont groupées par sujets. Les syntaxes sont associées aux copies.
+ *
+ *    Chaque cellule du tableau possède une data qui représente des données en fonction de la colonne de
+ *    la cellule (ex : cellule de COL_COPY aura data copy)
+ */
+
 class SortTable : public QTableWidget
 {
   Q_OBJECT
@@ -19,7 +34,6 @@ public:
     COL_PAGE,
     COL_FIELD,
     COL_SYNTAX,
-    COL_SEMANTIC,
     COL_MET1,
     COL_MET2,
     NB_COL

@@ -12,7 +12,6 @@ void FieldViewTable::insertField(int &line, SubjectInfo &subject,
                                  FieldInfo &field)
 {
   int progress = std::rand() % 101;
-  int semantique = std::rand() % 2;
   field.setSyntax(progress);
   field.setValue("value");
 
@@ -34,15 +33,13 @@ void FieldViewTable::insertField(int &line, SubjectInfo &subject,
   setItem(line, COL_FIELD, fieldItem);
   setCellWidget(line, COL_SYNTAX, progression);
   setItem(line, COL_SYNTAX, progression);
-  setItem(line, COL_SEMANTIC,
-          new QTableWidgetItem(QString::number(semantique)));
   line++;
 }
 
 void FieldViewTable::insertPage(int &line, SubjectInfo &subject, CopyInfo &copy,
                                 PageInfo &page)
 {
-  if (!page.getPageInJSON())
+  if (!page.pageIsInJSON())
   { // This will occur if a selected page was not mentionned in any JSON file
     QTableWidgetItem *copyItem = new QTableWidgetItem(copy.getCopyName());
     copyItem->setData(Qt::UserRole, QVariant::fromValue(&copy));
@@ -63,7 +60,7 @@ void FieldViewTable::insertPage(int &line, SubjectInfo &subject, CopyInfo &copy,
                         " is not associated with any JSON file.";
     addErrors(fileError);
   }
-  else if (!page.getPageInFiles())
+  else if (!page.pageIsInFiles())
   { // This will occur if a page was mentionned in a JSON file but was never
     // selected
     QTableWidgetItem *copyItem = new QTableWidgetItem(copy.getCopyName());
@@ -97,7 +94,7 @@ void FieldViewTable::insertPage(int &line, SubjectInfo &subject, CopyInfo &copy,
 
 void FieldViewTable::insertCopy(int &line, SubjectInfo &subject, CopyInfo &copy)
 {
-  if (!copy.getCopyInJSON())
+  if (!copy.copyIsInJSON())
   { // This will occur if a selected page was not mentionned in any JSON file
     QTableWidgetItem *subjectItem =
         new QTableWidgetItem(subject.getSubjectName());
@@ -119,7 +116,7 @@ void FieldViewTable::insertCopy(int &line, SubjectInfo &subject, CopyInfo &copy)
                         " is not associated with any JSON file.";
     addErrors(fileError);
   }
-  else if (!copy.getCopyInFiles())
+  else if (!copy.copyIsInFiles())
   { // This will occur if a page was mentionned in a JSON file but was never
     // selected
     QTableWidgetItem *subjectItem =

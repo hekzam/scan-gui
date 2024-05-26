@@ -32,6 +32,8 @@ TableBox::TableBox(std::map<QString, SubjectInfo> &copies, QWidget *dockParent,
   tableWidget->addWidget(groupTable);
   tableWidget->addWidget(fieldTable);
   tableWidget->setCurrentWidget(groupTable);
+  connect(groupTable->horizontalHeader(), &QHeaderView::sectionResized, this, &TableBox::synchronizeColumnWidth);
+  connect(fieldTable->horizontalHeader(), &QHeaderView::sectionResized, this, &TableBox::synchronizeColumnWidth);
 
   sortDock = new QDockWidget(dockParent);
   sortDock->hide();
@@ -102,15 +104,6 @@ void TableBox::initTableFilter()
             fieldTable->editColumn(state, fieldTable->COL_SYNTAX);
           });
 
-  QCheckBox *semantic = new QCheckBox("Semantic", sortBox);
-  semantic->setCheckState(Qt::Checked);
-  connect(semantic, &QCheckBox::stateChanged, this,
-          [this](int state)
-          {
-            groupTable->editColumn(state, groupTable->COL_SEMANTIC);
-            fieldTable->editColumn(state, fieldTable->COL_SEMANTIC);
-          });
-
   QCheckBox *metric1 = new QCheckBox("Metric 1", sortBox);
   connect(metric1, &QCheckBox::stateChanged, this,
           [this](int state)
@@ -134,7 +127,6 @@ void TableBox::initTableFilter()
   sortBoxLayout->addWidget(page);
   sortBoxLayout->addWidget(field);
   sortBoxLayout->addWidget(syntax);
-  sortBoxLayout->addWidget(semantic);
   sortBoxLayout->addWidget(metric1);
   sortBoxLayout->addWidget(metric2);
 
@@ -163,6 +155,11 @@ void TableBox::displayTableFilter()
   }
 }
 
+void TableBox::synchronizeColumnWidth(int colIndex, int oldSize, int newSize){
+  int otherView = !actualView;
+  sortTableList.at(otherView)->setColumnWidth(colIndex,newSize);
+}
+
 void TableBox::connectFieldViewToggle()
 {
   connect(fieldViewToggle, &QCheckBox::stateChanged, this,
@@ -172,13 +169,6 @@ void TableBox::connectFieldViewToggle()
             QScrollBar *fieldScrollY = fieldTable->verticalScrollBar();
             QScrollBar *groupScrollX = groupTable->horizontalScrollBar();
             QScrollBar *groupScrollY = groupTable->verticalScrollBar();
-
-            int otherView = !actualView;
-
-            for (int column = 0; column < sortTableList.at(actualView)->model()->columnCount(); ++column)
-            {
-              sortTableList.at(otherView)->setColumnWidth(column, sortTableList.at(actualView)->columnWidth(column));
-            }
 
             if (state)
             {
@@ -264,9 +254,10 @@ void TableBox::collectData(int row, int col)
     if (!copyVariant.isValid())
       return;
     CopyInfo *copy = copyVariant.value<CopyInfo *>();
-    if (!copy->getCopyInFiles())
+    if (!copy->copyIsInFiles())
       return;
     paths.append(copy->getPagesPathList());
+    qDebug() << copy->getCopyNum();
     break;
   }
   case (SortTable::COL_PAGE):
@@ -276,10 +267,12 @@ void TableBox::collectData(int row, int col)
     if (!pageVariant.isValid())
       return;
     PageInfo *page = pageVariant.value<PageInfo *>();
-    if (!page->getPageInFiles())
+    if (!page->pageIsInFiles())
       return;
     paths.append(page->getFilePath());
-    pageNumberToDisplay = page->getPageInJSON(); // this is the pagenumber
+    QString pageName = page->getPageName();
+    pageNumberToDisplay = page->pageIsInJSON();
+    qDebug() << page->getPageNum();;    // this is the pagenumber
     break;
   }
   default:
@@ -289,7 +282,6 @@ void TableBox::collectData(int row, int col)
   };
 
   QString fieldName = (col == SortTable::COL_FIELD) ? item->text() : "";
-  paths.removeAll("");
   qDebug() << paths;
   emit sendDataToPreview(paths, data, pageNumberToDisplay, fieldName);
 }

@@ -31,12 +31,12 @@ void JsonLinker::initialiseMaps(QStringList const &jsonPaths)
     for (int i = 1; i < numCopies + 1; i++)
     {
       QString const copyName = "copie" + QString::number(i);
-      subject.addCopy(copyName, 1);
+      subject.addCopy(copyName, i, 1);
       for (dataFieldJSON const &coordinate : *data->documentFields)
       {
         QString const pageName =
             "page" + QString::number(coordinate.pagenum); // (ex : page1)
-        subject.addPageToCopy(copyName, pageName, 1);
+        subject.addPageToCopy(copyName, pageName, coordinate.pagenum, 1);
         subject.addFieldToCopyPage(copyName, pageName, coordinate.clef);
       }
     }
@@ -65,9 +65,9 @@ JsonLinker::collectFields(QStringList const &filePaths,
       fileSubjectMap[subjectName] = SubjectInfo(subjectName);
     SubjectInfo &subject = fileSubjectMap[subjectName];
     if (!subject.containsCopy(copyName))
-      subject.addCopy(copyName, 0);
+      subject.addCopy(copyName, 0, 0);
     if (!subject.copyContainsPage(copyName, pageName))
-      subject.addPageToCopy(copyName, pageName, 0);
+      subject.addPageToCopy(copyName, pageName, 0, 0);
 
     // We then proceed to set the page path
     subject.setPagePath(copyName, pageName, filePath);

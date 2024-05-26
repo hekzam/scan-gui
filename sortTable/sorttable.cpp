@@ -11,7 +11,6 @@ SortTable::SortTable(std::map<QString, SubjectInfo> &copies, QWidget *parent)
              << "Page"
              << "Field"
              << "Syntax"
-             << "Semantic"
              << "Metric 1"
              << "Metric 2";
   setHorizontalHeaderLabels(headerList);
@@ -41,5 +40,5 @@ QStringList SortTable::getErrors()
 
 void SortTable::addErrors(QString &newErrors)
 {
-  errors.push_back(newErrors);
+  getErrors().push_back(newErrors);
 }

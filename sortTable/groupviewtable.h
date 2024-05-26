@@ -3,6 +3,8 @@
 
 #include "sorttable.h"
 
+//Items regroupés
+
 class GroupViewTable : public SortTable
 {
 public:

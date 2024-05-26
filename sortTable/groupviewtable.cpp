@@ -34,8 +34,6 @@ void GroupViewTable::insertField(int &line, SubjectInfo &subject,
   setItem(line, COL_COPY, copyItem);
   setItem(line, COL_PAGE, pageItem);
   setItem(line, COL_FIELD, fieldItem);
-  setItem(line, COL_SEMANTIC,
-          new QTableWidgetItem(QString::number(semantique)));
   line++;
 }
 
@@ -44,7 +42,7 @@ void GroupViewTable::insertPage(int &line, SubjectInfo &subject, CopyInfo &copy,
 {
   int lineRefPage(line);
 
-  if (!page.getPageInJSON())
+  if (!page.pageIsInJSON())
   { // This will occur if a selected page was not mentionned in any JSON file
     QTableWidgetItem *subjectItem =
         new QTableWidgetItem(subject.getSubjectName());
@@ -65,7 +63,7 @@ void GroupViewTable::insertPage(int &line, SubjectInfo &subject, CopyInfo &copy,
     qDebug() << "The file " << copy.getCopyName() + "-" + page.getPageName()
              << " is not associated with any JSON file.";
   }
-  else if (!page.getPageInFiles())
+  else if (!page.pageIsInFiles())
   { // This will occur if a page was mentionned in a JSON file but was never
     // selected
     QTableWidgetItem *subjectItem =
@@ -103,7 +101,7 @@ void GroupViewTable::insertCopy(int &line, SubjectInfo &subject, CopyInfo &copy)
 {
   int lineRefCopySyntax(line);
 
-  if (!copy.getCopyInJSON())
+  if (!copy.copyIsInJSON())
   { // This will occur if a selected page was not mentionned in any JSON file
     QTableWidgetItem *subjectItem =
         new QTableWidgetItem(subject.getSubjectName());
@@ -122,7 +120,7 @@ void GroupViewTable::insertCopy(int &line, SubjectInfo &subject, CopyInfo &copy)
              << subject.getSubjectName() + "-" + copy.getCopyName()
              << " is not associated with any JSON file.";
   }
-  else if (!copy.getCopyInFiles())
+  else if (!copy.copyIsInFiles())
   { // This will occur if a page was mentionned in a JSON file but was never
     // selected
     QTableWidgetItem *subjectItem =

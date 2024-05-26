@@ -3,6 +3,8 @@
 
 #include "sorttable.h"
 
+// Items non regroupés
+
 class FieldViewTable : public SortTable
 {
 public:

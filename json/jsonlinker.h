@@ -6,6 +6,11 @@
 #include "jsonreader.h"
 #include "../scaninfo.h"
 
+/* Classe temporaire permettant de regrouper manuellement les fichiers JSON avec les pages
+ * en fonction de leurs noms.
+*/
+
+
 using namespace mJSON;
 
 class JsonLinker

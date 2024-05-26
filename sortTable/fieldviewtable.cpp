@@ -41,6 +41,9 @@ void FieldViewTable::insertPage(int &line, SubjectInfo &subject, CopyInfo &copy,
 {
   if (!page.pageIsInJSON())
   { // This will occur if a selected page was not mentionned in any JSON file
+    QTableWidgetItem *subjectItem =
+        new QTableWidgetItem(subject.getSubjectName());
+    subjectItem->setData(Qt::UserRole, QVariant::fromValue(&subject));
     QTableWidgetItem *copyItem = new QTableWidgetItem(copy.getCopyName());
     copyItem->setData(Qt::UserRole, QVariant::fromValue(&copy));
     QTableWidgetItem *pageItem =
@@ -48,6 +51,7 @@ void FieldViewTable::insertPage(int &line, SubjectInfo &subject, CopyInfo &copy,
     pageItem->setData(Qt::UserRole, QVariant::fromValue(&page));
 
     insertRow(line);
+    setItem(line, COL_SUBJECT, subjectItem);
     setItem(line, COL_COPY, copyItem);
     setItem(line, COL_PAGE, pageItem);
     line++;
@@ -63,6 +67,9 @@ void FieldViewTable::insertPage(int &line, SubjectInfo &subject, CopyInfo &copy,
   else if (!page.pageIsInFiles())
   { // This will occur if a page was mentionned in a JSON file but was never
     // selected
+    QTableWidgetItem *subjectItem =
+        new QTableWidgetItem(subject.getSubjectName());
+    subjectItem->setData(Qt::UserRole, QVariant::fromValue(&subject));
     QTableWidgetItem *copyItem = new QTableWidgetItem(copy.getCopyName());
     copyItem->setData(Qt::UserRole, QVariant::fromValue(&copy));
     QTableWidgetItem *pageItem =
@@ -70,6 +77,7 @@ void FieldViewTable::insertPage(int &line, SubjectInfo &subject, CopyInfo &copy,
     pageItem->setData(Qt::UserRole, QVariant::fromValue(&page));
 
     insertRow(line);
+    setItem(line, COL_SUBJECT, subjectItem);
     setItem(line, COL_COPY, copyItem);
     setItem(line, COL_PAGE, pageItem);
     line++;

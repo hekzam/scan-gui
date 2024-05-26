@@ -60,6 +60,46 @@ void ExamScene::toggleFieldsVisibility(bool state)
   m_singleImage->toggleAtomicBoxVisibility(state);
 }
 
+void ExamScene::nextImage()
+{
+  if (m_numberOfPages > 1)
+  {
+    qDebug() << "In examscene, nextImage doesn't work";
+    qDebug() << "current page is" << m_currentPageNum << "out of"
+             << m_numberOfPages;
+    qDebug() << "next page is"
+             << (m_currentPageNum == m_numberOfPages ? 1
+                                                     : m_currentPageNum + 1);
+    m_currentPageNum =
+        m_currentPageNum == m_numberOfPages ? 1 : m_currentPageNum + 1;
+    loadAnswerSheet();
+  }
+  else
+  {
+    qDebug() << "only one image path currently in the preview";
+  }
+}
+
+void ExamScene::previousImage()
+{
+  if (m_numberOfPages > 1)
+  {
+    qDebug() << "In examscene, previousImage doesn't work";
+    qDebug() << "current page is" << m_currentPageNum << "out of"
+             << m_numberOfPages;
+    qDebug() << "next page is "
+             << (m_currentPageNum == 1 ? m_numberOfPages
+                                       : m_currentPageNum - 1);
+    m_currentPageNum =
+        m_currentPageNum == 1 ? m_numberOfPages : m_currentPageNum - 1;
+    loadAnswerSheet();
+  }
+  else
+  {
+    qDebug() << "only one image path currently in the preview";
+  }
+}
+
 // throw some error here to let the preview window know?
 void ExamScene::loadAnswerSheet()
 {

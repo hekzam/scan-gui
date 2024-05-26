@@ -72,6 +72,8 @@ void ExamPreview::createPreviewButtonBox()
       new QCheckBox(tr("HighlightFields"), previewButtonBox);
   auto calibrationModeSelectorCheckBox =
       new QCheckBox(tr("Calibration Mode"), previewButtonBox);
+  auto prevButton = new QPushButton(tr("Prev"), previewButtonBox);
+  auto nextButton = new QPushButton(tr("Next"), previewButtonBox);
 
   highlightFieldsCheckbox->setChecked(true);
   calibrationModeSelectorCheckBox->setChecked(false);
@@ -93,6 +95,9 @@ void ExamPreview::createPreviewButtonBox()
           &ExamPreview::assignPage);
   connect(validatePageButton, &QPushButton::clicked, this,
           &ExamPreview::markExamSheetAsValidated);
+  connect(prevButton, &QPushButton::clicked, baseScene,
+          &ExamScene::previousImage);
+  connect(nextButton, &QPushButton::clicked, baseScene, &ExamScene::nextImage);
 
   // connect(transformButton....)
   connect(highlightFieldsCheckbox, &QCheckBox::clicked, baseScene,
@@ -112,6 +117,8 @@ void ExamPreview::createPreviewButtonBox()
   previewButtonLayout->addWidget(opacitySlider, 0, 0, 1, 2);
   previewButtonLayout->addWidget(resetOpacity, 0, 2);
   previewButtonLayout->addWidget(thresholdSlider, 0, 3);
+  previewButtonLayout->addWidget(prevButton, 0, 4);
+  previewButtonLayout->addWidget(nextButton, 0, 5);
   previewButtonLayout->addWidget(viewWholePageButton, 1, 0);
   previewButtonLayout->addWidget(deletePageButton, 1, 1);
   previewButtonLayout->addWidget(assignPageButton, 1, 2);
@@ -187,11 +194,6 @@ void ExamPreview::onAction_CurrentTableElementChanged(
 {
   baseScene->loadImage(imagePath, data, pageNumbertoDisplay, fieldName);
 }
-
-// TODO
-void ExamPreview::nextImage() {}
-
-void ExamPreview::previousImage() {}
 
 // Ping-pong
 void ExamPreview::showExternalPreview()

@@ -58,9 +58,6 @@ public slots:
 
 protected:
 private slots:
-  // TODO, public ?
-  void nextImage();
-  void previousImage();
 
   void showExternalPreview();
   void deletePage();

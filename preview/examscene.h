@@ -26,6 +26,8 @@ public slots:
   void toggleCalibrationMode(bool state);
   void setMaskOpacityLevel(int value);
   void toggleFieldsVisibility(bool state);
+  void nextImage();
+  void previousImage();
 
 private:
   void loadAnswerSheet();

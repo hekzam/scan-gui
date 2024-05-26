@@ -366,45 +366,51 @@ void TableBox::tagsProcessing(QString &querylocale)
     QRegularExpression regex(pattern,
                              QRegularExpression::CaseInsensitiveOption);
     regexList.append(regex);
-
     delete elemList;
   }
 
-  // column selection for tagged search
-  initSelectedColumns(true);
-  for (int var = 0; var < actualTable->getHeaderList().size(); var++)
-  {
+    // column selection for tagged search v1
+    initSelectedColumns(true);
+    int index;
 
-    QString *word = new QString((actualTable->getHeaderList()).at(var));
+    for (int var = 0; var < searchedTags->size(); var++) {
+      QString *userTag = new QString(searchedTags->at(var));
 
-    if (searchedTags->contains(*word, Qt::CaseInsensitive))
-    {
-      selectedColumns.append(var);
+      if ((index = containAndIndexOf(*userTag, actualTable->getHeaderList()))!= -1){
+        //qDebug()<<index;
+        selectedColumns.append(index);
+      }
+
+      else{
+        searchInfo->setText("Incorrect search. For further informations, head to the help.");
+        delete userTag;
+        delete searchedTags;
+        return;
+      }
+      delete userTag;
     }
-    delete word;
-  }
-  if (selectedColumns.size() != searchedTags->size())
-  {
-    searchInfo->setText(
-        "Incorrect search. For further informations, head to the help.");
-    delete searchedTags;
-    return;
-  }
-  delete searchedTags;
 
+  delete searchedTags;
+  // do the search
   filterTaggedTextRows(regexList);
+}
+
+int TableBox::containAndIndexOf(const QString &str, const QStringList &list)
+{
+  for (int i = 0; i < list.size(); i++) {
+    if (str.compare(list.at(i), Qt::CaseInsensitive) == 0){
+      return i;
+    }
+  }
+  return -1;
 }
 
 void TableBox::initSelectedColumns(bool isTagSearch)
 {
   selectedColumns.clear();
-
-  if (!(isTagSearch))
-  {
-    for (int var = 0; var < actualTable->columnCount(); var++)
-    {
-      if (!(actualTable->isColumnHidden(var)))
-      {
+  if(!(isTagSearch)){
+    for (int var = 0; var < actualTable->columnCount(); var++) {
+      if(!(actualTable->isColumnHidden(var))){
         selectedColumns.append(var);
       }
     }
@@ -454,8 +460,9 @@ void TableBox::filterTextRows(QRegularExpression regex)
   printFuzzySearchRes(meantSearchesList);
 }
 
-// to-do : try to factorize with the function above
-void TableBox::filterTaggedTextRows(QList<QRegularExpression> regexList)
+
+
+void TableBox::filterTaggedTextRows(QList <QRegularExpression> regexList)
 {
 
   for (int i = 0; i < actualTable->rowCount(); i++)
@@ -489,68 +496,6 @@ void TableBox::filterTaggedTextRows(QList<QRegularExpression> regexList)
     // groupTable->setRowHidden(i, !match);
     // fieldTable->setRowHidden(i, !match);
   }
-}
-
-// a try to refactor the two methods above
-// isn't actualise with table system
-void TableBox::filterRows(QList<QRegularExpression> regexList)
-{
-  meantSearchesList.clear();
-  int regexListSize = regexList.size();
-  for (int i = 0; i < groupTable->rowCount(); i++)
-  {
-    bool match = false;
-
-    for (int j = 0; j < selectedColumns.size(); j++)
-    {
-      int selectedJIndex = selectedColumns[j];
-      QTableWidgetItem *item = groupTable->item(i, selectedJIndex);
-
-      if (item)
-      {
-        QString *cellText =
-            new QString((selectedJIndex == SortTable::COL_SYNTAX)
-                            ? item->data(Qt::UserRole).toString()
-                            : item->text());
-
-        // cas de la recherche simple ou multiple
-        if ((regexListSize == 0) && (regexList[0].match(*cellText).hasMatch()))
-        {
-          match = true;
-          emptySearchRes = false;
-          delete cellText;
-          break;
-        }
-
-        // cas du tagged search -> liste de regex
-        else if ((regexListSize > 0) &&
-                 (regexList[j].match(*cellText).hasMatch()))
-        {
-          match = true;
-        }
-        else
-        {
-          match = false;
-          delete cellText;
-          break;
-        }
-
-        // we want to limit to the *three* nearest words of our input
-        if (meantSearchesList.size() < 3)
-        {
-          meantSearchesList = fuzzySearch(
-              meantSearchesList, *cellText,
-              ((regexListSize == 0) ? regexList[0] : regexList[j]), 3);
-        }
-
-        delete cellText;
-      }
-    }
-    groupTable->setRowHidden(i, !match);
-    fieldTable->setRowHidden(i, !match);
-  }
-  // print the resultat of the fuzzy search
-  printFuzzySearchRes(meantSearchesList);
 }
 
 int TableBox::levenshteinDistance(QString str1, QString str2)

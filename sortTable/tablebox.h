@@ -88,6 +88,7 @@ private:
   void initRegEx();
 
   void connectFieldViewToggle();
+  int containAndIndexOf(const QString &str, const QStringList &searchedTag);
 
 signals:
   void sendDataToPreview(const QStringList &imagePaths,
@@ -113,10 +114,9 @@ private slots:
   // the tag search
   void tagsProcessing(QString &querylocale);
 
-  // filter the rows
-  void filterRows(QList<QRegularExpression> regexList);
+  //filter the rows
   void filterTextRows(QRegularExpression regex);
-  void filterTaggedTextRows(QList<QRegularExpression> regexList);
+  void filterTaggedTextRows(QList <QRegularExpression> regexList);
 
   // initialize the needed columns for the search
   void initSelectedColumns(bool isTagSearch);

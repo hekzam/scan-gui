@@ -104,6 +104,5 @@ void ExamScene::loadAnswerSheet()
       }
       emit newPageLoaded(p.size());
     }
-    }
   }
 }

@@ -270,7 +270,6 @@ void TableBox::collectData(int row, int col)
     if (!page->pageIsInFiles())
       return;
     paths.append(page->getFilePath());
-    QString pageName = page->getPageName();
     pageNumberToDisplay = page->pageIsInJSON();
     qDebug() << page->getPageNum();;    // this is the pagenumber
     break;

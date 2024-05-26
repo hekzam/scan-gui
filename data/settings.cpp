@@ -1,7 +1,7 @@
 // settings.cpp
 #include "settings.h"
 
-Settings::Settings() : settings("UT3", "Hekzam")
+Settings::Settings() : settings("Hekzam", "Hekzam")
 {
   loadSettings();
 }

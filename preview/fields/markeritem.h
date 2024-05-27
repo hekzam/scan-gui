@@ -16,7 +16,7 @@ public:
 
 protected:
   // mouse events
-  // void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+  void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
 private:
   QList<MarkerHandles *> handles;

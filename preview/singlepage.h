@@ -1,3 +1,6 @@
+/*
+ * This is a Pixmap, AKA an image displayed in a scene
+ */
 #ifndef SINGLEPAGE_H
 #define SINGLEPAGE_H
 

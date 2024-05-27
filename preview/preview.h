@@ -1,14 +1,14 @@
 /*
  * Layout of the preview module
  *
- * - QStackedWidget pour switch entre les 2 Vues
+ * - QStackedWidget pour passer entre les 2 Vues
  *  - ExamViewPort * 2 : 2 sous-classes de QGraphicsView pour montrer les scènes
  *   - ExamScene * 2 : 2 sous-classes de QGraphicsScene pour montrer les objets
  *    - PageMask : Un masque plus ou moins transparent pour cacher les items
  *      indésirables. Il est possible de montrer plusieurs items à la fois et
  *      cacher le reste de la page
- *    - SinglePage : one ne peut montre qu'une page à la fois
- *      La page contient des champs.
+ *    - SinglePage : Une page d'une copie, on ne peut montrer qu'une page à la
+ * fois, La page contient des champs(Fields).
  *
  *     - FieldItems : Les champs associés à chaque page, séparés en différentes
  *       sous-classes pour différencier les marqueurs, les Atomic Boxes et

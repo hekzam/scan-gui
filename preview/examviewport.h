@@ -1,3 +1,9 @@
+/*
+ * The Viewport can be associated with a scene to show the items visible on that
+ * scene, by default items are visible and enabled. Here you can perform
+ * operation that do not change the scene or the objects but how they are viewed
+ * (namely zoom operations)
+ */
 #ifndef EXAMVIEWPORT_H
 #define EXAMVIEWPORT_H
 

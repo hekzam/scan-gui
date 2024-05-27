@@ -50,7 +50,6 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         sortTable/groupviewtable.h sortTable/groupviewtable.cpp
         userinformations.h userinformations.cpp
         scaninfo.cpp
-
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET scan-gui APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

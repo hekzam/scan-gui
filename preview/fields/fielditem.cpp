@@ -36,9 +36,9 @@ fieldType FieldItem::getType()
   return m_Type;
 }
 
-void FieldItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void FieldItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-  QGraphicsItem::mousePressEvent(event);
+  QGraphicsItem::mouseReleaseEvent(event);
 }
 
 void FieldItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e)

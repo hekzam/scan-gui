@@ -13,7 +13,7 @@ UserInformations::UserInformations(const QString &title, QWidget *parent)
 
 void UserInformations::setTextZone(QStringList &newText)
 {
-  textZone->clear();
+  // textZone->clear();
   for (const QString &text : newText)
   {
     textZone->append(text); // Ajouter chaque chaîne avec un retour à la ligne

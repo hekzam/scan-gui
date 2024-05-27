@@ -13,7 +13,7 @@ void showHelp() {
 }
 
 void showVersion() {
-  std::cout << "scan-gui version 2.0.0\n"; // Replace with your actual version
+  std::cout << "scan-gui version 0.1.0\n"; // Replace with your actual version
 }
 
 int main(int argc, char *argv[])

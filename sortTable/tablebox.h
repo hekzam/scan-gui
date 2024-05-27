@@ -19,7 +19,6 @@
 #include "groupviewtable.h"
 #include <vector>
 #include <algorithm>
-#include <iostream>
 
 /* Layout of the table module
 *
@@ -34,7 +33,10 @@
 *                     apparaître ou disparaître des tableaux
 *
 *                 * QStackedWidget contenant deux tableaux (QTableWidget) représentant deux vue différentes et une
-*                   checkbox pour switch entre les deux (QCheckBox)
+*                   checkbox pour switch entre les deux (QCheckBox fieldViewToggle)
+*                   La deuxième QCheckBox permet de passer dans le mode recherche atomique
+*
+*                 * Un pattern de recherche en QString (combinedPattern) et un regex (cf. Doc Regex)
 *
 */
 class TableBox : public QGroupBox
@@ -43,8 +45,6 @@ class TableBox : public QGroupBox
 public:
   TableBox(std::map<QString, ExamInfo> &exams, QWidget *dockParent,
            QWidget *parent = nullptr);
-
-  QList<SortTable *> *getSortTableList() const;
 
   SortTable *getFieldTable();
 

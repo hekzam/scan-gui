@@ -4,6 +4,7 @@
 #include <QTranslator>
 #include <qprogressbar.h>
 #include <QString>
+#include <iostream>
 
 void showHelp() {
   std::cout << "Usage: scan-gui [options]\n"

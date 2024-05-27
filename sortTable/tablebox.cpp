@@ -452,9 +452,10 @@ void TableBox::initSelectedColumns(bool isTagSearch)
 void TableBox::filterTextRows(QRegularExpression regex)
 {
   meantSearchesList.clear();
+  emptySearchRes = true;
   int threshold = ceil((regex.pattern().size())*0.3);
 
-  for (int i = 0; i < actualTable->rowCount(); ++i)
+  for (int i = 0; i < actualTable->rowCount(); i++)
   {
     bool match = false;
     for (int j = 0; j < selectedColumns.size(); j++)
@@ -483,6 +484,10 @@ void TableBox::filterTextRows(QRegularExpression regex)
               fuzzySearch(meantSearchesList, cellText, regex, threshold);
         }
       }
+      //item is null
+      else {
+        actualTable->setRowHidden(i, true);
+      }
     }
     actualTable->setRowHidden(i, !match);
   }
@@ -499,7 +504,6 @@ void TableBox::filterTaggedTextRows(QList <QRegularExpression> regexList)
   for (int i = 0; i < actualTable->rowCount(); i++)
   {
     bool match = false;
-
     for (int j = 0; j < selectedColumns.size(); j++)
     {
 
@@ -520,6 +524,10 @@ void TableBox::filterTaggedTextRows(QList <QRegularExpression> regexList)
           match = false;
           break;
         }
+      }
+      else
+      {
+        actualTable->setRowHidden(i, true);
       }
     }
     emptySearchRes = false;
@@ -569,7 +577,6 @@ QStringList TableBox::fuzzySearch(QStringList meantSearchesList,
 {
   if (!(meantSearchesList.contains(cellText)))
   {
-    qDebug()<<"Le seuil est à : "<<threshold;
     if (levenshteinDistance(cellText, regex.pattern()) <= threshold)
     {
       meantSearchesList.push_back(cellText);

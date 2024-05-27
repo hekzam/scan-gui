@@ -229,7 +229,6 @@ void MainWindow::createEvaluationView()
   // récupérer le tableau d'erreurs comme dans l'exemple ci-dessous (ici il se
   // trouve dans jsonLinker)
   QStringList errors = tableBox->getFieldTable()->getErrors();
-  qDebug() << errors;
   informationBox->setTextZone(errors);
   informationLayout->addWidget(informationBox->textZone);
   verticalSplitter->addWidget(informationBox);

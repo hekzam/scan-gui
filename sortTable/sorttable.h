@@ -29,7 +29,7 @@ class SortTable : public QTableWidget
 public:
   enum Columns
   {
-    COL_SUBJECT = 0,
+    COL_EXAM = 0,
     COL_COPY,
     COL_PAGE,
     COL_FIELD,
@@ -39,7 +39,7 @@ public:
     NB_COL
   };
 
-  SortTable(std::map<QString, SubjectInfo> &copies, QWidget *parent = nullptr);
+  SortTable(std::map<QString, ExamInfo> &exams, QWidget *parent = nullptr);
   virtual void initSortTable() = 0;
 
   // méthode d'accès et d'ajout à la liste d'erreurs de linkage
@@ -49,7 +49,7 @@ private:
   QStringList headerList;
 
 protected:
-  std::map<QString, SubjectInfo> &subjectMap;
+  std::map<QString, ExamInfo> &examMap;
   virtual void addErrors(QString &newErrors);
 
   // liste des erreurs de linkage

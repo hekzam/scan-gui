@@ -223,64 +223,64 @@ std::map<QString, PageInfo>::iterator CopyInfo::end()
   return m_copyPageMap.end();
 }
 
-/*      Subject Info      */
+/*      Exam Info      */
 
-SubjectInfo::SubjectInfo(){};
+ExamInfo::ExamInfo(){};
 
-SubjectInfo::SubjectInfo(QString const &subjectName, mJSON::dataCopieJSON *data)
-    : m_subjectName(subjectName), m_data(data), m_numCopies(0){};
+ExamInfo::ExamInfo(QString const &examName, mJSON::dataCopieJSON *data)
+    : m_examName(examName), m_data(data), m_numCopies(0){};
 
-QString const &SubjectInfo::getSubjectName() const
+QString const &ExamInfo::getExamName() const
 {
-  return m_subjectName;
+  return m_examName;
 }
 
-mJSON::dataCopieJSON *SubjectInfo::getData() const
+mJSON::dataCopieJSON *ExamInfo::getData() const
 {
   return m_data;
 }
 
-int SubjectInfo::getNumCopies() const
+int ExamInfo::getNumCopies() const
 {
   return m_numCopies;
 }
 
-void SubjectInfo::addCopy(QString const &copyName, int copyNum, int copyInJSON)
+void ExamInfo::addCopy(QString const &copyName, int copyNum, int copyInJSON)
 {
   if (!containsCopy(copyName))
   {
-    m_subjectCopyMap[copyName] = CopyInfo(copyName, copyNum, copyInJSON);
+    m_examCopyMap[copyName] = CopyInfo(copyName, copyNum, copyInJSON);
     m_numCopies++;
   }
 }
 
-void SubjectInfo::addPageToCopy(QString const &copyName,
+void ExamInfo::addPageToCopy(QString const &copyName,
                                 QString const &pageName, int pageNum, int pageInJSON)
 {
   if (containsCopy(copyName))
-    m_subjectCopyMap[copyName].addPage(pageName, pageNum, pageInJSON);
+    m_examCopyMap[copyName].addPage(pageName, pageNum, pageInJSON);
 }
 
-void SubjectInfo::addFieldToCopyPage(QString const &copyName,
+void ExamInfo::addFieldToCopyPage(QString const &copyName,
                                      QString const &pageName,
                                      QString const &fieldName)
 {
   if (containsCopy(copyName))
-    m_subjectCopyMap[copyName].addFieldToPage(pageName, fieldName);
+    m_examCopyMap[copyName].addFieldToPage(pageName, fieldName);
 }
 
-CopyInfo &SubjectInfo::getCopy(QString const &copyName)
+CopyInfo &ExamInfo::getCopy(QString const &copyName)
 {
   static CopyInfo defaultCopy("", 0, 0);
   if (!containsCopy(copyName))
     return defaultCopy;
-  return m_subjectCopyMap[copyName];
+  return m_examCopyMap[copyName];
 }
 
-QStringList SubjectInfo::getCopiesPathList()
+QStringList ExamInfo::getCopiesPathList()
 {
   QStringList paths;
-  for (auto itCopy = m_subjectCopyMap.begin(); itCopy != m_subjectCopyMap.end();
+  for (auto itCopy = m_examCopyMap.begin(); itCopy != m_examCopyMap.end();
        itCopy++)
   {
     paths.append(itCopy->second.getPagesPathList());
@@ -288,45 +288,45 @@ QStringList SubjectInfo::getCopiesPathList()
   return paths;
 }
 
-void SubjectInfo::setPagePath(QString const &copyName, QString const &pageName,
+void ExamInfo::setPagePath(QString const &copyName, QString const &pageName,
                               QString const &path)
 {
   if (containsCopy(copyName))
-    m_subjectCopyMap[copyName].setPagePath(pageName, path);
+    m_examCopyMap[copyName].setPagePath(pageName, path);
 }
 
-void SubjectInfo::setCopyInFiles(QString const &copyName, int copyInFiles)
+void ExamInfo::setCopyInFiles(QString const &copyName, int copyInFiles)
 {
   if (containsCopy(copyName))
-    m_subjectCopyMap[copyName].setCopyInFiles(copyInFiles);
+    m_examCopyMap[copyName].setCopyInFiles(copyInFiles);
 }
 
-void SubjectInfo::setCopyPageInFiles(QString const &copyName,
+void ExamInfo::setCopyPageInFiles(QString const &copyName,
                                      QString const &pageName, int copyInFiles)
 {
   if (containsCopy(copyName))
-    m_subjectCopyMap[copyName].setCopyPageInFiles(pageName, copyInFiles);
+    m_examCopyMap[copyName].setCopyPageInFiles(pageName, copyInFiles);
 }
 
-bool SubjectInfo::containsCopy(QString const &copyName)
+bool ExamInfo::containsCopy(QString const &copyName)
 {
-  return m_subjectCopyMap.find(copyName) != m_subjectCopyMap.end();
+  return m_examCopyMap.find(copyName) != m_examCopyMap.end();
 }
 
-bool SubjectInfo::copyContainsPage(QString const &copyName,
+bool ExamInfo::copyContainsPage(QString const &copyName,
                                    QString const &pageName)
 {
   if (containsCopy(copyName))
-    return m_subjectCopyMap[copyName].containsPage(pageName);
+    return m_examCopyMap[copyName].containsPage(pageName);
   return false;
 }
 
-std::map<QString, CopyInfo>::iterator SubjectInfo::begin()
+std::map<QString, CopyInfo>::iterator ExamInfo::begin()
 {
-  return m_subjectCopyMap.begin();
+  return m_examCopyMap.begin();
 }
 
-std::map<QString, CopyInfo>::iterator SubjectInfo::end()
+std::map<QString, CopyInfo>::iterator ExamInfo::end()
 {
-  return m_subjectCopyMap.end();
+  return m_examCopyMap.end();
 }

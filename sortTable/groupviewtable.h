@@ -8,16 +8,16 @@
 class GroupViewTable : public SortTable
 {
 public:
-  explicit GroupViewTable(std::map<QString, SubjectInfo> &copies,
+  explicit GroupViewTable(std::map<QString, ExamInfo> &copies,
                           QWidget *parent = nullptr);
   void initSortTable() override;
 
 private:
-  void insertSubject(int &ligne, SubjectInfo &subject);
-  void insertCopy(int &ligne, SubjectInfo &subject, CopyInfo &copy);
-  void insertPage(int &line, SubjectInfo &subject, CopyInfo &copy,
+  void insertExam(int &ligne, ExamInfo &exam);
+  void insertCopy(int &ligne, ExamInfo &exam, CopyInfo &copy);
+  void insertPage(int &line, ExamInfo &exam, CopyInfo &copy,
                   PageInfo &page, int& maxSyntax);
-  void insertField(int &line, SubjectInfo &subject, CopyInfo &copy,
+  void insertField(int &line, ExamInfo &exam, CopyInfo &copy,
                    PageInfo &page, FieldInfo &field, int& maxSyntax);
 };
 

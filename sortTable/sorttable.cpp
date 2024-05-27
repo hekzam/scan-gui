@@ -1,7 +1,7 @@
 #include "sorttable.h"
 
-SortTable::SortTable(std::map<QString, SubjectInfo> &copies, QWidget *parent)
-    : subjectMap(copies), QTableWidget(parent)
+SortTable::SortTable(std::map<QString, ExamInfo> &exams, QWidget *parent)
+    : examMap(exams), QTableWidget(parent)
 {
   setColumnCount(NB_COL);
   hideColumn(COL_MET1);

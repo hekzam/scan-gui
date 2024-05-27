@@ -17,11 +17,11 @@ class JsonLinker
 {
 public:
   JsonLinker();
-  std::map<QString, SubjectInfo> &
+  std::map<QString, ExamInfo> &
   collectFields(QStringList const &filePaths, QStringList const &jsonFilePaths);
 
 private:
-  std::map<QString, SubjectInfo> fileSubjectMap;
+  std::map<QString, ExamInfo> fileExamMap;
   jsonreader jsonReader;
 
   void initialiseMaps(QStringList const &jsonPath);

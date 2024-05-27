@@ -18,32 +18,32 @@ void JsonLinker::initialiseMaps(QStringList const &jsonPaths)
   {
     QString jsonNameAndExtension =
         jsonPath.section("/", -1); //(ex : 1-0-0-json.json)
-    QString subjectName =
+    QString examName =
         jsonNameAndExtension.section("-", 0, 2); //(ex : 1-0-0)
     // We store the data structure in a map in order to give the informations to
     // the preview later
     dataCopieJSON *data(loadAndGetJsonCoords(jsonPath));
-    if (fileSubjectMap.find(subjectName) == fileSubjectMap.end())
-      fileSubjectMap[subjectName] = SubjectInfo(subjectName, data);
+    if (fileExamMap.find(examName) == fileExamMap.end())
+      fileExamMap[examName] = ExamInfo(examName, data);
 
-    SubjectInfo &subject = fileSubjectMap[subjectName];
-    int numCopies = subjectName.front().digitValue();
+    ExamInfo &exam = fileExamMap[examName];
+    int numCopies = examName.front().digitValue();
     for (int i = 1; i < numCopies + 1; i++)
     {
       QString const copyName = "copie" + QString::number(i);
-      subject.addCopy(copyName, i, 1);
+      exam.addCopy(copyName, i, 1);
       for (dataFieldJSON const &coordinate : *data->documentFields)
       {
         QString const pageName =
             "page" + QString::number(coordinate.pagenum); // (ex : page1)
-        subject.addPageToCopy(copyName, pageName, coordinate.pagenum, 1);
-        subject.addFieldToCopyPage(copyName, pageName, coordinate.clef);
+        exam.addPageToCopy(copyName, pageName, coordinate.pagenum, 1);
+        exam.addFieldToCopyPage(copyName, pageName, coordinate.clef);
       }
     }
   }
 }
 
-std::map<QString, SubjectInfo> &
+std::map<QString, ExamInfo> &
 JsonLinker::collectFields(QStringList const &filePaths,
                           QStringList const &jsonPaths)
 {
@@ -54,25 +54,25 @@ JsonLinker::collectFields(QStringList const &filePaths,
     QString fileNameAndExtension =
         filePath.section("/", -1); //(ex : 1-0-0-page1.png)
     QString fileName = fileNameAndExtension.split(".")[0]; //(ex : 1-0-0-page1)
-    QString subjectName =
+    QString examName =
         fileNameAndExtension.section("-", 0, 2);               //(ex : 1-0-0)
     QString copyName = fileName.section("-", 3).split("-")[0]; //(ex : copie1)
     QString pageName = fileName.section("-", 3).split("-")[1]; //(ex : page1)
 
-    if (fileSubjectMap.find(subjectName) == fileSubjectMap.end())
+    if (fileExamMap.find(examName) == fileExamMap.end())
       // If a copy was not added during the json loading we add it in order to
       // collect the pages that will not be associated to any JSON
-      fileSubjectMap[subjectName] = SubjectInfo(subjectName);
-    SubjectInfo &subject = fileSubjectMap[subjectName];
-    if (!subject.containsCopy(copyName))
-      subject.addCopy(copyName, 0, 0);
-    if (!subject.copyContainsPage(copyName, pageName))
-      subject.addPageToCopy(copyName, pageName, 0, 0);
+      fileExamMap[examName] = ExamInfo(examName);
+    ExamInfo &exam = fileExamMap[examName];
+    if (!exam.containsCopy(copyName))
+      exam.addCopy(copyName, 0, 0);
+    if (!exam.copyContainsPage(copyName, pageName))
+      exam.addPageToCopy(copyName, pageName, 0, 0);
 
     // We then proceed to set the page path
-    subject.setPagePath(copyName, pageName, filePath);
-    subject.setCopyInFiles(copyName, 1);
-    subject.setCopyPageInFiles(copyName, pageName, 1);
+    exam.setPagePath(copyName, pageName, filePath);
+    exam.setCopyInFiles(copyName, 1);
+    exam.setCopyPageInFiles(copyName, pageName, 1);
   }
-  return fileSubjectMap;
+  return fileExamMap;
 }

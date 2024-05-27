@@ -8,16 +8,16 @@
 class FieldViewTable : public SortTable
 {
 public:
-  explicit FieldViewTable(std::map<QString, SubjectInfo> &copies,
+  explicit FieldViewTable(std::map<QString, ExamInfo> &copies,
                           QWidget *parent = nullptr);
   void initSortTable() override;
 
 private:
-  void insertSubject(int &ligne, SubjectInfo &subject);
-  void insertCopy(int &ligne, SubjectInfo &subject, CopyInfo &copy);
-  void insertPage(int &line, SubjectInfo &subject, CopyInfo &copy,
+  void insertExam(int &ligne, ExamInfo &exam);
+  void insertCopy(int &ligne, ExamInfo &exam, CopyInfo &copy);
+  void insertPage(int &line, ExamInfo &exam, CopyInfo &copy,
                           PageInfo &page);
-  void insertField(int &line, SubjectInfo &subject, CopyInfo &copy,
+  void insertField(int &line, ExamInfo &exam, CopyInfo &copy,
                            PageInfo &page, FieldInfo &field);
 
   // SortTable interface

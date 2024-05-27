@@ -90,7 +90,7 @@ private:
   int m_copyInFiles;
   int m_numPages;
 
-  friend class SubjectInfo;
+  friend class ExamInfo;
 
   void addPage(QString const &pageName, int pageNum, int pageInJSON);
   void addFieldToPage(QString const &pageName, QString const &fieldName);
@@ -120,18 +120,18 @@ public:
  * de copie la structure associée et le nombre de copies dans le sujet.
  */
 
-class SubjectInfo
+class ExamInfo
 {
 private:
-  QString m_subjectName;
+  QString m_examName;
   mJSON::dataCopieJSON *m_data = nullptr;
-  std::map<QString, CopyInfo> m_subjectCopyMap;
+  std::map<QString, CopyInfo> m_examCopyMap;
   int m_numCopies;
 
 public:
-  SubjectInfo();
-  SubjectInfo(QString const &subjectName, mJSON::dataCopieJSON *data = nullptr);
-  QString const &getSubjectName() const;
+  ExamInfo();
+  ExamInfo(QString const &examName, mJSON::dataCopieJSON *data = nullptr);
+  QString const &getExamName() const;
   mJSON::dataCopieJSON *getData() const;
   int getNumCopies() const;
   void addCopy(QString const &copyName, int copyNum, int copyInJSON);
@@ -152,6 +152,6 @@ public:
   std::map<QString, CopyInfo>::iterator end();
 };
 
-Q_DECLARE_METATYPE(SubjectInfo *)
+Q_DECLARE_METATYPE(ExamInfo *)
 Q_DECLARE_METATYPE(CopyInfo *)
 Q_DECLARE_METATYPE(PageInfo *)

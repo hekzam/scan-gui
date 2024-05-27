@@ -2,7 +2,7 @@
 
 using namespace std;
 
-TableBox::TableBox(std::map<QString, SubjectInfo> &copies, QWidget *dockParent,
+TableBox::TableBox(std::map<QString, ExamInfo> &exams, QWidget *dockParent,
                    QWidget *parent)
     : QGroupBox(parent), firstAppearence(true)
 {
@@ -21,8 +21,8 @@ TableBox::TableBox(std::map<QString, SubjectInfo> &copies, QWidget *dockParent,
 
   fieldViewToggle = new QCheckBox("Enable field view", sortBox);
   atomicSearchToggle = new QCheckBox("Enable atomic search", sortBox);
-  groupTable = new GroupViewTable(copies, this);
-  fieldTable = new FieldViewTable(copies, this);
+  groupTable = new GroupViewTable(exams, this);
+  fieldTable = new FieldViewTable(exams, this);
 
   // ajout à la liste de vue
   sortTableList.push_back(fieldTable);
@@ -60,13 +60,13 @@ void TableBox::initTableFilter()
   connect(sortButton, &QPushButton::clicked, this,
           &TableBox::displayTableFilter);
 
-  QCheckBox *subject = new QCheckBox("Exam", sortBox);
-  subject->setCheckState(Qt::Checked);
-  connect(subject, &QCheckBox::stateChanged, this,
+  QCheckBox *exam = new QCheckBox("Exam", sortBox);
+  exam->setCheckState(Qt::Checked);
+  connect(exam, &QCheckBox::stateChanged, this,
           [this](int state)
           {
-            groupTable->editColumn(state, groupTable->COL_SUBJECT);
-            fieldTable->editColumn(state, fieldTable->COL_SUBJECT);
+            groupTable->editColumn(state, groupTable->COL_EXAM);
+            fieldTable->editColumn(state, fieldTable->COL_EXAM);
           });
 
   QCheckBox *copy = new QCheckBox("Copy", sortBox);
@@ -123,7 +123,7 @@ void TableBox::initTableFilter()
 
   QVBoxLayout *sortBoxLayout = new QVBoxLayout;
   sortBoxLayout->setSpacing(10);
-  sortBoxLayout->addWidget(subject);
+  sortBoxLayout->addWidget(exam);
   sortBoxLayout->addWidget(copy);
   sortBoxLayout->addWidget(page);
   sortBoxLayout->addWidget(field);
@@ -268,14 +268,14 @@ void TableBox::collectData(int row, int col)
   if (!item)
     return;
 
-  QTableWidgetItem *subjectItem =
-      sortTableList.at(actualView)->item(row, SortTable::COL_SUBJECT);
-  QVariant subjectVariant = subjectItem->data(Qt::UserRole);
-  if (!subjectVariant.isValid())
+  QTableWidgetItem *examItem =
+      sortTableList.at(actualView)->item(row, SortTable::COL_EXAM);
+  QVariant examVariant = examItem->data(Qt::UserRole);
+  if (!examVariant.isValid())
     return;
 
-  SubjectInfo *subject = subjectVariant.value<SubjectInfo *>();
-  dataCopieJSON *data = subject->getData();
+  ExamInfo *exam = examVariant.value<ExamInfo *>();
+  dataCopieJSON *data = exam->getData();
   if (!data)
     return;
 

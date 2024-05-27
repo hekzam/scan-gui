@@ -20,6 +20,7 @@ TableBox::TableBox(std::map<QString, SubjectInfo> &copies, QWidget *dockParent,
   searchInfo = new QLabel(this);
 
   fieldViewToggle = new QCheckBox("Enable field view", sortBox);
+  atomicSearchToggle = new QCheckBox("Enable atomic search", sortBox);
   groupTable = new GroupViewTable(copies, this);
   fieldTable = new FieldViewTable(copies, this);
 
@@ -46,6 +47,7 @@ TableBox::TableBox(std::map<QString, SubjectInfo> &copies, QWidget *dockParent,
   connect(fieldTable, &QTableWidget::cellClicked, this, &TableBox::collectData);
 }
 
+
 SortTable *TableBox::getFieldTable()
 {
   return fieldTable;
@@ -53,7 +55,6 @@ SortTable *TableBox::getFieldTable()
 
 void TableBox::initTableFilter()
 {
-
   sortButton->setFixedSize(50, 50);
   sortButton->setStyleSheet("background-color :#E1912F");
   connect(sortButton, &QPushButton::clicked, this,
@@ -194,6 +195,40 @@ void TableBox::connectFieldViewToggle()
           });
 }
 
+void TableBox::connectAtomicSearchToggle()
+{
+  connect(atomicSearchToggle, &QCheckBox::stateChanged,this,
+        [this](int state)
+        {
+            if (state)
+            {
+              typeOfSearch = 1;
+            }
+            else
+            {
+              typeOfSearch = 0;
+            }
+        });
+}
+
+bool TableBox::searchMethod(const int typeOfSearch, QRegularExpression &regex, QString &cellText)
+{
+  switch (typeOfSearch) {
+    case 0:
+      return regex.match(cellText).hasMatch();
+
+    case 1:
+      //do we keep Case Insensitive in this case ?
+      if (regex.pattern().compare(cellText, Qt::CaseInsensitive)!= 0){
+        return false;
+      }
+      return true;
+
+    default:
+      return false;
+  }
+}
+
 void TableBox::initTableView()
 {
 
@@ -205,11 +240,13 @@ void TableBox::initTableView()
   QVBoxLayout *evalLayout = new QVBoxLayout;
 
   connectFieldViewToggle();
+  connectAtomicSearchToggle();
 
   // Checkbox to display one of the tables
   evalLayout->addLayout(sortButtonLayout);
   evalLayout->addWidget(searchInfo);
   evalLayout->addWidget(fieldViewToggle);
+  evalLayout->addWidget(atomicSearchToggle);
   evalLayout->addWidget(tableWidget);
 
   groupTable->initSortTable();
@@ -285,7 +322,8 @@ void TableBox::collectData(int row, int col)
 
 void TableBox::searchProcessing()
 {
-  searchInfo->setText("");
+  //searchInfo->setText("");
+  cleanSortTable();
 
   input = textZone->text();
   emptySearchRes = true;
@@ -330,9 +368,9 @@ void TableBox::cleanSortTable()
     {
       groupTable->setRowHidden(i, false);
       fieldTable->setRowHidden(i, false);
-    }
-    searchInfo->setText("");
+    }  
   }
+  searchInfo->setText("");
 }
 
 void TableBox::simpleTextProcessing(QString &querylocale)
@@ -366,8 +404,7 @@ void TableBox::tagsProcessing(QString &querylocale)
     regexList.append(regex);
     delete elemList;
   }
-
-    // column selection for tagged search v1
+    // column selection for tagged search
     initSelectedColumns(true);
     int index;
 
@@ -375,21 +412,18 @@ void TableBox::tagsProcessing(QString &querylocale)
       QString *userTag = new QString(searchedTags->at(var));
 
       if ((index = containAndIndexOf(*userTag, actualTable->getHeaderList()))!= -1){
-        //qDebug()<<index;
         selectedColumns.append(index);
       }
 
       else{
-        searchInfo->setText("Incorrect search. For further informations, head to the help.");
+        searchInfo->setText("One of the tag does not correspond to a known tag. For further informations, head to the help.");
         delete userTag;
         delete searchedTags;
         return;
       }
       delete userTag;
     }
-
   delete searchedTags;
-  // do the search
   filterTaggedTextRows(regexList);
 }
 
@@ -417,8 +451,8 @@ void TableBox::initSelectedColumns(bool isTagSearch)
 
 void TableBox::filterTextRows(QRegularExpression regex)
 {
-  // first we clean our list of meant words for the fuzzy search
   meantSearchesList.clear();
+  int threshold = ceil((regex.pattern().size())*0.3);
 
   for (int i = 0; i < actualTable->rowCount(); ++i)
   {
@@ -434,26 +468,24 @@ void TableBox::filterTextRows(QRegularExpression regex)
         QString cellText = (selectedJIndex == SortTable::COL_SYNTAX)
                                ? item->data(Qt::UserRole).toString()
                                : item->text();
-        if (regex.match(cellText).hasMatch())
+        if (searchMethod(typeOfSearch, regex, cellText))
         {
           match = true;
           emptySearchRes = false;
           break;
         }
-        // we want to limit to the three nearest words of our input
+        // we want to limit to the three found nearest words of our input
+        // we can imagine different rules to found them
+        // here I define the threesold as twenty percent of the length of the word
         if (meantSearchesList.size() < 3)
         {
-          // qDebug()<<"size ça passe";
           meantSearchesList =
-              fuzzySearch(meantSearchesList, cellText, regex, 3);
+              fuzzySearch(meantSearchesList, cellText, regex, threshold);
         }
       }
     }
     actualTable->setRowHidden(i, !match);
-    // groupTable->setRowHidden(i, !match);
-    // fieldTable->setRowHidden(i, !match);
   }
-
   // print the resultat of the fuzzy search
   printFuzzySearchRes(meantSearchesList);
 }
@@ -462,6 +494,7 @@ void TableBox::filterTextRows(QRegularExpression regex)
 
 void TableBox::filterTaggedTextRows(QList <QRegularExpression> regexList)
 {
+  meantSearchesList.clear();
 
   for (int i = 0; i < actualTable->rowCount(); i++)
   {
@@ -491,8 +524,6 @@ void TableBox::filterTaggedTextRows(QList <QRegularExpression> regexList)
     }
     emptySearchRes = false;
     actualTable->setRowHidden(i, !match);
-    // groupTable->setRowHidden(i, !match);
-    // fieldTable->setRowHidden(i, !match);
   }
 }
 
@@ -538,6 +569,7 @@ QStringList TableBox::fuzzySearch(QStringList meantSearchesList,
 {
   if (!(meantSearchesList.contains(cellText)))
   {
+    qDebug()<<"Le seuil est à : "<<threshold;
     if (levenshteinDistance(cellText, regex.pattern()) <= threshold)
     {
       meantSearchesList.push_back(cellText);
@@ -548,19 +580,25 @@ QStringList TableBox::fuzzySearch(QStringList meantSearchesList,
 
 void TableBox::printFuzzySearchRes(QStringList meantSearchesList)
 {
-  if ((emptySearchRes) && (meantSearchesList.size()))
+  if(emptySearchRes)
   {
-    QString sentence = "Did you mean : ";
-    int sizeList = meantSearchesList.size();
-    for (int var = 0; var < sizeList; var++)
+    if(meantSearchesList.size())
     {
-      sentence += meantSearchesList[var];
-      if (var < sizeList - 1)
+      QString sentence = "Did you mean : ";
+      int sizeList = meantSearchesList.size();
+      for (int var = 0; var < sizeList; var++)
       {
-        sentence += " or ";
+        sentence += meantSearchesList[var];
+        if (var < sizeList - 1)
+        {
+          sentence += " or ";
+        }
       }
+      sentence += " ?";
+      searchInfo->setText(sentence);
     }
-    sentence += " ?";
-    searchInfo->setText(sentence);
-  }
+    else {
+      searchInfo->setText("No result found.");
+    }
+}
 }

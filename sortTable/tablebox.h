@@ -23,8 +23,12 @@
 
 /* Layout of the table module
 *
-* QVBoxLayout :   * QHBoxLayout contenant la barre de recherche (QSearchBar) et le bouton de tri (QButton)
-*                   - QSearchBar
+* QVBoxLayout :   * QHBoxLayout contenant la barre de recherche (QLineEdit),
+*                   zone d'affichage de texte(QLabel) et le bouton de tri (QButton) :
+*                   - QLineEdit récupère le texte de l'utilisateur afin d'éxcuter la recherche dans le
+*                   tableau concerné et filtre en conséquence les lignes.
+*                   - QLabel affiche les résultats de la fuzzySearch ou encore des messages d'erreurs sur
+*                   le format de la recherche.
 *                   - QButton fait apparaître un QDockWidget qui contient un QGroupBox avec des QCheckBox
 *                     alignées verticalement avec un QVBoxLayoutqui représentent les colonnes à faire
 *                     apparaître ou disparaître des tableaux
@@ -47,6 +51,7 @@ public:
 private:
   QStackedWidget *tableWidget;
   QCheckBox *fieldViewToggle;
+  QCheckBox *atomicSearchToggle;
   SortTable *groupTable;
   SortTable *fieldTable;
   QList<SortTable *> sortTableList;
@@ -75,6 +80,8 @@ private:
   // selected columns for search
   QList<int> selectedColumns;
 
+  int typeOfSearch = 0 ;
+
   bool firstAppearence;
 
   // to delete ??
@@ -88,6 +95,8 @@ private:
   void initRegEx();
 
   void connectFieldViewToggle();
+  void connectAtomicSearchToggle();
+  bool searchMethod(const int typeOfSearch, QRegularExpression &regex, QString &cellText);
   int containAndIndexOf(const QString &str, const QStringList &searchedTag);
 
 signals:

@@ -20,6 +20,9 @@ Then you can :
  - Look at the Application output for hints on what still needs to be done.
  - read the summaries of the modules located in the .h files (mainly `preview`, 
  `sortTable`, `TableBox` and `mainwindow`)
+ - Click on the search bar to enter your search
+ - Different type of search, the simple : *word* , the multiple *word1, word2, ...* and the
+   tag search : *tag1: word1; tag2: word2, word3;...*
  - Hovering the sliders below the preview opens up a tooltip that tells you what they do.
  - some buttons do not work : Delete, Assing and Mark as Validated, 
  feel free to remove, rework them if needed.
@@ -35,3 +38,4 @@ depends on the `m_rect` values of the `fieldItems` but changing
 around values in the coordinate system might break things on that end too.
 - The currently implemented CLI could be reworked using the 
 `QCommandLineParser` class. This can be done in `main.cpp`.
+- The search functionalities are not finished/optimal for some of them: read the doc for more informations.

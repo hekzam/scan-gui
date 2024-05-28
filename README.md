@@ -27,9 +27,11 @@ Then you can :
 - There are things still not implemented due to the lack of backend at the time
 this project was conducted. Some code is therefore going to be removed.
 - Items displayed in pages aren't positioned where they seem, this could be 
-improved/changed (see `markeritem.cpp`). The fieldItems are initialized in 
+improved/changed (see `markeritem.cpp`). The `fieldItems` are initialized in 
  `setFieldItemAttributes` in `singlepage.cpp`
 - The mask applied on the preview (see `pagemask.cpp`, `addFieldToHighlight` 
 in `pagemask.cpp`, `FieldItems` and `singlepage.cpp`)
-depends on the `m_rect` values of the fieldItems but changing 
+depends on the `m_rect` values of the `fieldItems` but changing 
 around values in the coordinate system might break things on that end too.
+- The currently implemented CLI could be reworked using the 
+`QCommandLineParser` class. This can be done in `main.cpp`.

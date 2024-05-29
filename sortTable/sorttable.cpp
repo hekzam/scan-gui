@@ -7,7 +7,7 @@ SortTable::SortTable(std::map<QString, ExamInfo> &exams, QWidget *parent)
   hideColumn(COL_MET1);
   hideColumn(COL_MET2);
   headerList << "Exam"
-             << "Copy"
+             << "Paper"
              << "Page"
              << "Field"
              << "Syntax"
